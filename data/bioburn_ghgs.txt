@@ -1,0 +1,4 @@
+"GHG"	"combustion_factor"	"emission_factor"	"global_warming_potential"
+"1"	"co2"	0.46	1580	1
+"2"	"ch4"	0.46	6.8	28
+"3"	"n2o"	0.46	0.2	265

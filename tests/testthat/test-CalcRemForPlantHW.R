@@ -1,0 +1,32 @@
+# Test CalcRemForPlantHW: Removals from Forest Plantations - Hardwood
+
+
+# FPAreaStockHW = 56950.45 # Existing stock at start of yr (ha)
+# FPAreaPlantHW =  3050.3 # Area planted during the yr (ha)
+# FPAreaHarvestHW = 3316.6 # Area harvested during the yr (ha)
+
+
+# x <- AreaStocked - AreaHarvested * MAIChw, (Area 1)
+# y <- AreaPlanted * MAIChw, (area 2)
+# z <- AreaHarvested * MAIChw (Area 3)
+# Total <- x + y + z, convert to CO2e * (-1) Total Area converted to biomass then CO2e
+
+test_that("Baseline Data example", {
+  expect_equal(CalcRemForPlantHW(56950.45, 3050.3, 3316.6, MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain), -961969.1300)
+})
+
+test_that("Baseline Data example", {
+  expect_equal(CalcRemForPlantHW(2, 1, 1, MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain), -60.771282)
+})
+
+test_that("One area zero", {
+  expect_equal(CalcRemForPlantHW(0, 1, 1, MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain), -30.3856410)
+})
+
+test_that("Areas sum to zero", {
+  expect_equal(CalcRemForPlantHW(0, 0, 1, MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain), -15.1928205)
+})
+
+test_that("negative numbers", {
+  expect_equal(CalcRemForPlantHW(-2, 1, 1, MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain), -0.0)
+})
