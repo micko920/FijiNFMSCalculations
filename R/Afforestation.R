@@ -31,10 +31,10 @@ CalcRemARTotal <- function(AreaTotal,
 #' Removals from Afforestation - upland and lowland
 #' 
 #' This function references Equation (34) to calculate the removals from
-#' afforestation/reforestation for the year The resulting value is expressed in
+#' afforestation/reforestation for the year. The resulting value is expressed in
 #' tCO2e. Upland and lowland data was provided for the FRL but total
 #' afforestation area, not aggregated for upland and lowland,  will be provided
-#' for future reporting. The net removals can be obtained with the 
+#' for future reporting. The gross removals can be obtained with the 
 #' CalcRemARTotal() function.
 #'
 #' @references [TBC - ERPD citation - Section 8.3.4.1]

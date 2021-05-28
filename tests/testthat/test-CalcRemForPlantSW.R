@@ -1,9 +1,9 @@
 # Test CalcRemForPlantSW: Removals from Forest Plantations - Softwood
 
 
-# FPAreaStockSW = 49106 # Existing stock at start of yr (ha) GET FROM PREVIOUS yr?
-# FPAreaPlantSW =   370.82 # Area planted during the yr (ha)
-# FPAreaHarvestSW = 1282.402 # Area harvested during the yr (ha)
+# FPlnAreaStockSwd = 49106 # Existing stock at start of yr (ha) GET FROM PREVIOUS yr?
+# FPlnAreaPlantSwd =   370.82 # Area planted during the yr (ha)
+# FPlnAreaHarvSwd = 1282.402 # Area harvested during the yr (ha)
 
 # w <- MAIBsw * 0.47, (Area 1)
 # x <- AreaStocked - AreaHarvested * w,  (Area 2)

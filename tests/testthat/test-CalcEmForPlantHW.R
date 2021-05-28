@@ -1,7 +1,7 @@
 # Test CalcEmForPlantHW: Emissions from Forest Plantations - Hardwood
 
 
-# FPVolHarvHW <- 62199.55 # volume of hardwood harvested (m3). Here used mean(hw$vol_m3)
+# FPlnVolHarvHwd <- 62199.55 # volume of hardwood harvested (m3). Here used mean(hw$vol_m3)
 
 
 # x <-Volume * BiomassConvExpansionHW, y <- Volume * BiomassConvExpansionHW * RootToShootTropRain RootToShootDryLandBig,

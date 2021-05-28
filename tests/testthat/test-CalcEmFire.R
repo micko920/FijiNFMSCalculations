@@ -1,12 +1,12 @@
 # Test CalcEmFire: Emissions from Biomass Burning
 
 
-# input FDBurnData2018 is a data frame with 2 columns, one age, one area.
+# input FDegBurnData2018 is a data frame with 2 columns, one age, one area.
 # bioburn_ghgs is a table of greenhouse gas data with 4 columns and 3 rows.
 # output file "EmFireResults2018"  below, is total emissions for each type of gas for 2018
 
-FDBurnData <- read.table("../../data/FRLBurnData.txt", header = T)
-FDBurnData2018 <- FDBurnData[235:294, c("year", "area_ha", "age_yrs")]
+FDegBurnData <- read.table("../../data/FRLBurnData.txt", header = T)
+FDegBurnData2018 <- FDegBurnData[235:294, c("year", "area_ha", "age_yrs")]
 bioburn_ghgs <- read.table("../../data/bioburn_ghgs.txt", header = T)
 
 
@@ -23,7 +23,7 @@ EmFireResults2018 <- data.frame(
 
 # test_that("2018 Data example", {
 #   expect_equal(CalcEmFire(
-#     FDBurnData2018$age_yrs, MAIBsw, RootToShootDryLandSmall, FDBurnData2018$area_ha,
+#     FDegBurnData2018$age_yrs, MAIBsw, RootToShootDryLandSmall, FDegBurnData2018$area_ha,
 #     bioburn_ghgs
 #   ), EmFireResults2018)
 # })
@@ -31,14 +31,14 @@ EmFireResults2018 <- data.frame(
 # # Get an error:
 # test_that("2018 Data example divide by zero", {
 #   expect_equal(CalcEmFire(
-#     FDBurnData2018$age_yrs, MAIBsw, -1, FDBurnData2018$area_ha,
+#     FDegBurnData2018$age_yrs, MAIBsw, -1, FDegBurnData2018$area_ha,
 #     bioburn_ghgs
 #   ), EmFireResults2018)
 # })
 
 # test_that("2018 Data example", {
 # Error
-# expect_equal(CalcEmFire(FDBurnData2018$age_yrs,  MAIBsw, RootToShootDryLandSmall, FDBurnData2018$area_ha,
+# expect_equal(CalcEmFire(FDegBurnData2018$age_yrs,  MAIBsw, RootToShootDryLandSmall, FDegBurnData2018$area_ha,
 #                        bioburn_ghgs, BiomassToCarbonConv, CarbonToCO2eRatio), sw_barea[235:294,6:9])
 # })
 
@@ -53,13 +53,13 @@ EmFireResults2018 <- data.frame(
 
 # test_that("FRL Data example", {
 # Error
-#  expect_equal(sum(CalcEmFire(FDBurnData$age_yrs,  MAIBsw, RootToShootDryLandSmall, FDBurnData$area_ha,
+#  expect_equal(sum(CalcEmFire(FDegBurnData$age_yrs,  MAIBsw, RootToShootDryLandSmall, FDegBurnData$area_ha,
 #                          bioburn_ghgs, BiomassToCarbonConv, CarbonToCO2eRatio)),FRLTotal )
 # })
 
 # test_that("FRL Data example", {
 #   expect_equal(CalcEmFire(
-#     FDBurnData$age_yrs, MAIBsw, RootToShootDryLandSmall, FDBurnData$area_ha,
+#     FDegBurnData$age_yrs, MAIBsw, RootToShootDryLandSmall, FDegBurnData$area_ha,
 #     bioburn_ghgs
 #   ), 629951.4765)
 # })
@@ -67,13 +67,13 @@ EmFireResults2018 <- data.frame(
 
 # test_that("FRL Data example - divide by zero", {
 # error
-#  expect_equal(sum(CalcEmFire(FDBurnData$age_yrs,  MAIBsw, -1, FDBurnData$area_ha,
+#  expect_equal(sum(CalcEmFire(FDegBurnData$age_yrs,  MAIBsw, -1, FDegBurnData$area_ha,
 #                              bioburn_ghgs, BiomassToCarbonConv, CarbonToCO2eRatio)),FRLTotal )
 # })
 
 # test_that("FRL Data example", {
 # error
-#  expect_equal(sum(CalcEmFire(FDBurnData$age_yrs,  MAIBsw, RootToShootDryLandSmall, FDBurnData$area_ha,
+#  expect_equal(sum(CalcEmFire(FDegBurnData$age_yrs,  MAIBsw, RootToShootDryLandSmall, FDegBurnData$area_ha,
 #                              bioburn_ghgs, BiomassToCarbonConv, CarbonToCO2eRatio)),sw_barea[,6:9] )
 # })
 # sw_barea[,6:9]

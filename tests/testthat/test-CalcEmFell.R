@@ -1,9 +1,9 @@
 # Test CalcEmFell, calculates the emissions from felling
 
 
-# EmFell <- CalcEmFell(FDFellVol , TEF)
+# EmFell <- CalcEmFell(FDegFellVol , TEF)
 # TEF                 = 1.05    # Total Emissions Factor
-# FDFellVol           = 50731.45 # Volume of wood extracted from natural forest (m^3)
+# FDegFellVol         = 50731.45 # Volume of wood extracted from natural forest (m^3)
 
 # Function: x <- a * TEF, y <- x * 44/12)
 

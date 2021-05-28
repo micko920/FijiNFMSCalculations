@@ -23,22 +23,22 @@ errTEF <- 0.25 # Relative error of TEF  (was param.errtef)
 
 
 #' @export
-EFDFUp <- 199.679 # Emissions Factor Deforestation Upland, extracted from FRL data
+EFDeforUp <- 199.679 # Emissions Factor Deforestation Upland, extracted from FRL data
 
 #' @export
-EFDFUp_UCI   <- 200.0    # TODO: get real number
+EFDeforUp_UCI   <- 200.0    # TODO: get real number
 
 #' @export
-EFDFUp_LCI   <- 199.0    # TODO: get real number
+EFDeforUp_LCI   <- 199.0    # TODO: get real number
 
 #' @export
-EFDFLow <- 259.400 # Emissions Factor  Deforestation Lowland, extracted from FRL data
+EFDeforLow <- 259.400 # Emissions Factor  Deforestation Lowland, extracted from FRL data
 
 #' @export
-EFDFLow_UCI   <- 260.0   # TODO: get real number
+EFDeforLow_UCI   <- 260.0   # TODO: get real number
 
 #' @export
-EFDFLow_LCI   <- 259.0   # TODO: get real number
+EFDeforLow_LCI   <- 259.0   # TODO: get real number
 
 
 
@@ -75,7 +75,7 @@ errMAIBsw <- 0.25 # Relative error in 'maibp'(was param.errmaibp)
 # Note: there is a discrepancy between FRL data and calculated data for MAICAGBar:
 # MAICBar : This was removed from the calc to go back to basic calc to handle uncertainty
 # and sensitivity analysis
-#MAICAGBar <- 1.918 # Mean annual total carbon increment AGB only (AR) (was param.maicar in FRL)
+# MAICAGBar <- 1.918 # Mean annual total carbon increment AGB only (AR) (was param.maicar in FRL)
 # Resolve the issue with the MAICAGBar between FRL and ERPD!!!!!
 # From fiji_frl_main_document_GENERAL.pdf and ERDP.pdf, MAICAGBar is calculated as:
 # MAICAGBar <- MAIVar * BiomassConvExpansionAR  * BiomassToCarbonConv
@@ -85,8 +85,8 @@ errMAIBsw <- 0.25 # Relative error in 'maibp'(was param.errmaibp)
 # This has been rounded to a common 4 sig figs to remove the discrepancy.
 # subsequently there is a discrepancy in MAICar between FRL and calculated.
 # FRL value used:
-#MAICAGBar <- 1.91846 # Mean annual total carbon increment AGB only (AR) (was param.maicar in FRL)
-#errMAICAGBar <- 0.5 # Relative error in MAICar(was param.errmaicar)
+# MAICAGBar <- 1.91846 # Mean annual total carbon increment AGB only (AR) (was param.maicar in FRL)
+# errMAICAGBar <- 0.5 # Relative error in MAICar(was param.errmaicar)
 
 
 #' @export

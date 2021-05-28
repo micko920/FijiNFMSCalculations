@@ -1,7 +1,7 @@
 # Test CalcRemFell calculate removals from Felling
 
 # MAICFell             = 0.99   # Mean annual increment (MAI) of total C (above- and below-ground carbon)
-# FDFellArea    =11669.87
+# FDegFellArea         =11669.87
 # x <- a * MAICFell, y =  convCO2 (x) * (-1) (i.e. * -44/12)
 
 test_that("Baseline FRL example", {

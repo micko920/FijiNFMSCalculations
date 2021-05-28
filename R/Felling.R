@@ -48,13 +48,13 @@ CalcRemFell <- function(Area, # area of natural forest logged
 #'
 #' @references [TBC - ERPD citation - Section 8.3.3.1]
 #'
-#' @param EmEstFell Emissions from logging
-#' @param RemEstFell Removals from regrowth on felled areas 
+#' @param EstEmFell Emissions from logging
+#' @param EstRemFell Removals from regrowth on felled areas 
 #' @seealso [CalcEmFell()]
 #' @seealso [CalcRemFell()]
 #' @return Emissions from Logging of Natural Forests - tCO2e
 #' @export
-CalcEmTotalFell <- function (EmEstFell, RemEstFell) {
-  return(EmEstFell + RemEstFell)
+CalcEmTotalFell <- function (EstEmFell, EstRemFell) {
+  return(EstEmFell + EstRemFell)
 }
 

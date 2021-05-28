@@ -4,12 +4,12 @@
 \alias{CalcEmTotalDF}
 \title{Emissions From Deforestation}
 \usage{
-CalcEmTotalDF(EmEstDFUp, EmEstDFLow)
+CalcEmTotalDF(EmEstDeforUp, EmEstDeforLow)
 }
 \arguments{
-\item{EmEstDFUp}{Emission Estimate from Lowland Deforestation}
+\item{EmEstDeforUp}{Emission Estimate from Lowland Deforestation}
 
-\item{EmEstDFLow}{Emission Estimate from Upland Deforestation}
+\item{EmEstDeforLow}{Emission Estimate from Upland Deforestation}
 }
 \value{
 Net Emission from deforestation

@@ -29,12 +29,12 @@ CalcEmDF <- function(Area, # use area for upland deforestation or lowland defore
 #' @references [TBC - ERPD citation - Section 8.3.2]
 #' 
 #'
-#' @param EmEstDFUp  Emission Estimate from Lowland Deforestation
-#' @param EmEstDFLow Emission Estimate from Upland Deforestation
+#' @param EmEstDeforUp  Emission Estimate from Lowland Deforestation
+#' @param EmEstDeforLow Emission Estimate from Upland Deforestation
 #' @seealso [CalcEmDF()]
 #' @return  Net Emission from deforestation 
 #' @export
-CalcEmTotalDF <- function (EmEstDFUp, EmEstDFLow) {
-  return(EmEstDFUp + EmEstDFLow)
+CalcEmTotalDF <- function (EmEstDeforUp, EmEstDeforLow) {
+  return(EmEstDeforUp + EmEstDeforLow)
 }
 

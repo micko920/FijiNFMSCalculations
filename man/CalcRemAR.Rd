@@ -26,10 +26,10 @@ Emission Removals from Afforestation - tCO2e
 }
 \description{
 This function references Equation (34) to calculate the removals from
-afforestation/reforestation for the year The resulting value is expressed in
+afforestation/reforestation for the year. The resulting value is expressed in
 tCO2e. Upland and lowland data was provided for the FRL but total
 afforestation area, not aggregated for upland and lowland,  will be provided
-for future reporting. The net removals can be obtained with the
+for future reporting. The gross removals can be obtained with the
 CalcRemARTotal() function.
 }
 \references{

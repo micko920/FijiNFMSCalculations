@@ -4,10 +4,10 @@
 \alias{CalcGrossRemTotal}
 \title{Gross Removals}
 \usage{
-CalcGrossRemTotal(RemEstFell, RemEstAR, RemEstFPTotal)
+CalcGrossRemTotal(EstRemFell, RemEstAR, RemEstFPTotal)
 }
 \arguments{
-\item{RemEstFell}{Gross removals from degradation}
+\item{EstRemFell}{Gross removals from degradation}
 
 \item{RemEstAR}{Gross removals from afforestation}
 

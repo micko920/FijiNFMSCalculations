@@ -8,8 +8,8 @@
 #'
 #' @references [TBC - ERPD citation - Section 8.3.1]
 #'
-#' @param EmEstDFTotal Gross emissions from deforestation
-#' @param EmEstFell Gross emissions from logging
+#' @param EstEmRemsDefor Gross emissions from deforestation
+#' @param EstEmFell Gross emissions from logging
 #' @param EmFireTotal Gross emissions from burning
 #' @param EmEstFPTotal Gross emissions from forest plantations
 #' @seealso [CalcEmDF()]
@@ -18,27 +18,10 @@
 #' 
 #' @return Gross Emissions - tCO2e  
 #' @export
-CalcGrossEmTotal <- function (EmEstDFTotal, EmEstFell, EmFireTotal, EmEstFPTotal) {
-  return(EmEstDFTotal + EmEstFell + EmFireTotal + EmEstFPTotal)
+CalcGrossEmTotal <- function (EstEmRemsDefor, EstEmFell, EmFireTotal, EmEstFPTotal) {
+  return(EstEmRemsDefor + EstEmFell + EmFireTotal + EmEstFPTotal)
 }
 
-
-#' Gross Emissions without degradation
-#'  
-#' @description This function uses equation (1) to calculate the gross emissions 
-#' from all sources apart from degradation. Emissions are presented in tco2e.
-#'
-#' @references [TBC - ERPD citation - Section 8.3.1]
-#'
-#' @param EmEstDFTotal Gross emissions from deforestation
-#' @param EmEstFPTotal Gross emissions from forest plantations
-#' @seealso [CalcEmDF()]
-#' @seealso [CalcEmEstTotalFP()]
-#' @return Gross Emissions without degradation - tCO2e  
-#' @export
-CalcGrossEmNoFDTotal <- function (EmEstDFTotal, EmEstFPTotal) {
-  return (EmEstDFTotal + EmEstFPTotal)
-}
 
 #' Gross Removals 
 #'  
@@ -47,7 +30,7 @@ CalcGrossEmNoFDTotal <- function (EmEstDFTotal, EmEstFPTotal) {
 #'
 #' @references [TBC - ERPD citation - Section 8.3.1]
 #'
-#' @param RemEstFell Gross removals from degradation
+#' @param EstRemFell Gross removals from degradation
 #' @param RemEstAR Gross removals from afforestation
 #' @param RemEstFPTotal Gross removals from forest plantations
 #' @seealso [CalcRemFell()]
@@ -55,25 +38,10 @@ CalcGrossEmNoFDTotal <- function (EmEstDFTotal, EmEstFPTotal) {
 #' @seealso [CalcRemTotalFP()]
 #' @return Gross Removals - tCO2e  
 #' @export
-CalcGrossRemTotal <- function (RemEstFell, RemEstAR, RemEstFPTotal) {
-  return (RemEstFell + RemEstAR + RemEstFPTotal)
+CalcGrossRemTotal <- function (EstRemFell, RemEstAR, RemEstFPTotal) {
+  return (EstRemFell + RemEstAR + RemEstFPTotal)
 }
 
-#' Gross Removals without degradation
-#'  
-#' @description This function uses equation (2) to calculate the gross removals 
-#' from all sources apart from degradation. Emissions are presented in tco2e.
-#'
-#' @references [TBC - ERPD citation - Section 8.3.1]
-#'
-#' @param RemEstAR Gross removals from afforestation
-#' @seealso [CalcRemARTotal()]
-#' @return Gross Removals without degradation - tCO2e  
-#' @export
-
-CalcGrossRemNoFDTotal <- function (RemEstAR) {
-  return (RemEstAR)
-}
 
 # 
 #' Forest Degradation Net Emissions
@@ -83,8 +51,8 @@ CalcGrossRemNoFDTotal <- function (RemEstAR) {
 #'
 #' @references [TBC - ERPD citation - Section 8.3.1]
 #'
-#' @param EmEstFell Gross emissions from logging
-#' @param RemEstFell Gross removals from regrowth on logged areas
+#' @param EstEmFell Gross emissions from logging
+#' @param EstRemFell Gross removals from regrowth on logged areas
 #' @param EmFireTotal Gross emissions from burning
 #' @seealso [CalcEmFell()]
 #' @seealso [CalcRemFell()]
@@ -92,8 +60,8 @@ CalcGrossRemNoFDTotal <- function (RemEstAR) {
 #' @return Forest Degradation Net Emissions - tCO2e  
 #' @export
 
-CalcFDEst <- function (EmEstFell, RemEstFell, EmFireTotal) {
-  return (EmEstFell + RemEstFell + EmFireTotal)
+CalcFDEst <- function (EstEmFell, EstRemFell, EmFireTotal) {
+  return (EstEmFell + EstRemFell + EmFireTotal)
 }
 
 

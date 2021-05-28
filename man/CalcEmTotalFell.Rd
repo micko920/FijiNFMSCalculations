@@ -4,12 +4,12 @@
 \alias{CalcEmTotalFell}
 \title{Net emissions from Logging of Natural Forests (tCO2e)}
 \usage{
-CalcEmTotalFell(EmEstFell, RemEstFell)
+CalcEmTotalFell(EstEmFell, EstRemFell)
 }
 \arguments{
-\item{EmEstFell}{Emissions from logging}
+\item{EstEmFell}{Emissions from logging}
 
-\item{RemEstFell}{Removals from regrowth on felled areas}
+\item{EstRemFell}{Removals from regrowth on felled areas}
 }
 \value{
 Emissions from Logging of Natural Forests - tCO2e

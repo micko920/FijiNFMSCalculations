@@ -4,12 +4,12 @@
 \alias{CalcGrossEmTotal}
 \title{Gross Emissions}
 \usage{
-CalcGrossEmTotal(EmEstDFTotal, EmEstFell, EmFireTotal, EmEstFPTotal)
+CalcGrossEmTotal(EstEmRemsDefor, EstEmFell, EmFireTotal, EmEstFPTotal)
 }
 \arguments{
-\item{EmEstDFTotal}{Gross emissions from deforestation}
+\item{EstEmRemsDefor}{Gross emissions from deforestation}
 
-\item{EmEstFell}{Gross emissions from logging}
+\item{EstEmFell}{Gross emissions from logging}
 
 \item{EmFireTotal}{Gross emissions from burning}
 

@@ -1,6 +1,6 @@
 # Test CalcEmForPlantSW: Emissions from Forest Plantations - Softwood
 
-# FPVolHarvSW = 334463.2 # volume of softwood harvested (m3) - used average from FRL
+#  FPlnVolHarvSwd = 334463.2 # volume of softwood harvested (m3) - used average from FRL
 
 # x <-Volume * AGBLossSW, y <- Volume * AGBLossSW * RootToShootDryLandBig,
 # z <- x + y, then convcarb(z) then convCO2

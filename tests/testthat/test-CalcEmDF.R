@@ -1,10 +1,10 @@
 # Test CalcEmDF Calcalute Emissions from Deforestation
 
 
-# DFAreaUp   = 2681.642 # Area of deforestation in natural forest upland (ha)
-# DFAreaLow   = 8332.147 # Area of deforestation in natural forest lowland (ha)
-# EFDFUp          = 199.6785  # Emissions Factor Deforestation Upland
-# EFDFLow         = 259.4006  # Emissions Factor  Deforestation Lowland
+# DeforAreaUp   = 2681.642 # Area of deforestation in natural forest upland (ha)
+# DeforAreaLow   = 8332.147 # Area of deforestation in natural forest lowland (ha)
+# EFDeforUp          = 199.6785  # Emissions Factor Deforestation Upland
+# EFDeforLow         = 259.4006  # Emissions Factor  Deforestation Lowland
 
 # Function multiplies activity data (AD) by Emissions Factor (EF)
 # x= a * 199.6785, y= b * 259.4006, z+ a * b

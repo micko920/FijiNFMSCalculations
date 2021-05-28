@@ -1,9 +1,9 @@
 # Test CalcRemForPlantHW: Removals from Forest Plantations - Hardwood
 
 
-# FPAreaStockHW = 56950.45 # Existing stock at start of yr (ha)
-# FPAreaPlantHW =  3050.3 # Area planted during the yr (ha)
-# FPAreaHarvestHW = 3316.6 # Area harvested during the yr (ha)
+# FPlnAreaStockHwd = 56950.45 # Existing stock at start of yr (ha)
+# FPlnAreaPlantHwd =  3050.3 # Area planted during the yr (ha)
+# FPlnAreaHarvHwd = 3316.6 # Area harvested during the yr (ha)
 
 
 # x <- AreaStocked - AreaHarvested * MAIChw, (Area 1)

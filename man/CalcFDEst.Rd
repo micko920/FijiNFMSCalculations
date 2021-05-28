@@ -4,12 +4,12 @@
 \alias{CalcFDEst}
 \title{Forest Degradation Net Emissions}
 \usage{
-CalcFDEst(EmEstFell, RemEstFell, EmFireTotal)
+CalcFDEst(EstEmFell, EstRemFell, EmFireTotal)
 }
 \arguments{
-\item{EmEstFell}{Gross emissions from logging}
+\item{EstEmFell}{Gross emissions from logging}
 
-\item{RemEstFell}{Gross removals from regrowth on logged areas}
+\item{EstRemFell}{Gross removals from regrowth on logged areas}
 
 \item{EmFireTotal}{Gross emissions from burning}
 }
