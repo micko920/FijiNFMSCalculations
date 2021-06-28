@@ -10,7 +10,7 @@
 #' 
 #' @return Emissions from Logging of Natural Forests - tCO2e  
 #' @export
-CalcEmFell <- function(Volume, # volume of area logged
+CalcEstEmFell <- function(Volume, # volume of area logged
                        EF # Total Emissions Factor
 ) {
   # Convert volume to carbon and then calculate emissions
@@ -31,7 +31,7 @@ CalcEmFell <- function(Volume, # volume of area logged
 #' @param MAIC Mean Annual Increment Carbon
 #' @return Removals from regrowth on Felled Areas in Natural Forests - tCO2e 
 #' @export
-CalcRemFell <- function(Area, # area of natural forest logged
+CalcEstRemFell <- function(Area, # area of natural forest logged
                         MAIC # Mean Annual Increment Carbon
 ) {
   # Convert area to carbon and then emissions
@@ -43,18 +43,18 @@ CalcRemFell <- function(Area, # area of natural forest logged
 
 #' Net emissions from Logging of Natural Forests (tCO2e)
 #'  
-#' @description This function used functions CalcEMFell and CalcREMFell to calculate net
+#' @description This function used functions CalcEstEmFell and CalcEstRemFell to calculate net
 #' emissions from logging. Emissions are presented in tCO2e.
 #'
 #' @references [TBC - ERPD citation - Section 8.3.3.1]
 #'
 #' @param EstEmFell Emissions from logging
 #' @param EstRemFell Removals from regrowth on felled areas 
-#' @seealso [CalcEmFell()]
-#' @seealso [CalcRemFell()]
+#' @seealso [CalcEstEmFell()]
+#' @seealso [CalcEstRemFell()]
 #' @return Emissions from Logging of Natural Forests - tCO2e
 #' @export
-CalcEmTotalFell <- function (EstEmFell, EstRemFell) {
+CalcNetEmRemsFell <- function (EstEmFell, EstRemFell) {
   return(EstEmFell + EstRemFell)
 }
 

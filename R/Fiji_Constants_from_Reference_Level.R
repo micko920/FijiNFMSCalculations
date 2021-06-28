@@ -75,17 +75,17 @@ errMAIBsw <- 0.25 # Relative error in 'maibp'(was param.errmaibp)
 # Note: there is a discrepancy between FRL data and calculated data for MAICAGBar:
 # MAICBar : This was removed from the calc to go back to basic calc to handle uncertainty
 # and sensitivity analysis
-# MAICAGBar <- 1.918 # Mean annual total carbon increment AGB only (AR) (was param.maicar in FRL)
+# MAICAGBar <- 1.918 # Mean annual total carbon increment AGB only (ARefor) (was param.maicar in FRL)
 # Resolve the issue with the MAICAGBar between FRL and ERPD!!!!!
 # From fiji_frl_main_document_GENERAL.pdf and ERDP.pdf, MAICAGBar is calculated as:
-# MAICAGBar <- MAIVar * BiomassConvExpansionAR  * BiomassToCarbonConv
-# MAIVar                <-  3.71      # Mean Annual Volume Increment (AR) m^3 ha^-1 yr^-1 (not used in FRL)
+# MAICAGBar <- MAIVar * BiomassConvExpansionARefor  * BiomassToCarbonConv
+# MAIVar                <-  3.71      # Mean Annual Volume Increment (ARefor) m^3 ha^-1 yr^-1 (not used in FRL)
 # BCEFar                <-  1.1       # Biomass conversion factor tB (m^3)^-1 (not used in FRL)
 # Thus MAICAGBar       <- 1.91807 when calculated as above.
 # This has been rounded to a common 4 sig figs to remove the discrepancy.
 # subsequently there is a discrepancy in MAICar between FRL and calculated.
 # FRL value used:
-# MAICAGBar <- 1.91846 # Mean annual total carbon increment AGB only (AR) (was param.maicar in FRL)
+# MAICAGBar <- 1.91846 # Mean annual total carbon increment AGB only (ARefor) (was param.maicar in FRL)
 # errMAICAGBar <- 0.5 # Relative error in MAICar(was param.errmaicar)
 
 

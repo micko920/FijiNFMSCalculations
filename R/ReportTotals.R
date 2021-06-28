@@ -8,18 +8,18 @@
 #'
 #' @references [TBC - ERPD citation - Section 8.3.1]
 #'
-#' @param EstEmRemsDefor Gross emissions from deforestation
+#' @param GrossEmDefor Gross emissions from deforestation
 #' @param EstEmFell Gross emissions from logging
-#' @param EmFireTotal Gross emissions from burning
-#' @param EmEstFPTotal Gross emissions from forest plantations
-#' @seealso [CalcEmDF()]
-#' @seealso [CalcEmFell()]
-#' @seealso [CalcEmEstTotalFP()]
+#' @param EstEmFire Gross emissions from burning
+#' @param GrossEmFPln Gross emissions from forest plantations
+#' @seealso [CalcEstEmDefor()]
+#' @seealso [CalcEstEmFell()]
+#' @seealso [CalcGrossEmFPln()]
 #' 
 #' @return Gross Emissions - tCO2e  
 #' @export
-CalcGrossEmTotal <- function (EstEmRemsDefor, EstEmFell, EmFireTotal, EmEstFPTotal) {
-  return(EstEmRemsDefor + EstEmFell + EmFireTotal + EmEstFPTotal)
+CalcGrossEm <- function (GrossEmDefor, EstEmFell, EstEmFire, GrossEmFPln) {
+  return(GrossEmDefor + EstEmFell + EstEmFire + GrossEmFPln)
 }
 
 
@@ -31,17 +31,16 @@ CalcGrossEmTotal <- function (EstEmRemsDefor, EstEmFell, EmFireTotal, EmEstFPTot
 #' @references [TBC - ERPD citation - Section 8.3.1]
 #'
 #' @param EstRemFell Gross removals from degradation
-#' @param RemEstAR Gross removals from afforestation
-#' @param RemEstFPTotal Gross removals from forest plantations
-#' @seealso [CalcRemFell()]
-#' @seealso [CalcRemARTotal()]
-#' @seealso [CalcRemTotalFP()]
+#' @param EstRemARefor Gross removals from afforestation
+#' @param GrossRemFPln Gross removals from forest plantations
+#' @seealso [CalcEstRemFell()]
+#' @seealso [CalcGrossRemARefor()]
+#' @seealso [CalcGrossRemFPln()]
 #' @return Gross Removals - tCO2e  
 #' @export
-CalcGrossRemTotal <- function (EstRemFell, RemEstAR, RemEstFPTotal) {
-  return (EstRemFell + RemEstAR + RemEstFPTotal)
+CalcGrossRem <- function (EstRemFell, EstRemARefor, GrossRemFPln) {
+  return (EstRemFell + EstRemARefor + GrossRemFPln)
 }
-
 
 # 
 #' Forest Degradation Net Emissions
@@ -53,15 +52,15 @@ CalcGrossRemTotal <- function (EstRemFell, RemEstAR, RemEstFPTotal) {
 #'
 #' @param EstEmFell Gross emissions from logging
 #' @param EstRemFell Gross removals from regrowth on logged areas
-#' @param EmFireTotal Gross emissions from burning
-#' @seealso [CalcEmFell()]
-#' @seealso [CalcRemFell()]
-#' @seealso [CalcEmFire()]
+#' @param EstEmFire Gross emissions from burning
+#' @seealso [CalcEstEmFell()]
+#' @seealso [CalcEstRemFell()]
+#' @seealso [CalcEstEmFire()]
 #' @return Forest Degradation Net Emissions - tCO2e  
 #' @export
 
-CalcFDEst <- function (EstEmFell, EstRemFell, EmFireTotal) {
-  return (EstEmFell + EstRemFell + EmFireTotal)
+CalcEstEmRemsFDeg <- function (EstEmFell, EstRemFell, EstEmFire) {
+  return (EstEmFell + EstRemFell + EstEmFire)
 }
 
 
@@ -72,14 +71,14 @@ CalcFDEst <- function (EstEmFell, EstRemFell, EmFireTotal) {
 #'
 #' @references [TBC - ERPD citation - Section 8.3.1]
 #'
-#' @param FPTotal Gross removals from Forest Plantations
-#' @param RemEstAR Gross removals from Afforestation
-#' @seealso [CalcRemTotalFP()]
-#' @seealso [CalcRemARTotal()]
+#' @param NetEmRemsFPln Gross removals from Forest Plantations
+#' @param EstRemARefor Gross removals from Afforestation
+#' @seealso [CalcGrossRemFPln()]
+#' @seealso [CalcGrossRemARefor()]
 #' @return Gross Removals from Enhancements - tCO2e  
 #' @export
-CalcECEst <- function (FPTotal, RemEstAR) {
-  return (FPTotal + RemEstAR)
+CalcEstEmRemsEnh <- function (NetEmRemsFPln, EstRemARefor) {
+  return (NetEmRemsFPln + EstRemARefor)
 }
 
 
@@ -90,13 +89,13 @@ CalcECEst <- function (FPTotal, RemEstAR) {
 #'
 #' @references [TBC - ERPD citation - Section 8.3.1]
 #'
-#' @param GrossEmTotal Gross emissions
-#' @param GrossRemTotal Gross removals 
-#' @seealso [CalcGrossEmTotal()]
-#' @seealso [CalcGrossRemTotal]
+#' @param GrossEm Gross emissions
+#' @param GrossRem Gross removals 
+#' @seealso [CalcGrossEm()]
+#' @seealso [CalcGrossRem()]
 #' @return Net Emissions  - tCO2e  
 #' @export
-CalcNetEmTotal <- function (GrossEmTotal, GrossRemTotal) {
-  return (GrossEmTotal + GrossRemTotal)
+CalcNetEmRems <- function (GrossEm, GrossRem) {
+  return (GrossEm + GrossRem)
 }
 

@@ -16,7 +16,7 @@
 #' @param RootToShootRatio Root-to-shoot ratio for tropical forests
 #' @return Emission Removals from Afforestation - tCO2e
 #' @export
-CalcRemARTotal <- function(AreaTotal,
+CalcGrossRemARefor <- function(AreaTotal,
                            MAIV,
                            BCEF,
                            RootToShootRatio) {
@@ -35,7 +35,7 @@ CalcRemARTotal <- function(AreaTotal,
 #' tCO2e. Upland and lowland data was provided for the FRL but total
 #' afforestation area, not aggregated for upland and lowland,  will be provided
 #' for future reporting. The gross removals can be obtained with the 
-#' CalcRemARTotal() function.
+#' CalcGrossRemARefor() function.
 #'
 #' @references [TBC - ERPD citation - Section 8.3.4.1]
 #' 
@@ -48,13 +48,13 @@ CalcRemARTotal <- function(AreaTotal,
 #' @param BCEF Biomass Conversion and expansion factor for increments in humid
 #' tropical natural forests
 #' @param RootToShootRatio Root-to-shoot ratio for tropical forests
-#' @seealso [CalcRemARTotal()]
+#' @seealso [CalcGrossRemARefor()]
 #' @return Emission Removals from Afforestation - tCO2e
 #' @export
-CalcRemAR <- function(AreaUpland,
+CalcEstRemARefor <- function(AreaUpland,
                       AreaLowland,
                       MAIV,
                       BCEF,
                       RootToShootRatio) {
-  return(CalcRemARTotal(AreaUpland + AreaLowland, MAIV, BCEF, RootToShootRatio))
+  return(CalcGrossRemARefor(AreaUpland + AreaLowland, MAIV, BCEF, RootToShootRatio))
 }

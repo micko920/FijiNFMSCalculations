@@ -13,7 +13,7 @@
 #' @param RootToShoot Root-to-shoot ratio for tropical rainforests
 #' @return Emissions from Hardwood Plantations
 #' @export
-CalcEmForPlantHW <- function(Volume,
+CalcEstEmFPlnHwd <- function(Volume,
                              BioConvExp,
                              RootToShoot) {
   # estimate AGB and BGB  losses
@@ -43,7 +43,7 @@ CalcEmForPlantHW <- function(Volume,
 #'   deciduous forest > 125 tB ha-1
 #' @return Emissions from Softwood Plantations
 #' @export
-CalcEmForPlantSW <- function(Volume,
+CalcEstEmFPlnSwd <- function(Volume,
                              Recovery,
                              WoodDensity,
                              RootToShoot) {
@@ -77,7 +77,7 @@ CalcEmForPlantSW <- function(Volume,
 
 #' @return Removals from Hardwood Plantations
 #' @export
-CalcRemForPlantHW <- function(AreaJustGrowsHW, # Initial area of forest at start of year
+CalcEstRemFPlnHwd <- function(AreaJustGrowsHW, # Initial area of forest at start of year
                               AreaPlanted, # Area planted during the year
                               AreaHarvested, # Area from area stocked which is harvested during the year
                               MAIV,
@@ -112,7 +112,7 @@ CalcRemForPlantHW <- function(AreaJustGrowsHW, # Initial area of forest at start
 #' year
 #' @return Removals from Softwood Plantations
 #' @export
-CalcRemForPlantSW <- function(MAIBsw, # Mean annual biomass increment in Softwood Plantations
+CalcEstRemFPlnSwd <- function(MAIBsw, # Mean annual biomass increment in Softwood Plantations
                               AreaJustGrowsSW, # Area stocked - area harvested in that year
                               AreaPlanted, # Area planted during the year
                               AreaHarvested # Area from area stocked which is harvested during the year
@@ -133,55 +133,55 @@ CalcRemForPlantSW <- function(MAIBsw, # Mean annual biomass increment in Softwoo
 
 #' Gross emissions Forest Plantations (Hard- and Softwood)
 #'
-#' @description This function refers to the CalcEmForPlantHW and
-#'   CalcEmForPlantSW functions to calculate the gross emissions from forest
+#' @description This function refers to theCalcEstEmFPlnHwd and
+#'   CalcEstEmFPlnSwd functions to calculate the gross emissions from forest
 #'   plantations. Gross Removals are presented in tCO2.
 #'
 #' @references [TBC - ERPD citation - Section 8.3.4.2]
 #'
-#' @param EmEstFPHW Emissions from Hardwood Plantations
-#' @param EmEstFPSW Emissions from Softwood Plantations
-#' @seealso [CalcEmForPlantHW()]
-#' @seealso [CalcEmForPlantSW()]
+#' @param EstEmFPlnHwd Emissions from Hardwood Plantations
+#' @param EstEmFPlnSwd Emissions from Softwood Plantations
+#' @seealso [CalcEstEmFPlnHwd()]
+#' @seealso [CalcEstEmFPlnSwd()]
 #' @return Gross Emissions from Hard and Softwood Plantations
 #' @export
-CalcEmEstTotalFP <- function (EmEstFPHW, EmEstFPSW) {
-  return(EmEstFPHW + EmEstFPSW)
+CalcGrossEmFPln <- function (EstEmFPlnHwd, EstEmFPlnSwd) {
+  return(EstEmFPlnHwd + EstEmFPlnSwd)
 }
 
 #' Gross removals from Forest Plantations (Hard- and Softwood)
 #'
-#' @description This function refers to the CalcRemForPlantHW and
-#'   CalcRemForPlantSW functions to calculate the gross removals from forest
+#' @description This function refers to the CalcEstRemFPlnHwd and
+#'   CalcEstRemFPlnSwd functions to calculate the gross removals from forest
 #'   plantations. Gross Removals are presented in tCO2e.
 #'
 #' @references [TBC - ERPD citation - Section 8.3.4.2]
 #'
-#' @param RemEstFPHW Removals from Softwood Plantations
-#' @param RemEstFPSW Removals from Softwood Plantations
-#' @seealso [CalcRemForPlantHW()]
-#' @seealso [CalcRemForPlantSW()]
+#' @param EstRemFPlnHwd Removals from Softwood Plantations
+#' @param EstRemFPlnSwd Removals from Softwood Plantations
+#' @seealso [CalcEstRemFPlnHwd()]
+#' @seealso [CalcEstRemFPlnSwd()]
 #' @return Gross Removals from Hard and Softwood Plantations
 #' @export
-CalcRemTotalFP <- function (RemEstFPHW, RemEstFPSW) {
-  return(RemEstFPHW + RemEstFPSW)
+CalcGrossRemFPln <- function (EstRemFPlnHwd, EstRemFPlnSwd) {
+  return(EstRemFPlnHwd + EstRemFPlnSwd)
 }
 
 #' Net Emissions from Forest Plantations (Hard and Softwood)
 #'
-#' @description This function references functions CalcEmEstTotalFP and
-#'   CalcRemTotalFP to calculate net emissions from Hard and Softwood
+#' @description This function references functions CalcGrossEmFPln and
+#'   CalcGrossRemFPln to calculate net emissions from Hard and Softwood
 #'   Plantations. Values are presented in tCO2e.
 #'
 #' @references [TBC - ERPD citation - Section 8.3.4.2]
 #'
-#' @param EmEstFPTotal Gross emissions from Soft and Hardwood Plantations
-#' @param RemEstFPTotal Gross removals from Soft and Hardwood Plantations
-#' @seealso [CalcEmEstTotalFP()]
-#' @seealso [CalcRemTotalFP()]
+#' @param GrossEmFPln Gross emissions from Soft and Hardwood Plantations
+#' @param GrossRemFPln Gross removals from Soft and Hardwood Plantations
+#' @seealso [CalcGrossEmFPln()]
+#' @seealso [CalcGrossRemFPln()]
 #' @return Net emissions from Hard and Softwood Plantations
 #' @export
-CalcTotalFP <- function (EmEstFPTotal, RemEstFPTotal) {
-  return(EmEstFPTotal + RemEstFPTotal)
+CalcNetEmRemsFPln <- function (GrossEmFPln, GrossRemFPln) {
+  return(GrossEmFPln + GrossRemFPln)
 }
 

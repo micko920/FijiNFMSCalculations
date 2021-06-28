@@ -4,8 +4,8 @@
 
 
 #' @export
-CalcMpEstEmRemsDefor <- function(Year1EstEmRemsDefor, Year2EstEmRemsDefor) {
-  return(Year1EstEmRemsDefor + Year2EstEmRemsDefor)
+CalcMpGrossEmDefor <- function(Year1GrossEmDefor, Year2GrossEmDefor) {
+  return(Year1GrossEmDefor + Year2GrossEmDefor)
 }
 
 

@@ -12,7 +12,7 @@
 #'   tCO2e/ha
 #' @return  Emission for deforestation in upland or lowland area
 #' @export
-CalcEmDF <- function(Area, # use area for upland deforestation or lowland deforestation
+CalcEstEmDefor <- function(Area, # use area for upland deforestation or lowland deforestation
                      EF # use EF for either upland or lowland
 ) {
   # Area deforested upland or lowland (AD) x Emission factor upland or lowland
@@ -29,12 +29,12 @@ CalcEmDF <- function(Area, # use area for upland deforestation or lowland defore
 #' @references [TBC - ERPD citation - Section 8.3.2]
 #' 
 #'
-#' @param EmEstDeforUp  Emission Estimate from Lowland Deforestation
-#' @param EmEstDeforLow Emission Estimate from Upland Deforestation
-#' @seealso [CalcEmDF()]
+#' @param EstEmDeforUp  Emission Estimate from Lowland Deforestation
+#' @param EstEmDeforLow Emission Estimate from Upland Deforestation
+#' @seealso [CalcEstEmDefor()]
 #' @return  Net Emission from deforestation 
 #' @export
-CalcEmTotalDF <- function (EmEstDeforUp, EmEstDeforLow) {
-  return(EmEstDeforUp + EmEstDeforLow)
+CalcGrossEmDefor <- function (EstEmDeforUp, EstEmDeforLow) {
+  return(EstEmDeforUp + EstEmDeforLow)
 }
 

@@ -16,7 +16,7 @@
 #'
 #' @return Emissions from Forest Degradation (Fire) - tCO2e
 #' @export
-CalcEmFire <- function(Age,
+CalcEstEmFire <- function(Age,
                        MAIBsw, # Mean Annual Increment Biomass softwood
                        RootToShootDryLandSmall,
                        Area) {

@@ -33,11 +33,11 @@ errUpperRtSDryLandBig <- 0.33 # Upper bound for triangle distribution
 # Biomass conversion and expansion factor for Volumn inc. humid trop. Nat. Forests (IPPC 2006, chp4, Table 4.5)
 
 #' @export
-BiomassConvExpansionAR <- 1.1     # Biomass conversion and expansion factor for volume increments in
+BiomassConvExpansionARefor <- 1.1     # Biomass conversion and expansion factor for volume increments in
 ## humid tropical natural forests (IPCC)
 
 #' @export
-errBiomassConvExpansionAR <- 0.25 # Relative error in Biomass Conversion and Expansion Factor
+errBiomassConvExpansionARefor <- 0.25 # Relative error in Biomass Conversion and Expansion Factor
 
 #' @export
 BiomassConvExpansionHW <- 1.05 # Biomass conversion and expansion factor (Hardwood) (was param.bcefrhw)

@@ -18,12 +18,12 @@ test_that("Test it can be called", {
   dummyMonitoredValues$DeforAreaUp_UCI <- 2889
   dummyMonitoredValues$DeforAreaUp_LCI <- 1627
 
-  dummyMonitoredValues$ARArea <- 6180 # Area of Afforestation lowland and upland (ha) (Not split into lowland and upland)
-  # ARAreaLow      #ARArea = Sum of ARAreaLow and ARAreaUp
-  # ARAreaUp       #ARArea = Sum of ARAreaLow and ARAreaUp
+  dummyMonitoredValues$AReforArea <- 6180 # Area of Afforestation lowland and upland (ha) (Not split into lowland and upland)
+  # AReforAreaLow      #AReforArea = Sum of AReforAreaLow and AReforAreaUp
+  # AReforAreaUp       #AReforArea = Sum of AReforAreaLow and AReforAreaUp
   # data taken from output of FRL Accuracy Assessment
-  dummyMonitoredValues$ARArea_UCI <- 8124
-  dummyMonitoredValues$ARArea_LCI <- 4415
+  dummyMonitoredValues$AReforArea_UCI <- 8124
+  dummyMonitoredValues$AReforArea_LCI <- 4415
 
   # Biomass Burned - Area and Average age of forest burned (used FRL data here)
   dummyMonitoredValues$FDegBurnData <- read.table("../../data/FRLBurnData.txt", header = T)[235:294, c("year", "area_ha", "age_yrs")]
@@ -45,7 +45,7 @@ test_that("Test it can be called", {
 
   expect_silent(result <- CalcEmRemsValues(dummyMonitoredValues))
   # Results Table has expected Deforestation Estimate
-  expect_equal(round(result$EstEmRemsDefor), 2696827)
+  expect_equal(round(result$GrossEmDefor), 2696827)
 
   ####################
   # Forest Degradation

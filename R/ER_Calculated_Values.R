@@ -12,21 +12,21 @@ CalcEmRemsValues <- function(MonitoredValues) {
 
   # Emission estimates for deforestation (tCO2e):
 
-  result$EmEstDeforUp <- CalcEmDF(
+  result$EstEmDeforUp <- CalcEstEmDefor(
     MonitoredValues$DeforAreaUp,
     EFDeforUp
   )
 
-  result$EmEstDeforLow <- CalcEmDF(
+  result$EstEmDeforLow <- CalcEstEmDefor(
     MonitoredValues$DeforAreaLow,
     EFDeforLow
   )
 
   # Total emissions from Deforestation (tCO2e)
 
-  result$EstEmRemsDefor <- CalcEmTotalDF(
-    result$EmEstDeforUp,
-    result$EmEstDeforLow
+  result$GrossEmDefor <- CalcGrossEmDefor(
+    result$EstEmDeforUp,
+    result$EstEmDeforLow
   )
 
   #################### 2. Forest Degradation (FD) ########
@@ -37,7 +37,7 @@ CalcEmRemsValues <- function(MonitoredValues) {
 
   # Estimate of CO2e emissions from felling
 
-  result$EstEmFell <- CalcEmFell(
+  result$EstEmFell <- CalcEstEmFell(
     MonitoredValues$FDegFellVol,
     TEF
   )
@@ -47,13 +47,13 @@ CalcEmRemsValues <- function(MonitoredValues) {
 
   # Estimate of CO2e removals from felling
 
-  result$EstRemFell <- CalcRemFell(
+  result$EstRemFell <- CalcEstRemFell(
     MonitoredValues$FDegFellArea,
     MAICFell
   )
 
 
-  result$EstFellTotal <- CalcEmTotalFell(
+  result$NetEmRemsFell <- CalcNetEmRemsFell(
     result$EstEmFell,
     result$EstRemFell
   )
@@ -63,7 +63,7 @@ CalcEmRemsValues <- function(MonitoredValues) {
 
   # Uses area and age data from 2018 compartments:
 
-  result$EmFire <- CalcEmFire(
+  result$EstEmFire <- CalcEstEmFire(
     MonitoredValues$FDegBurnData$age_yrs,
     MAIBsw,
     RootToShootDryLandSmall,
@@ -80,15 +80,15 @@ CalcEmRemsValues <- function(MonitoredValues) {
 
   # Yearly Removals from Afforestation  (tCO2e)
 
-  result$RemEstAR <- CalcRemARTotal(
-    MonitoredValues$ARArea,
-    MAIVar, BiomassConvExpansionAR, RootToShootTropRain
+  result$EstRemARefor <- CalcGrossRemARefor(
+    MonitoredValues$AReforArea,
+    MAIVar, BiomassConvExpansionARefor, RootToShootTropRain
   )
   # 3.2 Forest Plantations
 
   # Emissions Hardwood plantations ####
 
-  result$EmEstFPHW <- CalcEmForPlantHW(
+  result$EstEmFPlnHwd <- CalcEstEmFPlnHwd(
     MonitoredValues$FPlnVolHarvHwd,
     BiomassConvExpansionHW,
     RootToShootTropRain
@@ -96,7 +96,7 @@ CalcEmRemsValues <- function(MonitoredValues) {
 
   # Emissions Softwood plantations ####
 
-  result$EmEstFPSW <- CalcEmForPlantSW(
+  result$EstEmFPlnSwd <- CalcEstEmFPlnSwd(
     MonitoredValues$FPlnVolHarvSwd,
     RecoveryRateSW, WoodDensitySW,
     RootToShootDryLandBig
@@ -104,7 +104,7 @@ CalcEmRemsValues <- function(MonitoredValues) {
 
   # Removals Hardwood plantations ####
 
-  result$RemEstFPHW <- CalcRemForPlantHW(
+  result$EstRemFPlnHwd <- CalcEstRemFPlnHwd(
     MonitoredValues$FPlnAreaJustGrowsHwd,
     MonitoredValues$FPlnAreaPlantHwd,
     MonitoredValues$FPlnAreaHarvHwd ,
@@ -113,33 +113,33 @@ CalcEmRemsValues <- function(MonitoredValues) {
 
   # Estimate of softwood removals for yr (tCO2e) ####
 
-  result$RemEstFPSW <- CalcRemForPlantSW(
+  result$EstRemFPlnSwd <- CalcEstRemFPlnSwd(
     MAIBsw,
     MonitoredValues$FPlnAreaJustGrowsSwd,
-    MonitoredValues$ FPlnAreaPlantSwd,
+    MonitoredValues$FPlnAreaPlantSwd,
     MonitoredValues$FPlnAreaHarvSwd
   )
 
   # **************************************************************
   # Gross emissions Forest Plantations (Hard- and Softwood)
 
-  result$EmEstFPTotal <- CalcEmEstTotalFP(
-    result$EmEstFPHW,
-    result$EmEstFPSW
+  result$GrossEmFPln <- CalcGrossEmFPln(
+    result$EstEmFPlnHwd,
+    result$EstEmFPlnSwd
   )
 
   # Gross removals Forest Plantations (Hard- and Softwood)
 
-  result$RemEstFPTotal <- CalcRemTotalFP(
-    result$RemEstFPHW,
-    result$RemEstFPSW
+  result$GrossRemFPln <- CalcGrossRemFPln(
+    result$EstRemFPlnHwd,
+    result$EstRemFPlnSwd
   )
 
   # Net Emissions from Forest Plantations (Hard- and Softwood)
 
-  result$FPTotal <- CalcTotalFP(
-    result$EmEstFPTotal,
-    result$RemEstFPTotal
+  result$NetEmRemsFPln <- CalcNetEmRemsFPln(
+    result$GrossEmFPln,
+    result$GrossRemFPln
   )
 
   #*************************************************************
@@ -147,41 +147,41 @@ CalcEmRemsValues <- function(MonitoredValues) {
 
   # Gross Emissions Total
 
-  result$GrossEmTotal <- CalcGrossEmTotal(
-    result$EstEmRemsDefor,
+  result$GrossEm <- CalcGrossEm(
+    result$GrossEmDefor,
     result$EstEmFell,
-    result$EmFire,
-    result$EmEstFPTotal
+    result$EstEmFire,
+    result$GrossEmFPln
   )
 
   # Gross Removals Total
 
-  result$GrossRemTotal <- CalcGrossRemTotal(
+  result$GrossRem <- CalcGrossRem(
     result$EstRemFell,
-    result$RemEstAR,
-    result$RemEstFPTotal
+    result$EstRemARefor,
+    result$GrossRemFPln
   )
 
   # Forest Degradation Total
 
-  result$EstEmRemsFDeg <- CalcFDEst(
+  result$EstEmRemsFDeg <- CalcEstEmRemsFDeg(
     result$EstEmFell,
     result$EstRemFell,
-    result$EmFire
+    result$EstEmFire
   )
 
   # Enhancement Total
 
-  result$EstEmRemsEnh <- CalcECEst(
-    result$FPTotal,
-    result$RemEstAR
+  result$EstEmRemsEnh <- CalcEstEmRemsEnh(
+    result$NetEmRemsFPln,
+    result$EstRemARefor
   )
 
   # Net Emissions Total
 
-  result$NetEmRems <- CalcNetEmTotal(
-    result$GrossEmTotal,
-    result$GrossRemTotal
+  result$NetEmRems <- CalcNetEmRems(
+    result$GrossEm,
+    result$GrossRem
   )
 
   return(result)
@@ -190,9 +190,9 @@ CalcEmRemsValues <- function(MonitoredValues) {
 #' @export
 CalcERValues <- function(EmRems, ErpaYearlyFRL, ErpaYearlyFRLFDeg) {
   ER <- list()
-  ER$MpEstEmRemsDefor <- CalcMpEstEmRemsDefor(
-    EmRems$year1$EstEmRemsDefor,
-    EmRems$year2$EstEmRemsDefor
+  ER$MpGrossEmDefor <- CalcMpGrossEmDefor(
+    EmRems$year1$GrossEmDefor,
+    EmRems$year2$GrossEmDefor
   )
   ER$MpEstEmRemsFDeg <- CalcMpEstEmRemsFDeg(
     EmRems$year1$EstEmRemsFDeg,
