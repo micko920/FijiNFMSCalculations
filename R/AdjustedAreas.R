@@ -1,3 +1,11 @@
+
+
+
+formatDecimal <- function(x) {
+  return(format(round(x, 4), nsmall = 4))
+}
+
+
 #' @export
 aaboot <- function( # A data.frame. The original accuracy assessment sample. First
                    # column gives the predicted class, second column gives the observed
@@ -7,8 +15,7 @@ aaboot <- function( # A data.frame. The original accuracy assessment sample. Fir
                    # gives the total area mapped of the class.
                    areas_mapped = NULL,
                    # Number of bootstrap runs (i.e., iterations)
-                   iterations = 1000
-                   ) {
+                   iterations = 1000) {
   # Check if all necessary data are provided. If not, stop!
   if (is.null(aa_sample)) {
     stop("Accuracy assessment sample is missing.")
@@ -76,7 +83,9 @@ aaboot <- function( # A data.frame. The original accuracy assessment sample. Fir
 }
 
 #' @export
-CalcAdjustedAreas <- function(lcc_mapped_areas, aa_sample, aa_change_period) {
+CalcAdjustedAreas <- function(lcc_mapped_areas, aa_sample, aa_change_period, progress = function(...) {}) {
+  lcc_mapped_areas <- lcc_mapped_areas[order(lcc_mapped_areas$class_code), ]
+  aa_sample <- aa_sample[order(aa_sample$predicted), ]
 
   # Structure of 'lcc_mapped_areas'
   if (debug_er) print(str(lcc_mapped_areas))
@@ -103,26 +112,41 @@ CalcAdjustedAreas <- function(lcc_mapped_areas, aa_sample, aa_change_period) {
   # Compute the area proportion (mapped) of class i
   round(W_i <- A_mapped_i / A_mapped, 5)
 
+  aa_sample$predicted <- factor(aa_sample$predicted, levels = c("111", "112", "171", "172", "711", "712", "777"))
+  aa_sample$observed <- factor(aa_sample$observed, levels = c("111", "112", "171", "172", "711", "712", "777"))
+
   # Compute the sample error matrix (counts); map class in rows, reference class in columns
-  (err <- table(aa_sample$predicted, aa_sample$observed))
+  err <- with(aa_sample, table(predicted, observed))
+
 
   # Compute the sample error matrix (area proportions); map class in rows, reference class in columns
-  round(errp <- rep(W_i, length.out = length(W_i)^2) * (err / rowSums(err)), 5)
+  errp <- rep(W_i, length.out = length(W_i)^2) * (err / rowSums(err))
+
+  if (debug_er) {
+    print(err)
+    print(round(errp, 5))
+  }
 
   # Estimate class areas [ha]
   (aa_est_areas <- A_mapped * colSums(errp))
 
+  runs <- 1000
+  if (exists("MCRuns")) {
+    runs <- MCRuns
+  }
   # Take bootstrap sample and estimate areas
   aa_boot <- aaboot(
     aa_sample = aa_sample, # AA sample
     areas_mapped = lcc_mapped_areas, # Mapped areas of change
-    iterations = 1000 # Number of iterations
+    iterations = runs # Number of iterations
   )
 
   # Output of the function 'aaboot' with iterations
   if (debug_er) {
-    cbind(do.call(rbind, lapply(aa_boot, quantile, c(0.5,QLCI,QUCI))),
-          do.call(rbind, lapply(aa_boot, mean)))
+    cbind(
+      do.call(rbind, lapply(aa_boot, quantile, c(0.5, QLCI, QUCI))),
+      do.call(rbind, lapply(aa_boot, mean))
+    )
   }
 
   # Results of the accuracy assessment
@@ -155,19 +179,20 @@ CalcAdjustedAreas <- function(lcc_mapped_areas, aa_sample, aa_change_period) {
   if (debug_er) print(rs_AA) # Print results
 
   # Extract change classes (remove stable classes)
-  rs_AA_annual <- rs_AA[3:6, ]
+  rs_AA_annual <- rs_AA[3:7, ]
   # Compute annual average of change classes
-  rs_AA_annual[, 3:6] <- rs_AA_annual[, 3:6] / aa_change_period
+  rs_AA_annual[, 3:7] <- rs_AA_annual[, 3:7] / aa_change_period
   # Rename rows
   row.names(rs_AA_annual) <- 1:nrow(rs_AA_annual)
   if (debug_er) print(rs_AA_annual) # Print
 
   # Result table for deforestation (AD)
-  rs_AA_annual_df <- rs_AA_annual[1:2, c(2, 4:6)]
+  rs_AA_annual_df <- rs_AA_annual[1:2, c(2, 4:7)]
   # Create row for the total (sum of Low- and Upland Natural Forest)
   rs_AA_annual_df_total <- c(
     NA,
     sum(rs_AA_annual_df[, 2]),
+    sum(rs_AA_annual_df[, 3]),
     quantile(aa_boot[, 3] + aa_boot[, 4], probs = QLCI) / aa_change_period,
     quantile(aa_boot[, 3] + aa_boot[, 4], probs = QUCI) / aa_change_period
   )
@@ -176,6 +201,8 @@ CalcAdjustedAreas <- function(lcc_mapped_areas, aa_sample, aa_change_period) {
   rs_AA_annual_df[, 1] <- as.character(rs_AA_annual_df[, 1])
   rs_AA_annual_df[3, 1] <- "Total"
   if (debug_er) print(rs_AA_annual_df) # Print
+
+
 
   areaLoss <- rs_AA_annual_df[1:2, 2]
 
@@ -186,11 +213,12 @@ CalcAdjustedAreas <- function(lcc_mapped_areas, aa_sample, aa_change_period) {
   ))
 
   # AA results for afforestation/reforestation (AR); see Chapter on 'deforestation' (AD)
-  rs_AA_annual_ar <- rs_AA_annual[3:4, c(2, 4:6)]
+  rs_AA_annual_ar <- rs_AA_annual[3:4, c(2, 4:7)]
   # Create row for the total (sum of Low- and Upland Natural Forest)
   rs_AA_annual_ar_total <- c(
     NA,
     sum(rs_AA_annual_ar[, 2]),
+    sum(rs_AA_annual_ar[, 3]),
     quantile(aa_boot[, 5] + aa_boot[, 6], probs = QLCI) / aa_change_period,
     quantile(aa_boot[, 5] + aa_boot[, 6], probs = QUCI) / aa_change_period
   )
@@ -198,6 +226,8 @@ CalcAdjustedAreas <- function(lcc_mapped_areas, aa_sample, aa_change_period) {
   rs_AA_annual_ar <- rbind(rs_AA_annual_ar, rs_AA_annual_ar_total)
   rs_AA_annual_ar[, 1] <- as.character(rs_AA_annual_ar[, 1])
   rs_AA_annual_ar[3, 1] <- "Total"
+
+
   if (debug_er) print(rs_AA_annual_ar) # Print
 
   # Estimated average annual area of afforestation/reforestation
@@ -207,9 +237,14 @@ CalcAdjustedAreas <- function(lcc_mapped_areas, aa_sample, aa_change_period) {
   MCaadeforL <- aa_boot[, 3] / aa_change_period # Lowland
   MCaadeforU <- aa_boot[, 4] / aa_change_period # Upland
   MCaaafor <- aa_boot[, 5:6] / aa_change_period # Average annual area of AR
-  MCaaaforMean <- sum(apply(aa_boot[, 5:6] / aa_change_period,2,mean)) # ARareas via aaboot mean
+  MCaaaforMean <- sum(apply(aa_boot[, 5:6] / aa_change_period, 2, mean)) # ARareas via aaboot mean
 
   result <- list()
+  result$errorMatrix <- err
+  result$errorProportions <- errp
+  result$rs_AA <- rs_AA
+  result$rs_AA_annual_df <- rs_AA_annual_df
+  result$rs_AA_annual_ar <- rs_AA_annual_ar
   result$areaLoss <- areaLoss
   result$MCaadeforL <- MCaadeforL
   result$MCaadeforU <- MCaadeforU

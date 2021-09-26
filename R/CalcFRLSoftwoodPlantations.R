@@ -69,16 +69,16 @@ calcFRLSoftwoodPlantations <- function() {
       29527,
       23960
     ))
-  
+
   netStockedArea$c_t  <- FRLParams$maicp * netStockedArea$area
   print(mean(netStockedArea$c_t))
-  
-  
+
+
   A2006 <- 49503
   sw$area_harvested_ha <- sw$carbon_extracted_t / (FRLParams$maicp * FRLParams$cuttingc)
   sw$area_planted_ha <- sw_hvol_parea[,3]
   A2005 <- A2006 + sw$area_harvested_ha[1] - sw$area_planted_ha[1]
-  
+
   # Area that was neither planted nor harvested during the Reference Period; they just
   # growth...
   atp <- A2005 - sum(sw$area_harvested_ha)
@@ -125,10 +125,10 @@ calcFRLSoftwoodPlantations <- function() {
     swi$cppt <- swi$area_planted_ha * FRLParams$deltaT * maicpi
     # Total average annual C accumulation
     resmcrp[i] <- mean(swi$cppt) + ctpi + cthpi
-    
+
     # Error in area is not included
     netStockedAreai$c_t  <- maicpi * netStockedArea$area
-    
+
     resmcrpNew[i] <- mean(netStockedAreai$c_t)
   }
 
@@ -137,44 +137,48 @@ calcFRLSoftwoodPlantations <- function() {
   lci_ec_sw_aar <- quantile(resmcrp * FRLParams$etacc, probs = FRLParams$qlci) # Lower CI limit
   uci_ec_sw_aar <- quantile(resmcrp * FRLParams$etacc, probs = FRLParams$quci) # Upper CI limit
   v_ec_sw_aar <- resmcrp * FRLParams$etacc # MC estimate
-  
+
   ec_sw_aarNew <- mean(netStockedArea$c_t) * FRLParams$etacc # Estimate
   lci_ec_sw_aarNew <- quantile(resmcrpNew * FRLParams$etacc, probs = FRLParams$qlci) # Lower CI limit
   uci_ec_sw_aarNew <- quantile(resmcrpNew * FRLParams$etacc, probs = FRLParams$quci) # Upper CI limit
   v_ec_sw_aarNew <- resmcrpNew * FRLParams$etacc # MC estimate
 
-  print(c(
-    ec_sw_aar,
-    lci_ec_sw_aar,
-    uci_ec_sw_aar,
-    length(v_ec_sw_aar)
-  ))
-  
-  
-  print(c(
-    ec_sw_aarNew,
-    lci_ec_sw_aarNew,
-    uci_ec_sw_aarNew,
-    length(v_ec_sw_aarNew)
-  ))
-  
+  if (debug_frl) {
+    print("original model of softwood growth")
+    print(c(
+      ec_sw_aar,
+      lci_ec_sw_aar,
+      uci_ec_sw_aar,
+      length(v_ec_sw_aar)
+    ))
+
+
+    print("new data provided by fiji for softwood plantations")
+    print(c(
+      ec_sw_aarNew,
+      lci_ec_sw_aarNew,
+      uci_ec_sw_aarNew,
+      length(v_ec_sw_aarNew)
+    ))
+  }
+
   # Net emissions Softwood Plantations
   lciv_ec_sw_aane <- quantile(v_ec_sw_aae -   # Emissions Softwood
-                              v_ec_sw_aar,    # Removals Softwood
+                              v_ec_sw_aarNew,    # Removals Softwood
                               probs = FRLParams$qlci)
   uciv_ec_sw_aane <- quantile(v_ec_sw_aae -
-                              v_ec_sw_aar,
+                              v_ec_sw_aarNew,
                               probs = FRLParams$quci)
 
   result <- list()
   result$ec_sw_aae <- ec_sw_aae
-  result$ec_sw_aar <- ec_sw_aar
+  result$ec_sw_aar <- ec_sw_aarNew
   result$lci_ec_sw_aae <- lci_ec_sw_aae
   result$uci_ec_sw_aae <- uci_ec_sw_aae
-  result$lci_ec_sw_aar <- lci_ec_sw_aar
-  result$uci_ec_sw_aar <- uci_ec_sw_aar
+  result$lci_ec_sw_aar <- lci_ec_sw_aarNew
+  result$uci_ec_sw_aar <- uci_ec_sw_aarNew
   result$v_ec_sw_aae <- v_ec_sw_aae
-  result$v_ec_sw_aar <- v_ec_sw_aar
+  result$v_ec_sw_aar <- v_ec_sw_aarNew
   result$lciv_ec_sw_aane <- lciv_ec_sw_aane
   result$uciv_ec_sw_aane <- uciv_ec_sw_aane
   return(result)

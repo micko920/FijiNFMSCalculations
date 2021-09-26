@@ -126,8 +126,11 @@ calcFRLTable_IncludingFuel <- function(frl_table) {
 
   result <- list()
   result$aa_emissions_tco2e_yr <-aa_emissions_tco2e_yr
+  result$v_aa_emissions_tco2e_yr <-v_aa_emissions_tco2e_yr
   result$aa_removals_tco2e_yr <-aa_removals_tco2e_yr
+  result$v_aa_removals_tco2e_yr <-v_aa_removals_tco2e_yr
   result$aa_net_emissions_tco2e_yr <-frl_net$aa_net_emissions_tco2e_yr
+  result$v_aa_net_emissions_tco2e_yr <-frl_net$v_aa_net_emissions_tco2e_yr
   result$lci_aa_emissions_tco2e_yr <-frl_net$lci_aa_emissions_tco2e_yr
   result$uci_aa_emissions_tco2e_yr <-frl_net$uci_aa_emissions_tco2e_yr
   result$uci_aa_removals_tco2e_yr <-frl_net$uci_aa_removals_tco2e_yr
@@ -179,8 +182,11 @@ calcFRLTable_ExFuel <- function(frl_table) {
 
   result <- list()
   result$aa_emissions_tco2e_yr <-aa_emissions_tco2e_yr
+  result$v_aa_emissions_tco2e_yr <-v_aa_emissions_tco2e_yr
   result$aa_removals_tco2e_yr <-aa_removals_tco2e_yr
+  result$v_aa_removals_tco2e_yr <-v_aa_removals_tco2e_yr
   result$aa_net_emissions_tco2e_yr <-frl_net$aa_net_emissions_tco2e_yr
+  result$v_aa_net_emissions_tco2e_yr <-frl_net$v_aa_net_emissions_tco2e_yr
   result$lci_aa_emissions_tco2e_yr <-frl_net$lci_aa_emissions_tco2e_yr
   result$uci_aa_emissions_tco2e_yr <-frl_net$uci_aa_emissions_tco2e_yr
   result$uci_aa_removals_tco2e_yr <-frl_net$uci_aa_removals_tco2e_yr
@@ -325,47 +331,34 @@ calcFRLTable <- function() {
   # Estimate of average annual net emissions
   aaneec <- FRLHardwoodPlantations$rs_ec_ar[1, 1] + # Gross/net removals AR
     FRLPlantations$rs_ec_pl[9, 2] # Net emissions Forest Plantations
+  v_aaneec <- (FRLHardwoodPlantations$v_ec_ar_aar * -1) + # MC gross/net emissions AR
+    (FRLSoftwoodPlantations$v_ec_sw_aae + FRLHardwoodPlantations$v_ec_hw_aae) - # MC gross emissions Plantations
+    (FRLSoftwoodPlantations$v_ec_sw_aar + FRLHardwoodPlantations$v_ec_hw_aar)   # MC gross removals Plantations
   # Lower confidence limit
-  lciaaneec <- quantile((FRLHardwoodPlantations$v_ec_ar_aar * -1) + # MC gross/net emissions AR
-    (FRLSoftwoodPlantations$v_ec_sw_aae + FRLHardwoodPlantations$v_ec_hw_aae) - # MC gross emissions Plantations
-    (FRLSoftwoodPlantations$v_ec_sw_aar + FRLHardwoodPlantations$v_ec_hw_aar), # MC gross removals Plantations
-  probs = FRLParams$qlci
-  )
+  lciaaneec <- quantile(v_aaneec, probs = FRLParams$qlci)
   # Upper confidence limit
-  uciaaneec <- quantile((FRLHardwoodPlantations$v_ec_ar_aar * -1) + # MC gross/net emissions AR
-    (FRLSoftwoodPlantations$v_ec_sw_aae + FRLHardwoodPlantations$v_ec_hw_aae) - # MC gross emissions Plantations
-    (FRLSoftwoodPlantations$v_ec_sw_aar + FRLHardwoodPlantations$v_ec_hw_aar), # MC gross removals Plantations
-  probs = FRLParams$quci
-  )
+  uciaaneec <- quantile(v_aaneec, probs = FRLParams$quci)
 
   # Average annual emissions and removals from forest degradation ========================
   # Gross emissions forest degradation (FD) ..............................................
   aaefd <- FRLFelling$rs_fd_lg[1, 2] + # Gross emissions FD logging
     FRLBurning$rs_fd_bb[1, 1] + # Gross emissions FD biomass burning
     FRLFuelwood$rs_fd_fu[1, 1] # Gross emissions FD fuelwood
-  # Lower confidence limit
-  lciaaefd <- quantile(FRLFelling$v_fd_lg_aae + # MC gross emissions logging
+  v_aaefd <- FRLFelling$v_fd_lg_aae + # MC gross emissions logging
     FRLBurning$v_fd_bb_aae + # MC gross emissions biomass burning
-    FRLFuelwood$v_fd_fu_aae, # MC gross emissions fuelwood
-  probs = FRLParams$qlci
-  )
+    FRLFuelwood$v_fd_fu_aae  # MC gross emissions fuelwood
+  # Lower confidence limit
+  lciaaefd <- quantile(v_aaefd, probs = FRLParams$qlci)
   # Upper confidence limit
-  uciaaefd <- quantile(FRLFelling$v_fd_lg_aae + # Gross emissions logging
-    FRLBurning$v_fd_bb_aae + # Gross emissions biomass burning
-    FRLFuelwood$v_fd_fu_aae, # Gross emissions fuelwood
-  probs = FRLParams$quci
-  )
+  uciaaefd <- quantile(v_aaefd, probs = FRLParams$quci)
 
   # Gross removals forest degradation (FD) ...............................................
   aarfd <- FRLFelling$rs_fd_lg[2, 2] # Gross removals FD logging
+  v_aarfd <- FRLFelling$v_fd_lg_aar  # MC gross removals logging
   # Lower confidence limit
-  lciaarfd <- quantile(FRLFelling$v_fd_lg_aar, # MC gross removals logging
-    probs = FRLParams$qlci
-  )
+  lciaarfd <- quantile(v_aarfd, probs = FRLParams$qlci)
   # Upper confidence limit
-  uciaarfd <- quantile(FRLFelling$v_fd_lg_aar, # MC gross removals logging
-    probs = FRLParams$quci
-  )
+  uciaarfd <- quantile(v_aarfd, probs = FRLParams$quci)
 
   # Net emissions forest degradation (FD) ................................................
   # Gross emissions FD fuelwood was removed from this calculation
@@ -375,19 +368,14 @@ calcFRLTable <- function() {
     FRLFelling$rs_fd_lg[2, 2] # Gross removals FD logging
 
   aanefdf <- aanefd
-  # Lower confidence limit
-  lciaanefd <- quantile(FRLFelling$v_fd_lg_aae + # MC gross emissions FD logging
+  v_aanefd <- FRLFelling$v_fd_lg_aae + # MC gross emissions FD logging
     FRLBurning$v_fd_bb_aae - # MC gross emissions FD fire
-    FRLFelling$v_fd_lg_aar, # MC gross removals FD logging
-  probs = FRLParams$qlci
-  )
+    FRLFelling$v_fd_lg_aar   # MC gross removals FD logging
+  # Lower confidence limit
+  lciaanefd <- quantile(v_aanefd, probs = FRLParams$qlci)
   lciaanefdf <- lciaanefd
   # Upper confidence limit
-  uciaanefd <- quantile(FRLFelling$v_fd_lg_aae + # MC gross emissions FD logging
-    FRLBurning$v_fd_bb_aae - # MC gross emissions FD fire
-    FRLFelling$v_fd_lg_aar, # MC gross removals FD logging
-  probs = FRLParams$quci
-  )
+  uciaanefd <- quantile(v_aanefd, probs = FRLParams$quci)
   uciaanefdf <- uciaanefd
 
 
@@ -517,6 +505,11 @@ calcFRLTable <- function() {
   )
   result <- list()
   result$frltab <- frltab
+  result$v_aaneec <- v_aaneec
+  result$v_aaefd <- v_aaefd
+  result$v_aarfd <- v_aarfd
+  result$v_aanefd <- v_aanefd
+  result$frl <- frl_ExFuel
 
   return(result)
 }
