@@ -155,7 +155,7 @@ createTable_7_2 <- function(MR, MRparams) {
       "Cumulative quantity of Total ERs estimated for prior reporting periods",
       "Available ERs this Reporting Period",
       "Amount of ERs that have been previously transfered to the Carbon Fund as Contract ERs and Additional ERs",
-      "Quantity of Buffer ERs to be cancelled from the REversal Buffer account"
+      "Quantity of Buffer ERs to be cancelled from the Reversal Buffer account"
     ),
     Values = c(
       # A
@@ -177,9 +177,9 @@ createTable_7_2 <- function(MR, MRparams) {
       # I
       formatNumber(MR$ErpaCurrentBalance), # G - H
       # J
-      ifelse(MR$IsReversal, formatNumber(MRparams$ErpaTransferredERs), "NA"),
+      ifelse(MR$IsReversal, formatNumber(MRparams$ErpaTransferredERs), "0"),
       # k
-      ifelse(MR$IsReversal, formatNumber(MR$RpCanceledERs), "NA") # J / (H * (H - G))
+      ifelse(MR$IsReversal, formatNumber(MR$RpCanceledERs), "0") # J / (H * (H - G))
     )
   )
 }
@@ -235,7 +235,7 @@ createTable_8 <- function(MR, MRparams) {
       # I
       formatNumber(MR$RpPotentialERs), # F - G - H
       # J
-      formatPercent(MRparams$RISKsetaside),
+      formatPercent(MRparams$ErpaRiskSetaside),
       # K
       formatNumber(MR$RpBufferedERs), # (I * J)
       # L,  there is a mistake in the Table. (I - L) should be (I - K)
