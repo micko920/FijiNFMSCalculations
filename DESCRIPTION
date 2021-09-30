@@ -1,6 +1,6 @@
 Package: FijiNFMSCalculations
 Title: Fiji NFMS Calculations
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R:
     person(given = "Michael",
            family = "Green",
@@ -11,13 +11,22 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
-Suggests: 
+RoxygenNote: 7.1.2
+Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-Imports: 
+Imports:
     markdown,
-    magrittr
+    magrittr,
+    data.table,
+    survey,
+    nlme,
+    VGAM,
+    MonteCarloUtils,
+    ValueWithUncertainty
+Remotes:
+    micko920/MonteCarloUtils,
+    micko920/ValueWithUncertainty
 VignetteBuilder: knitr

@@ -45,10 +45,10 @@ This function is also useful for viewing any other palettes.
 
 ```
 
-See also the [FijiNFMSCalculations::CalcEmDF()] function.
+See also the [FijiNFMSCalculations::CalcEstEmDefor()] function.
 
 
-```{r child="../man/CalcEmDF.Rd"} 
+```{r child="../man/CalcEstEmDefor.Rd"} 
 ```
 
 
