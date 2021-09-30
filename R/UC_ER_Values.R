@@ -486,14 +486,14 @@ createUC_ERValues <- function(UC_EmRems, UC_MV, UC, MRparams) {
   )
 
   MpEstERsDefEnhValue <- CalcMpEstERsDefEnh(
-    ValueWithUncertaintyValue(UC$FRLDeforestation),
-    ValueWithUncertaintyValue(UC$FRLRemovalsBySinks),
+    ValueWithUncertaintyValue(UC$ErpaYearlyFRLDefor),
+    ValueWithUncertaintyValue(UC$ErpaYearlyFRLEnh),
     ValueWithUncertaintyValue(MpGrossEmDefor),
     ValueWithUncertaintyValue(MpEstEmRemsEnh)
   )
 
   CalcMpEstERsDefEnhArgs <- function() {
-    return(list(UC$FRLDeforestation, UC$FRLRemovalsBySinks, MpGrossEmDefor, MpEstEmRemsEnh))
+    return(list(UC$ErpaYearlyFRLDefor, UC$ErpaYearlyFRLEnh, MpGrossEmDefor, MpEstEmRemsEnh))
   }
 
   result$McMpEstERsDefEnh <- CalcMonteCarlo("MpEstERsDefEnh", MpEstERsDefEnhValue, CalcMpEstERsDefEnh, CalcMpEstERsDefEnhArgs)
@@ -548,11 +548,11 @@ createUC_ERValues <- function(UC_EmRems, UC_MV, UC, MRparams) {
     return(CalcMpEstERsFDeg(CalcMpEstFRL(FRLFDeg), EmRemsFDeg))
   }
   CalcFDegArgs <- function() {
-    return(list(UC$FRLForestDegradation, NetEmRemsFDeg))
+    return(list(UC$ErpaYearlyFRLFDeg, NetEmRemsFDeg))
   }
 
   MpEstERsFDegValue <- CalcFDeg(
-    ValueWithUncertaintyValue(UC$FRLForestDegradation),
+    ValueWithUncertaintyValue(UC$ErpaYearlyFRLFDeg),
     ValueWithUncertaintyValue(NetEmRemsFDeg)
   )
 

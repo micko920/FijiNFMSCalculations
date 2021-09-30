@@ -3,7 +3,7 @@
 
 
 #' @export
-createUC_Values <- function() {
+createUC_Values <- function(mrp) {
   result <- list()
 
   ## TODO: these are still to be implimented with variance
@@ -180,37 +180,37 @@ createUC_Values <- function() {
   )
   names(result$WoodDensity) <- c("WoodDensity")
 
-  result$FRL <- ValueWithUncertainty(
-    Value = FRL,
-    LowerCI = FRL_LCI,
-    UpperCI = FRL_UCI,
+  result$ErpaYearlyFRL <- ValueWithUncertainty(
+    Value = mrp$ErpaYearlyFRL,
+    LowerCI = mrp$ErpaYearlyFRLLCI,
+    UpperCI = mrp$ErpaYearlyFRLUCI,
     model = vwuTriangle, fixed = FALSE
   )
-  names(result$FRL) <- c("FRL")
+  names(result$ErpaYearlyFRL) <- c("ErpaYearlyFRL")
 
-  result$FRLDeforestation <- ValueWithUncertainty(
-    Value = FRLDeforestation,
-    LowerCI = FRLDeforestation_LCI,
-    UpperCI = FRLDeforestation_UCI,
+  result$ErpaYearlyFRLDefor <- ValueWithUncertainty(
+      Value = mrp$ErpaYearlyFRLDefor,
+    LowerCI = mrp$ErpaYearlyFRLDeforLCI,
+    UpperCI = mrp$ErpaYearlyFRLDeforUCI,
     model = vwuTriangle, fixed = FALSE
   )
-  names(result$FRLDeforestation) <- c("FRLDeforestation")
+  names(result$ErpaYearlyFRLDefor) <- c("ErpaYearlyFRLDefor")
 
-  result$FRLForestDegradation <- ValueWithUncertainty(
-    Value = FRLForestDegradation,
-    LowerCI = FRLForestDegradation_LCI,
-    UpperCI = FRLForestDegradation_UCI,
+  result$ErpaYearlyFRLFDeg <- ValueWithUncertainty(
+    Value = mrp$ErpaYearlyFRLFDeg,
+    LowerCI = mrp$ErpaYearlyFRLFDegLCI,
+    UpperCI = mrp$ErpaYearlyFRLFDegUCI,
     model = vwuTriangle, fixed = FALSE
   )
-  names(result$FRLForestDegradation) <- c("FRLForestDegradation")
+  names(result$ErpaYearlyFRLFDeg) <- c("ErpaYearlyFRLFDeg")
 
-  result$FRLRemovalsBySinks <- ValueWithUncertainty(
-    Value = FRLRemovalsBySinks,
-    LowerCI = FRLRemovalsBySinks_LCI,
-    UpperCI = FRLRemovalsBySinks_UCI,
+  result$ErpaYearlyFRLEnh <- ValueWithUncertainty(
+    Value = mrp$ErpaYearlyFRLEnh,
+    LowerCI = mrp$ErpaYearlyFRLEnhLCI,
+    UpperCI = mrp$ErpaYearlyFRLEnhUCI,
     model = vwuTriangle, fixed = FALSE
   )
-  names(result$FRLRemovalsBySinks) <- c("FRLRemovalsBySinks")
+  names(result$ErpaYearlyFRLEnh) <- c("ErpaYearlyFRLEnh")
 
   return(result)
 }
