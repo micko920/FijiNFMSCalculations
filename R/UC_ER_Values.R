@@ -502,7 +502,7 @@ createUC_ERValues <- function(UC_EmRems, UC_MV, UC, MRparams) {
 
 
   # ERs not including FDeg
-  result$MpEstERsDefEnh <- calcUCModel(
+  result$McMpEstERsDefEnh$UCModel <- calcUCModel(
     result$McMpEstERsDefEnh$value[2],
     median(result$McMpEstERsDefEnh$MCresults),
     result$McMpEstERsDefEnh$value[3]
@@ -560,11 +560,14 @@ createUC_ERValues <- function(UC_EmRems, UC_MV, UC, MRparams) {
   # FRLFDeg + EmRemsFDeg
 
   # forestDeg ERs
-  result$MpEstERsFDeg <- calcUCModel(
+  result$McMpEstERsFDeg$UCModel <- calcUCModel(
     result$McMpEstERsFDeg$value[2],
     median(result$McMpEstERsFDeg$MCresults),
     result$McMpEstERsFDeg$value[3]
   )
+
+  # This is hardwired for proxy data to 15% always no matter what the CI.
+  result$McMpEstERsFDeg$UCModel$conserFactor <- 0.15
 
   return(result)
 }
