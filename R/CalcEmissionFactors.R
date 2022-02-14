@@ -727,14 +727,16 @@ calcEmissionFactors <- function() {
   if (debug_frl) print(rs_nfi_mc)
 
   # Relative error in the estimate of carbon stocks in grassland
-  if (debug_frl) print(FRLParams$errcgrass)
+  if (debug_frl) {
+    print(FRLParams$lcicgrass)
+    print(FRLParams$ucicgrass)
+  }
 
   # Simulate MC estimates of carbon stocks in grassland
-  v_c_grass <- rtriangle(
+  v_c_grass <- rnorm(
     n = FRLParams$runs,
-    theta = FRLParams$cgrass,
-    lower = FRLParams$cgrass - FRLParams$cgrass * FRLParams$errcgrass,
-    upper = FRLParams$cgrass + FRLParams$cgrass * FRLParams$errcgrass
+    mean = FRLParams$cgrass,
+    sd = FRLParams$sdcgrass
   )
   # Show simulated values
   if (debug_frl) print(v_c_grass)

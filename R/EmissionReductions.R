@@ -20,6 +20,15 @@ CalcMpEstEmRemsEnh <- function(Year1EstEmRemsEnh, Year2EstEmRemsEnh) {
   return(Year1EstEmRemsEnh + Year2EstEmRemsEnh)
 }
 
+#' @export
+CalcMpEstEmRemsDeforEnh <- function(Year1GrossEmDefor, Year2GrossEmDefor, Year1EstEmRemsEnh, Year2EstEmRemsEnh) {
+  return(
+    CalcMpGrossEmDefor(Year1GrossEmDefor,Year2GrossEmDefor) +
+      CalcMpEstEmRemsEnh(Year1EstEmRemsEnh,Year2EstEmRemsEnh)
+  )
+}
+
+
 
 #' @export
 CalcMpNetEmRems <- function(Year1NetEmRems, Year2NetEmRems) {
@@ -40,7 +49,7 @@ CalcMpEstERs <- function(MpEstFRL, MpNetEmRems) {
 
 #' @export
 CalcMpEstFRLFDeg <- function(ErpaYearlyFRLFDeg) {
-  return(ErpaYearlyFRLFDeg * 2)
+  return(CalcMpEstFRL(ErpaYearlyFRLFDeg))
 }
 
 #' @export
@@ -48,9 +57,12 @@ CalcMpEstERsFDeg <- function(MpEstFRLFDeg, MpEstEmRemsFDeg) {
   return(MpEstFRLFDeg - MpEstEmRemsFDeg)
 }
 
-
+#' @export
+CalcMpEstFRLDefEnh <- function(ErpaYearlyFRLDefor, ErpaYearlyFRLEnh) {
+  return(CalcMpEstFRL(ErpaYearlyFRLDefor) + CalcMpEstFRL(ErpaYearlyFRLEnh))
+}
 
 #' @export
 CalcMpEstERsDefEnh <- function(FRLDefor, FRLEnh, EmRemsDefor, EmRemsEnh) {
-  return((CalcMpEstFRL(FRLDefor) + CalcMpEstFRL(FRLEnh)) - (EmRemsDefor + EmRemsEnh))
+  return(CalcMpEstFRLDefEnh(FRLDefor, FRLEnh) - (EmRemsDefor + EmRemsEnh))
 }

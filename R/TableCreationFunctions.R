@@ -9,7 +9,7 @@ formatNumber <- function(x) {
 }
 
 formatDecimal <- function(x) {
-  return(format(round(x, 2), nsmall = 2))
+  return(format(round(x, 4), nsmall = 4))
 }
 
 #' @export
@@ -58,10 +58,15 @@ createTable_4_3 <- function(MR, MRparams) {
         "Net emissions and removals under the ER Program during the Reporting Period (tCO2e)",
         "Emission Reductions during the Reporting Period (tCO2e)"
       ),
-      Equal = c(
-        formatNumber(MR$RpEstFRL),
-        formatNumber(MR$RpNetEmRems),
-        formatNumber(MR$RpEstERs) #  Monitoring Period length == Reporting Period Length
+      EqualDefEnh = c(
+        formatNumber(MR$RpEstFRLDefEnh),
+        formatNumber(MR$RpEstEmRemsDefEnh),
+        formatNumber(MR$RpEstERsDefEnh) #  Monitoring Period length == Reporting Period Length
+      ),
+      EqualFDeg = c(
+        formatNumber(MR$RpEstFRLFDeg),
+        formatNumber(MR$RpEstEmRemsFDeg),
+        formatNumber(MR$RpEstERsFDeg) #  Monitoring Period length == Reporting Period Length
       )
     )
   } else {
@@ -73,17 +78,27 @@ createTable_4_3 <- function(MR, MRparams) {
         "Length of the Reporting Period / Length of the Monitoring Period (#days/# days)",
         "Emission Reductions during the Reporting Period (tCO2e)"
       ),
-      NotEqual = c(
-        formatNumber(MR$MpEstFRL),
-        formatNumber(MR$MpNetEmRems),
-        formatNumber(MR$MpEstERs),
-        formatDecimal(MRparams$RpMpRatio), #  Monitoring Period length != Reporting Period Length
-        formatNumber(MR$RpEstERs)
+      NotEqualDefEnh = c(
+        formatNumber(MR$MpEstFRLDefEnh),
+        formatNumber(MR$MpEstEmRemsDefEnh),
+        formatNumber(MR$MpEstERsDefEnh),
+        paste(formatNumber(MRparams$RpDays),"/",formatNumber(MRparams$MpDays)), #  Monitoring Period length != Reporting Period Length
+        formatNumber(MR$RpEstERsDefEnh)
+      ),
+      NotEqualFDeg = c(
+        formatNumber(MR$MpEstFRLFDeg),
+        formatNumber(MR$MpEstEmRemsFDeg),
+        formatNumber(MR$MpEstERsFDeg),
+        paste(formatNumber(MRparams$RpDays),"/",formatNumber(MRparams$MpDays)), #  Monitoring Period length != Reporting Period Length
+        formatNumber(MR$RpEstERsFDeg)
       )
     )
   }
+  # The * is to reference a note about the forest degradation is excluded from
+  # the Total value as it is calculated by proxy methods.
   names(Table4_3) <- c(
-    "Value"
+    "Total Emissions Reductions*",
+    "Forest Degradation"
   )
 
   return(Table4_3)
@@ -104,24 +119,26 @@ createTable_5_2_2 <- function(MR) {
       "Uncertainty discount"
     ),
     totalEmissions = c(
-      formatNumber(MR$MpEstERsDefEnh$median),
-      formatNumber(MR$MpEstERsDefEnh$UCI),
-      formatNumber(MR$MpEstERsDefEnh$LCI),
-      formatNumber(MR$MpEstERsDefEnh$halfWidth),
-      formatPercent(MR$MpEstERsDefEnh$relativeMargin),
-      formatPercent(MR$MpEstERsDefEnh$conserFactor)
+      formatNumber(MR$McMpEstERsDefEnh$UCModel$median),
+      formatNumber(MR$McMpEstERsDefEnh$UCModel$UCI),
+      formatNumber(MR$McMpEstERsDefEnh$UCModel$LCI),
+      formatNumber(MR$McMpEstERsDefEnh$UCModel$halfWidth),
+      formatPercent(MR$McMpEstERsDefEnh$UCModel$relativeMargin),
+      formatPercent(MR$McMpEstERsDefEnh$UCModel$conserFactor)
     ),
     forestDeg = c(
-      formatNumber(MR$MpEstERsFDeg$median),
-      formatNumber(MR$MpEstERsFDeg$UCI),
-      formatNumber(MR$MpEstERsFDeg$LCI),
-      formatNumber(MR$MpEstERsFDeg$halfWidth),
-      formatPercent(MR$MpEstERsFDeg$relativeMargin),
-      formatPercent(MR$MpEstERsFDeg$conserFactor)
+      formatNumber(MR$McMpEstERsFDeg$UCModel$median),
+      formatNumber(MR$McMpEstERsFDeg$UCModel$UCI),
+      formatNumber(MR$McMpEstERsFDeg$UCModel$LCI),
+      formatNumber(MR$McMpEstERsFDeg$UCModel$halfWidth),
+      formatPercent(MR$McMpEstERsFDeg$UCModel$relativeMargin),
+      formatPercent(MR$McMpEstERsFDeg$UCModel$conserFactor)
     )
   )
+  # The * is to reference a note about the forest degradation is excluded from
+  # the Total value as it is calculated by proxy methods.
   names(Table5_2_2) <- c(
-    "Total Emissions Reductions",
+    "Total Emissions Reductions*",
     "Forest Degradation"
   )
   return(Table5_2_2)
@@ -223,7 +240,7 @@ createTable_8 <- function(MR, MRparams) {
       # C
       formatNumber(MR$RpEstERsDefEnh), #  A - B
       # D  from Table5_2 conservativeness factor.
-      formatPercent(MR$MpEstERsDefEnh$conserFactor),
+      formatPercent(MR$McMpEstERsDefEnh$UCModel$conserFactor),
       # E
       formatNumber(MR$RpSetaside), # (0.15 * B) + (C * D), 0.15 is default ConserFactor for FDeg
       # F

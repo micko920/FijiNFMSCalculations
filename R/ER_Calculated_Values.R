@@ -107,7 +107,7 @@ CalcEmRemsValues <- function(MonitoredValues) {
   result$EstRemFPlnHwd <- CalcEstRemFPlnHwd(
     MonitoredValues$FPlnAreaJustGrowsHwd,
     MonitoredValues$FPlnAreaPlantHwd,
-    MonitoredValues$FPlnAreaHarvHwd ,
+    MonitoredValues$FPlnAreaHarvHwd,
     MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain
   )
 
@@ -188,7 +188,7 @@ CalcEmRemsValues <- function(MonitoredValues) {
 }
 
 #' @export
-CalcERValues <- function(EmRems, ErpaYearlyFRL, ErpaYearlyFRLFDeg) {
+CalcERValues <- function(EmRems, ErpaYearlyFRL, ErpaYearlyFRLFDeg, ErpaYearlyFRLDefor, ErpaYearlyFRLEnh) {
   ER <- list()
   ER$MpGrossEmDefor <- CalcMpGrossEmDefor(
     EmRems$year1$GrossEmDefor,
@@ -202,14 +202,25 @@ CalcERValues <- function(EmRems, ErpaYearlyFRL, ErpaYearlyFRLFDeg) {
     EmRems$year1$EstEmRemsEnh,
     EmRems$year2$EstEmRemsEnh
   )
+  ER$MpEstEmRemsDefEnh <- CalcMpEstEmRemsDeforEnh(
+    EmRems$year1$GrossEmDefor,
+    EmRems$year2$GrossEmDefor,
+    EmRems$year1$EstEmRemsEnh,
+    EmRems$year2$EstEmRemsEnh
+  )
   ER$MpNetEmRems <- CalcMpNetEmRems(
     EmRems$year1$NetEmRems,
     EmRems$year2$NetEmRems
   )
+
+
   ER$MpEstFRL <- CalcMpEstFRL(ErpaYearlyFRL)
   ER$MpEstERs <- CalcMpEstERs(ER$MpEstFRL, ER$MpNetEmRems)
 
   ER$MpEstFRLFDeg <- CalcMpEstFRL(ErpaYearlyFRLFDeg)
   ER$MpEstERsFDeg <- CalcMpEstERsFDeg(ER$MpEstFRLFDeg, ER$MpEstEmRemsFDeg)
+
+  ER$MpEstFRLDefEnh <- CalcMpEstFRLDefEnh(ErpaYearlyFRLDefor, ErpaYearlyFRLEnh)
+  ER$MpEstERsDefEnh <- CalcMpEstERsDefEnh(ErpaYearlyFRLDefor, ErpaYearlyFRLEnh, ER$MpGrossEmDefor, ER$MpEstEmRemsEnh)
   return(ER)
 }

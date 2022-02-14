@@ -1,6 +1,5 @@
 
 
-
 formatDecimal <- function(x) {
   return(format(round(x, 4), nsmall = 4))
 }
@@ -25,7 +24,7 @@ aaboot <- function( # A data.frame. The original accuracy assessment sample. Fir
   }
 
   # AA sample size in strata (strata = change class)
-  n1 <- table(aa_sample[, 1])
+  n1 <- table(aa_sample[,1])
   # Sort AA sample by change class (mapped class = predicted)
   names(aa_sample) <- c("predicted", "observed")
   aa_sample <- with(aa_sample, aa_sample[order(predicted), ])
@@ -38,8 +37,8 @@ aaboot <- function( # A data.frame. The original accuracy assessment sample. Fir
 
 
   # Create data.frame that collects the results of the bootstrap runs
-  Ais1 <- rep(0, length(unique(aa_sample[, 1])))
-  names(Ais1) <- paste0("class_", unique(aa_sample[, 1]))
+  Ais1 <- rep(0, length(unique(aa_sample[,2])))
+  names(Ais1) <- paste0("class_", sort(unique(aa_sample[, 2])))
 
   # Vector to select rows from the AA sample (see 'n1' above)
   ns <- c(rbind(c(1, cumsum(n1) + 1)[-(length(n1) + 1)], cumsum(n1)))
@@ -65,7 +64,7 @@ aaboot <- function( # A data.frame. The original accuracy assessment sample. Fir
     emi <- table(rsi[, 1], rsi[, 2])
 
     # Compute error matrix with estimated area proportions
-    empi <- rep(weight_class_i, length.out = length(weight_class_i)^2) *
+    empi <- rep(weight_class_i, length.out = length(levels(aa_sample$predicted)) * length(levels(aa_sample$observed))) *
       (emi / rowSums(emi))
 
     # Estimate bias-adjusted areas for run i
@@ -78,7 +77,7 @@ aaboot <- function( # A data.frame. The original accuracy assessment sample. Fir
   Ais1 <- Ais1[-1, ] # Remove first dummy row
   aab <- data.frame(Ais1) # Rename to aab
   row.names(aab) <- 1:nrow(aab) # Change row names (starting at 1)
-  names(aab) <- areas_mapped[, 1]
+  names(aab) <- sort(unique(aa_sample[, 2]))
   return(aab) # Return data frame
 }
 
@@ -102,6 +101,7 @@ CalcAdjustedAreas <- function(lcc_mapped_areas, aa_sample, aa_change_period, pro
   # Number of sample points in the mapped classes
   if (debug_er) print(table(aa_sample$predicted))
 
+  
   # Get the total area mapped [ha]
   A_mapped <- sum(lcc_mapped_areas[, 2])
 
@@ -112,15 +112,20 @@ CalcAdjustedAreas <- function(lcc_mapped_areas, aa_sample, aa_change_period, pro
   # Compute the area proportion (mapped) of class i
   round(W_i <- A_mapped_i / A_mapped, 5)
 
-  aa_sample$predicted <- factor(aa_sample$predicted, levels = c("111", "112", "171", "172", "711", "712", "777"))
-  aa_sample$observed <- factor(aa_sample$observed, levels = c("111", "112", "171", "172", "711", "712", "777"))
+
+  reference_codes <- c("111","112","171","172","711","712","777")
+  mapped_class <- c("111","112","171","172","555", "711","712","777", "1115", "1125", "7775")
+  aa_sample$predicted <- factor(aa_sample$predicted )
+  aa_sample$observed <- factor(aa_sample$observed,levels = reference_codes )
+  
 
   # Compute the sample error matrix (counts); map class in rows, reference class in columns
   err <- with(aa_sample, table(predicted, observed))
 
 
   # Compute the sample error matrix (area proportions); map class in rows, reference class in columns
-  errp <- rep(W_i, length.out = length(W_i)^2) * (err / rowSums(err))
+  errp <- rep(W_i, length.out = length(levels(aa_sample$predicted)) * length(levels(aa_sample$observed))) * (err / rowSums(err))
+
 
   if (debug_er) {
     print(err)
@@ -128,7 +133,7 @@ CalcAdjustedAreas <- function(lcc_mapped_areas, aa_sample, aa_change_period, pro
   }
 
   # Estimate class areas [ha]
-  (aa_est_areas <- A_mapped * colSums(errp))
+  aa_est_areas <- A_mapped * colSums(errp)
 
   runs <- 1000
   if (exists("MCRuns")) {
@@ -152,7 +157,7 @@ CalcAdjustedAreas <- function(lcc_mapped_areas, aa_sample, aa_change_period, pro
   # Results of the accuracy assessment
   rs_AA <- data.frame(
     # Change class code
-    class_code = lcc_mapped_areas[, 1],
+    class_code = lcc_mapped_areas[match(reference_codes, lcc_mapped_areas$class_code), 1],
     # Class description
     class_desc = c(
       "Stable LF", # LF = Lowland Natural Forest
@@ -163,16 +168,17 @@ CalcAdjustedAreas <- function(lcc_mapped_areas, aa_sample, aa_change_period, pro
       "AR Upland",
       "Stable NF" # NF = Non-Forest
     ),
+    
     # Mapped areas of change classes [ha]
-    area_mapped_ha = lcc_mapped_areas[, 2],
+    area_mapped_ha = lcc_mapped_areas[match(reference_codes, lcc_mapped_areas$class_code), 2],
     # Estimated areas of change classes [ha]
     area_est_ha = aa_est_areas,
     # Mean of aa boot
-    aaboot_mean = do.call(rbind, lapply(aa_boot, mean)),
+    aaboot_mean = do.call(rbind, lapply(aa_boot[,reference_codes ], mean)),
     # Lower limit of the 90%-confidence interval
-    lci_area_ha = apply(aa_boot, 2, function(x) quantile(x, probs = QLCI)),
+    lci_area_ha = apply(aa_boot[,reference_codes ], 2, function(x) quantile(x, probs = QLCI)),
     # Upper limit of the 90%-confidence interval
-    uci_area_ha = apply(aa_boot, 2, function(x) quantile(x, probs = QUCI))
+    uci_area_ha = apply(aa_boot[,reference_codes ], 2, function(x) quantile(x, probs = QUCI))
   )
   # Rename rows
   row.names(rs_AA) <- 1:nrow(rs_AA)
