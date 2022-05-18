@@ -41,3 +41,4 @@ library(FijiNFMSCalculations)
 
 1.0.1 - Release to produce calculations for review.
 1.0.2 - Extend Accuracy Assesment to allow more mapped classes than reference classes.
+1.0.3 - Small fixes for AA and relative margin.
