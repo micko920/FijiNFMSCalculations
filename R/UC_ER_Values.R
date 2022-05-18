@@ -6,8 +6,8 @@ calcUCModel <- function(lci, median, uci) {
   result$median <- median
   result$UCI <- uci
   result$LCI <- lci
-  result$halfWidth <- (uci - lci) / 2
-  result$relativeMargin <- result$halfWidth / median
+  result$halfWidth <- abs((uci - lci) / 2)
+  result$relativeMargin <- abs(result$halfWidth / median)
   result$conserFactor <- 0.15
   if (result$relativeMargin <= 0.15) {
     result$conserFactor <- 0

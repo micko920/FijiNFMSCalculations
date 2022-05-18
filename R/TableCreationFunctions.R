@@ -1,7 +1,11 @@
 # Tables Creation Functions for ER Monitoring Report. 4.2, 4.3, 5.2.2, 7 and 8
 
 formatPercent <- function(x) {
-  return(paste(format(round(x * 100, 2), nsmall = 2), "%"))
+  return(ifelse(is.na(x),"--", paste(format(round(x * 100, 2), nsmall = 2), "%")))
+}
+
+formatMaxPercent <- function(x) {
+  return(ifelse(x>1,">100%",formatPercent(x)))
 }
 
 formatNumber <- function(x) {
@@ -123,7 +127,7 @@ createTable_5_2_2 <- function(MR) {
       formatNumber(MR$McMpEstERsDefEnh$UCModel$UCI),
       formatNumber(MR$McMpEstERsDefEnh$UCModel$LCI),
       formatNumber(MR$McMpEstERsDefEnh$UCModel$halfWidth),
-      formatPercent(MR$McMpEstERsDefEnh$UCModel$relativeMargin),
+      formatMaxPercent(MR$McMpEstERsDefEnh$UCModel$relativeMargin),
       formatPercent(MR$McMpEstERsDefEnh$UCModel$conserFactor)
     ),
     forestDeg = c(
@@ -131,7 +135,7 @@ createTable_5_2_2 <- function(MR) {
       formatNumber(MR$McMpEstERsFDeg$UCModel$UCI),
       formatNumber(MR$McMpEstERsFDeg$UCModel$LCI),
       formatNumber(MR$McMpEstERsFDeg$UCModel$halfWidth),
-      formatPercent(MR$McMpEstERsFDeg$UCModel$relativeMargin),
+      formatMaxPercent(MR$McMpEstERsFDeg$UCModel$relativeMargin),
       formatPercent(MR$McMpEstERsFDeg$UCModel$conserFactor)
     )
   )
