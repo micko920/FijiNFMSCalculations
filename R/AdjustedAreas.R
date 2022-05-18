@@ -8,7 +8,8 @@ formatDecimal <- function(x) {
 #' @export
 aaboot <- function( # A data.frame. The original accuracy assessment sample. First
                    # column gives the predicted class, second column gives the observed
-                   # ('true') class.
+                   # ('true') class. Must contain levels for all possible
+                   # classes even if not present
                    aa_sample = NULL,
                    # A data.frame. First column gives the class codes, second column
                    # gives the total area mapped of the class.
@@ -37,8 +38,8 @@ aaboot <- function( # A data.frame. The original accuracy assessment sample. Fir
 
 
   # Create data.frame that collects the results of the bootstrap runs
-  Ais1 <- rep(0, length(unique(aa_sample[,2])))
-  names(Ais1) <- paste0("class_", sort(unique(aa_sample[, 2])))
+  Ais1 <- rep(0, length(levels(aa_sample[,2])))
+  names(Ais1) <- paste0("class_", sort(levels(aa_sample[, 2])))
 
   # Vector to select rows from the AA sample (see 'n1' above)
   ns <- c(rbind(c(1, cumsum(n1) + 1)[-(length(n1) + 1)], cumsum(n1)))
@@ -77,7 +78,7 @@ aaboot <- function( # A data.frame. The original accuracy assessment sample. Fir
   Ais1 <- Ais1[-1, ] # Remove first dummy row
   aab <- data.frame(Ais1) # Rename to aab
   row.names(aab) <- 1:nrow(aab) # Change row names (starting at 1)
-  names(aab) <- sort(unique(aa_sample[, 2]))
+  names(aab) <- sort(levels(aa_sample[, 2]))
   return(aab) # Return data frame
 }
 
