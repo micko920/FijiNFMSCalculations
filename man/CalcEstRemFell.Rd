@@ -4,7 +4,7 @@
 \alias{CalcEstRemFell}
 \title{Removals from regrowth on Felled Areas in Natural Forests}
 \usage{
-CalcEstRemFell(Area, MAIC)
+CalcEstRemFell(Area, MAIC, Age)
 }
 \arguments{
 \item{Area}{Area of natural forest logged}

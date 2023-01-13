@@ -25,21 +25,49 @@ createUC_MV_Values <- function(MV) {
   )
   names(result$DeforAreaUp) <- c("DeforAreaUp")
 
-  result$AReforArea <- ValueWithUncertainty(
-    Value = MV$AReforArea,
-    LowerCI = quantile(MV$McAReforArea,probs=QLCI),
-    UpperCI = quantile(MV$McAReforArea,probs=QUCI),
-    model = create_vwuSampled(MV$McAReforArea), fixed = FALSE
-  )
-  names(result$AReforArea) <- c("AReforArea")
+  ## MGG - patch for ARefor survey area to override Adjusted Areas sampled
+  ## TODO: still to be implimented with variance
+  # result$AReforArea <- ValueWithUncertainty(
+  #   Value = MV$AReforArea,
+  #   LowerCI = quantile(MV$McAReforArea,probs=QLCI),
+  #   UpperCI = quantile(MV$McAReforArea,probs=QUCI),
+  #   model = create_vwuSampled(MV$McAReforArea), fixed = FALSE
+  # )
+  # names(result$AReforArea) <- c("AReforArea")
 
+
+  ## MGG - patch for FDeg growth tables
   result$FDegFellArea <- ValueWithUncertainty(
-    Value = MV$FDegFellArea,
-    LowerCI = MV$FDegFellArea - MV$FDegFellArea * ErrAreaFell,
-    UpperCI = MV$FDegFellArea + MV$FDegFellArea * ErrAreaFell,
+    Value = MV$FDegFellArea$area_ha,
+    LowerCI = MV$FDegFellArea$area_ha - MV$FDegFellArea$area_ha * ErrAreaFell,
+    UpperCI = MV$FDegFellArea$area_ha + MV$FDegFellArea$area_ha * ErrAreaFell,
     model = vwuTriangle, fixed = FALSE
   )
   names(result$FDegFellArea) <- c("FDegFellArea")
+
+  result$FPlnAreaPlantHwd <- ValueWithUncertainty(
+    Value = MV$FPlnAreaPlantHwd$area_ha,
+    LowerCI = MV$FPlnAreaPlantHwd$area_ha - MV$FPlnAreaPlantHwd$area_ha * ErrAreaARefor,
+    UpperCI = MV$FPlnAreaPlantHwd$area_ha + MV$FPlnAreaPlantHwd$area_ha * ErrAreaARefor,
+    model = vwuTriangle, fixed = FALSE
+  )
+  names(result$FPlnAreaPlantHwd) <- c("FPlnAreaPlantHwd")
+
+  result$FPlnAreaPlantSwd <- ValueWithUncertainty(
+    Value = MV$FPlnAreaPlantSwd$area_ha,
+    LowerCI = MV$FPlnAreaPlantSwd$area_ha - MV$FPlnAreaPlantSwd$area_ha * ErrAreaARefor,
+    UpperCI = MV$FPlnAreaPlantSwd$area_ha + MV$FPlnAreaPlantSwd$area_ha * ErrAreaARefor,
+    model = vwuTriangle, fixed = FALSE
+  )
+  names(result$FPlnAreaPlantSwd) <- c("FPlnAreaPlantSwd")
+
+  result$NFDegArea <- ValueWithUncertainty(
+    Value = MV$NFDegArea,
+    LowerCI = MV$NFDegArea_LCI,
+    UpperCI = MV$NFDegArea_UCI,
+    model = vwuTriangle, fixed = FALSE
+  )
+  names(result$NFDegArea) <- c("NFDegArea")
 
   return(result)
 }

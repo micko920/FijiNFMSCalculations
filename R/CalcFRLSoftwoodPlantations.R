@@ -4,7 +4,10 @@ calcFRLSoftwoodPlantations <- function() {
   # Volumes extracted from Softwood Plantations
   sw <- hwsw_volharv[, c(1, 3)] # Softwood data
   names(sw) <- c("year", "vol_m3") # Rename columns
-  if (debug_frl) print(sw) # Print 'sw'
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLSoftwoodPlantations.R", ":8"))
+    print(sw) # Print 'sw'
+  }
 
   volToAgbPine <- 1 / FRLParams$volTovol * FRLParams$wdsw
 
@@ -71,7 +74,22 @@ calcFRLSoftwoodPlantations <- function() {
     ))
 
   netStockedArea$c_t  <- FRLParams$maicp * netStockedArea$area
-  print(mean(netStockedArea$c_t))
+
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLSoftwoodPlantations.R", ":79"))
+    print(netStockedArea$c_t)
+    print(mean(netStockedArea$c_t))
+  }
+
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLSoftwoodPlantations.R", ":85"))
+    net_cstock <- growthTotals(
+      FRLParams$Ty, netStockedArea$area,
+      growthMatrix(FRLParams$Ty, netStockedArea$area, FRLParams$rdeltaT) * FRLParams$maicp
+    )
+    print(net_cstock)
+  }
+
 
 
   A2006 <- 49503
@@ -84,12 +102,51 @@ calcFRLSoftwoodPlantations <- function() {
   atp <- A2005 - sum(sw$area_harvested_ha)
   # Mean annual C removals on areas that just grow during the Reference Period
   ctp <- atp * FRLParams$maicp
+
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLSoftwoodPlantations.R", ":107"))
+    print(ctp)
+  }
+
   # Accumulation of C on planted areas over the Reference Period
-  sw$cgain_t <- sw$area_planted_ha * FRLParams$deltaT * FRLParams$maicp
-  # C accumulation on areas that were harvested in year t
-  mchp <- mean(sw$area_harvested_ha * FRLParams$rdeltaT * FRLParams$maicp)
+  sw$cgainp_t <- sw$area_planted_ha * FRLParams$deltaT * FRLParams$maicp
   # Average annual C accumulation on planted areas over the Reference Period
-  mcpp <- mean(sw$cgain_t)
+  mcpp <- mean(sw$cgainp_t)
+
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLSoftwoodPlantations.R", ":117"))
+    print(sw$cgainp_t)
+    print(mcpp)
+  }
+
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLSoftwoodPlantations.R", ":123"))
+    planted_cstock <- growthTotals(
+      FRLParams$Ty, sw$area_planted_ha,
+      growthMatrix(FRLParams$Ty, sw$area_planted_ha, FRLParams$rdeltaT) * FRLParams$maicp
+    )
+    print(planted_cstock)
+  }
+
+  # C accumulation on areas that were harvested in year t
+  sw$cgainh_t <- sw$area_harvested_ha * FRLParams$rdeltaT * FRLParams$maicp
+  # Average annual C accumulation on harvested areas over the Reference Period
+  mchp <- mean(sw$cgainh_t)
+
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLSoftwoodPlantations.R", ":137"))
+    print(sw$cgainh_t)
+    print(mchp)
+  }
+
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLSoftwoodPlantations.R", ":143"))
+    harvested_cstock <- growthTotals(
+      FRLParams$Ty, sw$area_harvested_ha,
+      growthMatrix(FRLParams$Ty, sw$area_harvested_ha, FRLParams$deltaT) * FRLParams$maicp
+    )
+    print(harvested_cstock)
+  }
 
   # Total average annual C removals
   mcrp <- mcpp + ctp + mchp
@@ -132,6 +189,65 @@ calcFRLSoftwoodPlantations <- function() {
     resmcrpNew[i] <- mean(netStockedAreai$c_t)
   }
 
+  # Growth tables projection rather than average yearly growth
+  yearly_growth <- c(0.5,rep_len(1,FRLParams$Tl-1))
+  area <- sw$area_planted_ha
+
+  swd_planted_cstock <- growthTotals(
+        FRLParams$Ty, area,
+        growthMatrix(FRLParams$Ty,
+                     area,
+                     yearly_growth,
+                     projection=7, offset = 14) * FRLParams$maicp,
+        projection=7, offset = 14)
+
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLSoftwaoodPlantations", ":204"))
+    print(swd_planted_cstock)
+  }
+
+  # Uncertainty analysis
+  vswcstock <- matrix(nrow=0,ncol=length(FRLParams$Ty)+4)
+  gm <- growthMatrix(FRLParams$Ty,rep_len(1,length(FRLParams$Ty)),c(0.5,rep_len(1,length(FRLParams$Ty)-1)), projection=7, offset = 14)
+
+  mArea  <- mean(area)
+  # MC simulation
+  for (i in 1:FRLParams$runs) { # i <- 1
+    vAreas <- rtriangle(
+      n = 1,
+      theta = mArea,
+      lower = mArea - mArea * FRLParams$errSwPlantations,
+      upper = mArea + mArea * FRLParams$errSwPlantations
+    )
+    # Random realization of MAI AGB (25% error)
+    maicpi <- rtriangle(
+      n = FRLParams$Ty+7,
+      theta = FRLParams$maicp,
+      lower = FRLParams$maicp - FRLParams$maicp * FRLParams$errmaicp,
+      upper = FRLParams$maicp + FRLParams$maicp * FRLParams$errmaicp
+    )
+    r <- colSums(gm * vAreas * maicpi)
+    if (i==1) vswcstock <- r
+    else vswcstock <- rbind(vswcstock, r)
+  }
+  colnames(vswcstock) <- colnames(gm)
+
+  # Yearly removals
+  ec_sw_cstock <- swd_planted_cstock[c(-1,-2)] * FRLParams$etacc# Estimate
+  mucstock <- apply(vswcstock * FRLParams$etacc,2, mean)
+  lciswcstock <- apply(vswcstock * FRLParams$etacc,2, quantile, probs = FRLParams$qlci) # Lower confidence limit
+  uciswcstock <- apply(vswcstock * FRLParams$etacc,2, quantile, probs = FRLParams$quci) # Upper confidence limit
+  v_ec_sw_cstock <- vswcstock * FRLParams$etacc * -1# MC estimates
+  # Result table CStock
+  rs_ec_sw_cstock <- data.frame(
+    rbind(
+      removals_tco2e_yr = ec_sw_cstock * -1,
+      lci_removals_tco2e_yr = lciswcstock * -1,
+      uci_removals_tco2e_yr = uciswcstock * -1,
+      mu_removals_tco2e_yr = mucstock * -1),
+    check.names = F
+  )
+
   # Average annual removals from Softwood Plantations ....................................
   ec_sw_aar <- mcrp * FRLParams$etacc # Estimate
   lci_ec_sw_aar <- quantile(resmcrp * FRLParams$etacc, probs = FRLParams$qlci) # Lower CI limit
@@ -144,6 +260,7 @@ calcFRLSoftwoodPlantations <- function() {
   v_ec_sw_aarNew <- resmcrpNew * FRLParams$etacc # MC estimate
 
   if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLSoftwoodPlantations.R", ":204"))
     print("original model of softwood growth")
     print(c(
       ec_sw_aar,
@@ -171,6 +288,8 @@ calcFRLSoftwoodPlantations <- function() {
                               probs = FRLParams$quci)
 
   result <- list()
+  result$sw_h_area <- sw$area_harvested_ha
+  result$sw_p_area <- sw$area_planted_ha
   result$ec_sw_aae <- ec_sw_aae
   result$ec_sw_aar <- ec_sw_aarNew
   result$lci_ec_sw_aae <- lci_ec_sw_aae
@@ -181,5 +300,7 @@ calcFRLSoftwoodPlantations <- function() {
   result$v_ec_sw_aar <- v_ec_sw_aarNew
   result$lciv_ec_sw_aane <- lciv_ec_sw_aane
   result$uciv_ec_sw_aane <- uciv_ec_sw_aane
+  result$rs_ec_sw_cstock <- rs_ec_sw_cstock
+  result$v_ec_sw_cstock <- v_ec_sw_cstock
   return(result)
 }

@@ -18,8 +18,8 @@
 #'
 #' @return Gross Emissions - tCO2e
 #' @export
-CalcGrossEm <- function (GrossEmDefor, EstEmFell, EstEmFire, GrossEmFPln) {
-  return(GrossEmDefor + EstEmFell + EstEmFire + GrossEmFPln)
+CalcGrossEm <- function (GrossEmDefor, EstEmFell, EstEmFire, GrossEmFPln, EstEmNFDeg) {
+  return(GrossEmDefor + EstEmFell + EstEmFire + GrossEmFPln + EstEmNFDeg)
 }
 
 
@@ -53,14 +53,16 @@ CalcGrossRem <- function (EstRemFell, EstRemARefor, GrossRemFPln) {
 #' @param EstEmFell Gross emissions from logging
 #' @param EstRemFell Gross removals from regrowth on logged areas
 #' @param EstEmFire Gross emissions from burning
+#' @param EstEmNFDeg Gross emissions from degradation
 #' @seealso [CalcEstEmFell()]
 #' @seealso [CalcEstRemFell()]
 #' @seealso [CalcEstEmFire()]
+#' @seealso [CalcEstEmNFDeg()]
 #' @return Forest Degradation Net Emissions - tCO2e
 #' @export
 
-CalcEstEmRemsFDeg <- function (EstEmFell, EstRemFell, EstEmFire) {
-  return (EstEmFell + EstRemFell + EstEmFire)
+CalcEstEmRemsFDeg <- function (EstEmFell, EstRemFell, EstEmFire, EstEmNFDeg) {
+  return (EstEmFell + EstRemFell + EstEmFire + EstEmNFDeg)
 }
 
 

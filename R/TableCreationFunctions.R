@@ -223,18 +223,18 @@ createTable_8 <- function(MR, MRparams) {
       "L"
     ),
     Titles = c(
-      "Emission Reductions during the Reporting Period",
+      "Emission Reductions during the Reporting period (tCO2-e)",
       "If applicable, number of Emission Reductions from reducing forest degradation that have been estimated using proxy-based estimation approaches (use zero if not applicable)",
-      "Number of Emission Reductions estimated using measurement approaches",
+      "Number of Emission Reductions estimated using measurement approaches (A-B)",
+      "Percentage of ERs (A) for which the ability to transfer Title to ERs is clear or uncontested",
+      "ERs sold, assigned or otherwise used by any other entity for sale, public relations, compliance or any other purpose including ERs accounted separately under other GHG accounting schemes or ERs that have been set-aside to meet Reversal management requirements under other GHG accounting schemes",
+      "Total ERs (B+C)*D-E",
       "Conservativeness Factor to reflect the level of uncertainty from non-proxy based approaches associated with the estimation of ERs during the Crediting Period",
-      "Calculate Uncertainty set-aside",
-      "Emission Reductions after uncertianty set-aside",
-      "Number of ERs for which the ability to transfer Title to ERs is still unclear or contested at the time of transfer of ERs",
-      "ERs sold, assigned or otherwise used by any other entity for sale, public relations, compliance or any other purpose including ERS that have been set-side to meet Reversal management requirements under other GHG accounting schemes",
-      "Potential ERs that can be transfered to the Carbon Fund before reversal risk set-aside",
+      "Quantity of ERs to be allocated to the Uncertainty Buffer (0.15*B/A*F)+(G*C/A*F)",
       "Total reversal risk set-aside percentage applied to the ER program",
-      "Quantity of ERs allocated to the Reversal Buffer and the Pooled Reversal Buffer",
-      "Number of FCPF ERs"
+      "Quantity of ERs to allocated to the Reversal Buffer (F-H)*(I-5%)",
+      "Quantity of ERs to be allocated to the Pooled Reversal Buffer (F-H)*5%",
+      "Number of FCPF ERs  (F- H – J – K)"
     ),
     Values = c(
       # A
@@ -243,24 +243,24 @@ createTable_8 <- function(MR, MRparams) {
       formatNumber(MR$RpEstERsFDeg),
       # C
       formatNumber(MR$RpEstERsDefEnh), #  A - B
-      # D  from Table5_2 conservativeness factor.
-      formatPercent(MR$McMpEstERsDefEnh$UCModel$conserFactor),
+      # D
+      formatPercent(MR$ErpaPercentageClearERs), # Uncontested ERs = 1 - (Contested / ERs)
       # E
-      formatNumber(MR$RpSetaside), # (0.15 * B) + (C * D), 0.15 is default ConserFactor for FDeg
-      # F
-      formatNumber(MR$RpAdjERs), # A - E
-      # G
-      formatNumber(MRparams$ErpaContestedERs),
-      # H
       formatNumber(MRparams$ErpaSoldERs),
+      # F
+      formatNumber(MR$RpAdjERs), #  (B + C) * D - E
+      # G  from Table5_2 conservativeness factor.
+      formatPercent(MR$McMpEstERsDefEnh$UCModel$conserFactor),
+      # H
+      formatNumber(MR$RpSetaside), # (((0.15 * B) / A) * F) + (((G * C) / A) * F), 0.15 is default ConserFactor for FDeg
       # I
-      formatNumber(MR$RpPotentialERs), # F - G - H
-      # J
       formatPercent(MRparams$ErpaRiskSetaside),
+      # J
+      formatNumber(MR$RpBufferedERs), # (F - H)*(I - 5%)
       # K
-      formatNumber(MR$RpBufferedERs), # (I * J)
-      # L,  there is a mistake in the Table. (I - L) should be (I - K)
-      formatNumber(MR$RpERs)
+      formatNumber(MR$RpPooledBufferedERs), # (F - H)*5%
+      # L
+      formatNumber(MR$RpERs) # (F - H - J - K)
     )
   )
 }

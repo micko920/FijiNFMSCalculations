@@ -18,19 +18,19 @@
 #                         )
 
 test_that("Baseline Estimate example", {
-  expect_equal(CalcEstRemFPlnSwd(MAIBsw, 49106, 370.82, 1282.402), -874750.60)
+  expect_equal(signif(CalcEstRemFPlnSwd(MAIBsw, 49106, 370.82, 1282.402, 1.0),5), -6390.50)
 })
 
 test_that("Baseline Data example", {
-  expect_equal(CalcEstRemFPlnSwd(MAIBsw, 1, 2, 1), -68.93333330)
+  expect_equal(signif(CalcEstRemFPlnSwd(MAIBsw, 1, 2, 1, 1.0),5), -34.467)
 })
 
 test_that("all areas sum to zero", {
-  expect_equal(CalcEstRemFPlnSwd(MAIBsw, 1, -1, 1), -17.23333330)
+  expect_equal(signif(CalcEstRemFPlnSwd(MAIBsw, 1, -1, 1, 1.0),5), 17.2330)
 })
 
 
 test_that("one area zero", {
-  expect_equal(CalcEstRemFPlnSwd(MAIBsw, 0, 1, 1), -34.46666670)
+  expect_equal(signif(CalcEstRemFPlnSwd(MAIBsw, 0, 1, 1, 1.0),5), -17.2330)
 })
 

@@ -42,7 +42,10 @@ calcFRLDeforestation <- function() {
   rs_df_strata <- rs_df[-3, ] # Strata only
   rs_df <- rs_df[3, -1] # Aggregated strata only
   # Show result table
-  if (debug_frl) print(rs_df_all)
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLDeforestation.R", ":46"))
+    print(rs_df_all)
+  }
 
   result <- list()
   result$rs_df <- rs_df

@@ -4,7 +4,7 @@
 \alias{CalcGrossEm}
 \title{Gross Emissions}
 \usage{
-CalcGrossEm(GrossEmDefor, EstEmFell, EstEmFire, GrossEmFPln)
+CalcGrossEm(GrossEmDefor, EstEmFell, EstEmFire, GrossEmFPln, EstEmNFDeg)
 }
 \arguments{
 \item{GrossEmDefor}{Gross emissions from deforestation}

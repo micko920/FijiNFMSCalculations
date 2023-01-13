@@ -61,7 +61,7 @@ create_EstMRValues <- function(UC_ER, ER, EmRems, MV, MRparams) {
 
 #' @export
 create_MRValues <- function(UC_ER, ER, EmRems, MV, MRparams) {
-  MR <- create_EstMRValues(UC_ER, ER, EmRems, MV, MRparams) 
+  MR <- create_EstMRValues(UC_ER, ER, EmRems, MV, MRparams)
 
   # Table5_2_2
   MR$McMpEstERsDefEnh <- UC_ER$McMpEstERsDefEnh
@@ -90,27 +90,28 @@ create_MRValues <- function(UC_ER, ER, EmRems, MV, MRparams) {
     0
   )
 
+  browser()
   # Table8
   # The Reporting Period Pro-rata is applied at this level to the Monitoring Period Numbers
   # A - MR$RpEstERs
   # B - MR$RpEstERsFDeg
   # C - MR$RpEstERsDefEnh , A - B
-  # D - MR$McMpEstERsDefEnh$UCModel$conserFactor
-  # E (0.15 * B) + (C * D), 0.15 is default ConserFactor for FDeg
-  MR$RpSetaside <- (MR$RpEstERsFDeg * MR$McMpEstERsFDeg$UCModel$conserFactor) +
-    (MR$RpEstERsDefEnh * MR$McMpEstERsDefEnh$UCModel$conserFactor)
-  # F
-  MR$RpAdjERs <- MR$RpEstERs - MR$RpSetaside # A - E
-  # G - MRparams$ErpaContestedERs
-  # H - MRparams$ErpaSoldERs
-  # I
-  MR$RpPotentialERs <- MR$RpAdjERs - MRparams$ErpaContestedERs - MRparams$ErpaSoldERs # F - G - H
-  # J - MRparams$ErpaRiskSetaside
-  # K
-  MR$RpBufferedERs <- MR$RpPotentialERs * MRparams$ErpaRiskSetaside # (I * J)
-  # L,  there is a mistake in the Table. (I - L) should be (I - K)
-  MR$RpERs <- MR$RpPotentialERs - MR$RpBufferedERs # I - K
-
+  # D - Uncontested ERs = 1 - (Contested / ERs)
+  MR$ErpaPercentageClearERs <- 1 - (MRparams$ErpaContestedERs / MR$RpEstERs)
+  # E - MRparams$ErpaSoldERs
+  # F - ((B + C) * D) - E
+  MR$RpAdjERs <- (MR$RpEstERs * MR$ErpaPercentageClearERs) - MRparams$ErpaSoldERs
+  # G - MR$McMpEstERsDefEnh$UCModel$conserFactor
+  # H - (((0.15 * B) / A) * F) + (((G * C) / A) * F), 0.15 is default ConserFactor for FDeg
+  MR$RpSetaside <- (((MR$RpEstERsFDeg   * MR$McMpEstERsFDeg$UCModel$conserFactor) / MR$RpEstERs) * MR$RpAdjERs) + (((MR$RpEstERsDefEnh * MR$McMpEstERsDefEnh$UCModel$conserFactor) / MR$RpEstERs) * MR$RpAdjERs)
+  # I - MRparams$ErpaRiskSetaside
+  # J - (F - H)*(I - 5%)
+  MR$RpPotentialERs <- MR$RpAdjERs - MR$RpSetaside
+  MR$RpBufferedERs <- MR$RpPotentialERs * (MRparams$ErpaRiskSetaside - 0.05)
+  # K - (F - H) * 5%
+  MR$RpPooledBufferedERs <- MR$RpPotentialERs * 0.05
+  # L,  (F - H - J - K)
+  MR$RpERs <- MR$RpPotentialERs - MR$RpBufferedERs - MR$RpPooledBufferedERs
 
   return(MR)
 }

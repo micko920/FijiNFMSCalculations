@@ -4,7 +4,7 @@
 \alias{CalcEstEmRemsFDeg}
 \title{Forest Degradation Net Emissions}
 \usage{
-CalcEstEmRemsFDeg(EstEmFell, EstRemFell, EstEmFire)
+CalcEstEmRemsFDeg(EstEmFell, EstRemFell, EstEmFire, EstEmNFDeg)
 }
 \arguments{
 \item{EstEmFell}{Gross emissions from logging}
@@ -12,6 +12,8 @@ CalcEstEmRemsFDeg(EstEmFell, EstRemFell, EstEmFire)
 \item{EstRemFell}{Gross removals from regrowth on logged areas}
 
 \item{EstEmFire}{Gross emissions from burning}
+
+\item{EstEmNFDeg}{Gross emissions from degradation}
 }
 \value{
 Forest Degradation Net Emissions - tCO2e
@@ -29,4 +31,6 @@ from Forest Degradation. Emissions are presented in tco2e.
 \code{\link[=CalcEstRemFell]{CalcEstRemFell()}}
 
 \code{\link[=CalcEstEmFire]{CalcEstEmFire()}}
+
+\code{\link[=CalcEstEmNFDeg]{CalcEstEmNFDeg()}}
 }

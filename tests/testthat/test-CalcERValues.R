@@ -42,6 +42,59 @@ test_that("Test it can be called", {
   dummyMonitoredValues$FPlnAreaJustGrowsSwd <- dummyMonitoredValues$FPlnAreaStockSwd - dummyMonitoredValues$FPlnAreaHarvSwd
   dummyMonitoredValues$FDegFellVol <- 50731.5 # Volume of wood extracted from natural forest (metric tonnes)
   dummyMonitoredValues$FDegFellArea <- 11669.9 # Area of natural forest felled (ha)
+  dummyMonitoredValues$FDegFellAreaSurveyArea <- 1350
+  dummyMonitoredValues$FDegFellArea <- data.frame(
+			year = c(2019),
+			area_ha = c(
+				dummyMonitoredValues$FDegFellAreaSurveyArea
+			),
+			age_yrs = c(0.5)
+  )
+  dummyMonitoredValues$AReforSurveyArea <- 616
+  dummyMonitoredValues$AReforArea <- data.frame(
+			year = c(2019),
+			area_ha = c(
+				dummyMonitoredValues$AReforSurveyArea
+			),
+			age_yrs = c(0.5)
+  )
+  dummyMonitoredValues$FPlnAreaPlantHwdSurveyArea <- 4008
+  dummyMonitoredValues$FPlnAreaPlantHwd <- data.frame(
+			year = c(2019),
+			area_ha = c(
+				dummyMonitoredValues$FPlnAreaPlantHwdSurveyArea
+			),
+			age_yrs = c(0.5)
+  )
+  dummyMonitoredValues$FPlnAreaPlantSwdSurveyArea <- 2008
+  dummyMonitoredValues$FPlnAreaPlantSwd <- data.frame(
+			year = c(2019),
+			area_ha = c(
+				dummyMonitoredValues$FPlnAreaPlantSwdSurveyArea
+			),
+			age_yrs = c(0.5)
+  )
+
+  dummyMonitoredValues$NFDegArea <- 428.5581 / 2
+  dummyMonitoredValues$NFDegArea_LCI <- (428.5581 / 2) - (qnorm(0.95) * 88.5538 / sqrt(2))
+  dummyMonitoredValues$NFDegArea_UCI <- (428.5581 / 2) + (qnorm(0.95) * 88.5538 / sqrt(2))
+
+
+  # MonitoringReportParams$ErpaYearlyFRL <- 2888635
+  # MonitoringReportParams$ErpaYearlyFRLUCI <- 3372092
+  # MonitoringReportParams$ErpaYearlyFRLLCI <- 2676753
+  # MonitoringReportParams$ErpaYearlyFRLFDeg <- 692551.3
+  # MonitoringReportParams$ErpaYearlyFRLFDegUCI <- 765766.4
+  # MonitoringReportParams$ErpaYearlyFRLFDegLCI <- 591155.8
+  # MonitoringReportParams$ErpaYearlyFRLDefor <- 1080470
+  # MonitoringReportParams$ErpaYearlyFRLDeforUCI  <-1342885
+  # MonitoringReportParams$ErpaYearlyFRLDeforLCI <- 796937.4
+  # MonitoringReportParams$ErpaYearlyFRLEnh <- 1115614
+  # MonitoringReportParams$ErpaYearlyFRLEnhUCI  <-1489684
+  # MonitoringReportParams$ErpaYearlyFRLEnhLCI  <-1081121
+  # MonitoringReportParams$ErpaYearlyFRLFDegNonProxy  <-292228.7
+  # MonitoringReportParams$ErpaYearlyFRLFDegNonProxyUCI <- 448571.3
+  # MonitoringReportParams$ErpaYearlyFRLFDegNonProxyLCI <- 151190.9
 
   expect_silent(result <- CalcEmRemsValues(dummyMonitoredValues))
   # Results Table has expected Deforestation Estimate
@@ -52,17 +105,17 @@ test_that("Test it can be called", {
 
   # This value does not match the FRL. The FRL uses an average of 2015-2018, this value is 2018 only.
   # Results Table has expected Forest Degradation Estimate
-  expect_equal(round(result$EstEmRemsFDeg), 234514)
+  expect_equal(round(result$EstEmRemsFDeg), 310218)
 
   #############
   # Enhancement
 
   # Results Table has expected Enhancement Estimate
-  expect_equal(round(result$EstEmRemsEnh), -1227582)
+  expect_equal(round(result$EstEmRemsEnh), 545479)
 
   #######
   # Total
 
   # Results Table has expected Total Estimate
-  expect_equal(round(result$NetEmRems), 1703759)
+  expect_equal(round(result$NetEmRems), 3552523)
 })

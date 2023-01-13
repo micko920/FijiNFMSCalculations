@@ -17,7 +17,10 @@ calcFRLFuelwood <- function() {
 
   # Emissions from fuelwood consumption
   fd_fu_aae <- mean(rowSums(fuelwhh[, -1] * fuelwch[, -1]) * FRLParams$etacf * FRLParams$etacc)
-  if (debug_frl) print(fd_fu_aae)
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLFuelwood.R", ":21"))
+    print(fd_fu_aae)
+  }
 
   # Uncertainty analysis
   # Create vector
@@ -70,7 +73,10 @@ calcFRLFuelwood <- function() {
   row.names(rs_fd_fu) <- "1"
 
   # Show result table for fuelwood
-  if (debug_frl) print(rs_fd_fu)
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLFuelwood.R", ":77"))
+    print(rs_fd_fu)
+  }
 
   result <- list()
   result$rs_fd_fu <- rs_fd_fu

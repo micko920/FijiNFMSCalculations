@@ -12,21 +12,21 @@
 # Total <- x + y + z, convert to CO2e * (-1) Total Area converted to biomass then CO2e
 
 test_that("Baseline Data example", {
-  expect_equal(CalcEstRemFPlnHwd(56950.45, 3050.3, 3316.6, MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain), -961969.1300)
+  expect_equal(signif(CalcEstRemFPlnHwd(56950.45, 3050.3, 3316.6, MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain, 1.0),5), -46343)
 })
 
 test_that("Baseline Data example", {
-  expect_equal(CalcEstRemFPlnHwd(2, 1, 1, MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain), -60.771282)
+  expect_equal(signif(CalcEstRemFPlnHwd(2, 1, 1, MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain, 1.0),5), -15.193)
 })
 
 test_that("One area zero", {
-  expect_equal(CalcEstRemFPlnHwd(0, 1, 1, MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain), -30.3856410)
+  expect_equal(signif(CalcEstRemFPlnHwd(0, 1, 1, MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain, 1.0),5), -15.193)
 })
 
 test_that("Areas sum to zero", {
-  expect_equal(CalcEstRemFPlnHwd(0, 0, 1, MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain), -15.1928205)
+  expect_equal(signif(CalcEstRemFPlnHwd(0, 0, 1, MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain, 1.0),5), -0.0)
 })
 
 test_that("negative numbers", {
-  expect_equal(CalcEstRemFPlnHwd(-2, 1, 1, MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain), -0.0)
+  expect_equal(signif(CalcEstRemFPlnHwd(-2, 1, 1, MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain, 1.0),5), -15.1930)
 })
