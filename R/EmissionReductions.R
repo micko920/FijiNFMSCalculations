@@ -38,7 +38,7 @@ CalcMpNetEmRems <- function(Year1NetEmRems, Year2NetEmRems) {
 
 #' @export
 CalcMpEstFRL <- function(ErpaYearlyFRL) {
-  return(ErpaYearlyFRL * 2)
+  return(ErpaYearlyFRL)
 }
 
 

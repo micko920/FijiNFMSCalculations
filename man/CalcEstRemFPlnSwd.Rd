@@ -4,7 +4,7 @@
 \alias{CalcEstRemFPlnSwd}
 \title{Forest Plantations - Removals from Softwood Plantations}
 \usage{
-CalcEstRemFPlnSwd(MAIBsw, AreaJustGrowsSW, AreaPlanted, AreaHarvested)
+CalcEstRemFPlnSwd(MAIBsw, AreaJustGrowsSW, AreaPlanted, AreaHarvested, Age)
 }
 \arguments{
 \item{MAIBsw}{Mean annual biomass increment in Softwood Plantations}

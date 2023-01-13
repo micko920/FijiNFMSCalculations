@@ -81,7 +81,10 @@ calcFRLPlantations <- function() {
   row.names(rs_ec_pl) <- c("2","1","3","21","11","31","22","12","32")
 
   # Show result table for Forest Plantations
-  if (debug_frl) print(rs_ec_pl)
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLPlantations.R", ":85"))
+    print(rs_ec_pl)
+  }
 
   result <- list()
   result$rs_ec_pl <- rs_ec_pl

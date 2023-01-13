@@ -102,7 +102,7 @@ CalcAdjustedAreas <- function(lcc_mapped_areas, aa_sample, aa_change_period, pro
   # Number of sample points in the mapped classes
   if (debug_er) print(table(aa_sample$predicted))
 
-  
+
   # Get the total area mapped [ha]
   A_mapped <- sum(lcc_mapped_areas[, 2])
 
@@ -118,7 +118,7 @@ CalcAdjustedAreas <- function(lcc_mapped_areas, aa_sample, aa_change_period, pro
   mapped_class <- c("111","112","171","172","555", "711","712","777", "1115", "1125", "7775")
   aa_sample$predicted <- factor(aa_sample$predicted )
   aa_sample$observed <- factor(aa_sample$observed,levels = reference_codes )
-  
+
 
   # Compute the sample error matrix (counts); map class in rows, reference class in columns
   err <- with(aa_sample, table(predicted, observed))
@@ -169,7 +169,7 @@ CalcAdjustedAreas <- function(lcc_mapped_areas, aa_sample, aa_change_period, pro
       "AR Upland",
       "Stable NF" # NF = Non-Forest
     ),
-    
+
     # Mapped areas of change classes [ha]
     area_mapped_ha = lcc_mapped_areas[match(reference_codes, lcc_mapped_areas$class_code), 2],
     # Estimated areas of change classes [ha]

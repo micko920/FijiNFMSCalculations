@@ -92,7 +92,7 @@ createUC_EmRemsValues <- function(UC, UC_MV, EmRems, MV) {
   # Felling Volume uncertainty not included in MC, just use actual volume
 
  CalcEstEmFellArgs <- function() {
-    return(list(UC$TEF, MV$FDegFellVol))
+    return(list(MV$FDegFellVol, UC$TEF))
   }
 
 
@@ -113,7 +113,7 @@ createUC_EmRemsValues <- function(UC, UC_MV, EmRems, MV) {
   # Uncertainty associated with the with MAIC and Area Felled
   # Calculate the arguments
   CalcEstRemFellArgs <- function() {
-    return(list(UC_MV$FDegFellArea, UC$MAICFell))
+    return(list(UC_MV$FDegFellArea, UC$MAICFell, MV$FDegFellArea$age_yrs))
   }
 
 
@@ -134,9 +134,35 @@ createUC_EmRemsValues <- function(UC, UC_MV, EmRems, MV) {
   }
 
   # Final Estimate of emissions with UCI and LCI
-  McEstEmFell <- CalcMonteCarlo("EstEmFell", EmRems$NetEmRemsFell, CalcNetEmRemsFell, CalcNetEmRemsFellArgs)
-  if (debug_er) McEstEmFell
+  McNetEmRemsFell <- CalcMonteCarlo("NetEmRemsFell", EmRems$NetEmRemsFell, CalcNetEmRemsFell, CalcNetEmRemsFellArgs)
+  if (debug_er) McNetEmRemsFell
 
+  ## Yearly Emissions from degradation in natural forest (tCO2e)
+  # Estimate of CO2e removals from degradation
+  # Uncertainty associated with the with EF NFDeg and Area degraded
+  # Calculate the arguments
+  CalcEstEmNFDegArgs <- function() {
+    return(list(UC_MV$NFDegArea, UC$EFNFDeg, UC$RootToShootTropRain ))
+  }
+
+  ## MGG - UC
+  # Final Estimate for Removals with UCI and LCI
+  result$McEstEmNFDeg <- CalcMonteCarlo("EstEmNFDeg", EmRems$EstEmNFDeg, CalcEstEmNFDeg, CalcEstEmNFDegArgs)
+  if (debug_er) result$McEstEmNFDeg
+  local$EstEmNFDeg <- ValueWithUncertainty(
+    Value = EmRems$EstEmNFDeg,
+    LowerCI = result$McEstEmNFDeg$value[2],
+    UpperCI = result$McEstEmNFDeg$value[3],
+    model = create_vwuSampled(result$McEstEmNFDeg$MCresults), fixed = FALSE
+  )
+  names(local$EstEmNFDeg) <- c("EstEmNFDeg")
+
+  CalcNetEmRemsNFDegArgs <- function() {
+    return(list(local$EstEmNFDeg))
+  }
+
+  McNetEmRemsNFDeg <- CalcMonteCarlo("NetEmRemsNFDeg", EmRems$NetEmRemsNFDeg, CalcNetEmRemsNFDeg, CalcNetEmRemsNFDegArgs)
+  if (debug_er) McNetEmRemsNFDeg
   ##***********************************************************
   ## 2.2 Biomass Burning
 
@@ -170,7 +196,7 @@ createUC_EmRemsValues <- function(UC, UC_MV, EmRems, MV) {
   # Uncertainty with the estimated total MAICAGBar and Root To Shoot Tropical Rain Ratio
   # Calculate arguments
   CalcEstRemAReforArgs <- function() {
-    return(list(UC_MV$AReforArea, UC$MAIVar, UC$BiomassConvExpansionARefor, UC$RootToShootTropRain))
+    return(list(MV$AReforArea$area_ha, UC$MAIVar, UC$BiomassConvExpansionARefor, UC$RootToShootTropRain,MV$AReforArea$age_yrs))
   }
 
 
@@ -224,7 +250,7 @@ createUC_EmRemsValues <- function(UC, UC_MV, EmRems, MV) {
   # Uncertainty assessment (removals) of MAIV, Biomass Conversion and Expansion Factor,
   # Root To Shoot Tropical Rain, MAIC, Average annual area of forest that just grows
   CalcRemFPHWArgs <- function() {
-    return(list(MV$FPlnAreaJustGrowsHwd, MV$FPlnAreaPlantHwd, MV$FPlnAreaHarvHwd, UC$MAIVhw, UC$BiomassConvExpansionIncHW, UC$RootToShootTropRain))
+    return(list(MV$FPlnAreaJustGrowsHwd, UC_MV$FPlnAreaPlantHwd, MV$FPlnAreaHarvHwd, UC$MAIVhw, UC$BiomassConvExpansionIncHW, UC$RootToShootTropRain, MV$FPlnAreaPlantHwd$age_yrs))
   }
 
 
@@ -240,7 +266,7 @@ createUC_EmRemsValues <- function(UC, UC_MV, EmRems, MV) {
   names(local$EstRemFPlnHwd) <- c("EstRemFPlnHwd")
   # Estimate of softwood removals for yr (tCO2e) ####
   CalcRemFPSWArgs <- function() {
-    return(list(UC$MAIBsw, MV$FPlnAreaJustGrowsSwd, MV$FPlnAreaPlantSwd, MV$FPlnAreaHarvSwd))
+    return(list(UC$MAIBsw, MV$FPlnAreaJustGrowsSwd, UC_MV$FPlnAreaPlantSwd, MV$FPlnAreaHarvSwd, MV$FPlnAreaPlantSwd$age_yrs))
   }
 
   # Final Estimate for SW Removals with UCI and LCI
@@ -323,7 +349,7 @@ createUC_EmRemsValues <- function(UC, UC_MV, EmRems, MV) {
 
   # Gross Emissions Total
   CalcGrossEmArgs <- function() {
-    return(list(local$GrossEmDefor, local$EstEmFell, local$EstEmFire, local$GrossEmFPln ))
+    return(list(local$GrossEmDefor, local$EstEmFell, local$EstEmFire, local$GrossEmFPln, local$EstEmNFDeg ))
   }
 
   ## MGG - UC
@@ -354,7 +380,7 @@ createUC_EmRemsValues <- function(UC, UC_MV, EmRems, MV) {
 
   # Forest Degradation Total
   CalcEstEmRemsFDegArgs <- function() {
-    return(list(local$EstEmFell, local$EstRemFell, local$EstEmFire))
+    return(list(local$EstEmFell, local$EstRemFell, local$EstEmFire, local$EstEmNFDeg))
   }
 
   ## MGG - UC

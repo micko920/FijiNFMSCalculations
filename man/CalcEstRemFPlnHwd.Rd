@@ -10,7 +10,8 @@ CalcEstRemFPlnHwd(
   AreaHarvested,
   MAIV,
   BioConvExpInc,
-  RootToShootRatio
+  RootToShootRatio,
+  Age
 )
 }
 \arguments{

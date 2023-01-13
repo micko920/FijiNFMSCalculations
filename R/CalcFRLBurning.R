@@ -2,10 +2,14 @@
 #' @export
 calcFRLBurning <- function() {
   # Structure of 'sw_barea'
-  if (debug_frl) print(str(sw_barea))
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLBurning.R", ":6"))
+    print(str(sw_barea))
+  }
 
 
   if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLBurning.R", ":12"))
     # Aggregate compartment data for the years 2015 to 2018 ................................
     ## Total area burnt in year t
     sw_barea_agg <- aggregate(area_ha ~ year, sw_barea, sum)
@@ -28,7 +32,10 @@ calcFRLBurning <- function() {
   names(bioburn_ghgs)[1] <- "GHG"
 
   # Table of greenhouse gases
-  if (debug_frl) print(bioburn_ghgs)
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLBurning.R", ":36"))
+    print(bioburn_ghgs)
+  }
 
   # Emissions (in tCO2e) for each gas (and each compartment)
   # CO_2 (above-ground biomass)
@@ -49,7 +56,10 @@ calcFRLBurning <- function() {
 
   # Compute totals of gases for each year
   swfiret$total <- rowSums(swfiret[, -1])
-  if (debug_frl) print(swfiret)
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLBurning.R", ":57"))
+    print(swfiret)
+  }
 
   # Average annual emissions [tCO2e yr^-1] from biomass burning in Softwood Plantations .
   fd_bb_aae <- mean(swfiret$total)
@@ -159,7 +169,10 @@ calcFRLBurning <- function() {
   row.names(rs_fd_bb) <- "1"
 
   # Show result table
-  if (debug_frl) print(rs_fd_bb)
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcFRLBurning.R", ":170"))
+    print(rs_fd_bb)
+  }
 
   result <- list()
   result$rs_fd_bb <- rs_fd_bb

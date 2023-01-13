@@ -1,11 +1,11 @@
 #' Emissions From Deforestation Lowland and Upland
-#' 
+#'
 #' This function references Equations (11) and (12) in order to calculate the
 #' emissions from deforestation in upland or lowland areas. The resulting
 #' emission is expressed in tCO2e.
-#' 
+#'
 #' @references [TBC - ERPD citation - Section 8.3.2]
-#' 
+#'
 #'
 #' @param Area Area deforested in upland or lowland
 #' @param EF Emissions Factor for deforestation in upland or lowland forest
@@ -21,18 +21,18 @@ CalcEstEmDefor <- function(Area, # use area for upland deforestation or lowland 
 }
 
 #' Emissions From Deforestation
-#' 
+#'
 #' This function references Equation (13) in order to calculate the
 #' emissions from deforestation in upland and lowland areas. The resulting
 #' emission is expressed in tCO2e.
-#' 
+#'
 #' @references [TBC - ERPD citation - Section 8.3.2]
-#' 
+#'
 #'
 #' @param EstEmDeforUp  Emission Estimate from Lowland Deforestation
 #' @param EstEmDeforLow Emission Estimate from Upland Deforestation
 #' @seealso [CalcEstEmDefor()]
-#' @return  Net Emission from deforestation 
+#' @return  Net Emission from deforestation
 #' @export
 CalcGrossEmDefor <- function (EstEmDeforUp, EstEmDeforLow) {
   return(EstEmDeforUp + EstEmDeforLow)

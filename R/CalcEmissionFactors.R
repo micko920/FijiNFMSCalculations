@@ -314,9 +314,15 @@ calcMCEmissionFactors <- function(nfi,
   }
 
   # Structure of 'MC'
-  if (debug_frl) print(str(MC))
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcEmissionFactors.R", ":318"))
+    print(str(MC))
+  }
   # First six rows of 'MC'
-  if (debug_frl) print(head(MC))
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcEmissionFactors.R", ":323"))
+    print(head(MC))
+  }
 
   return(MC)
 }
@@ -485,7 +491,10 @@ calcEmissionFactors <- function() {
   nfi$agb2p <- cid_r2[, "agb2"]
 
   # Head of 'nfi'
-  if (debug_frl) print(head(nfi))
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcEmissionFactors.R", ":495"))
+    print(head(nfi))
+  }
 
   # Plot expansion factors for large and small circles
   EF3 <- 10000 / 400 / 5 # 1 hectare / circle area [m^2] / number of cluster sub-plots
@@ -617,7 +626,10 @@ calcEmissionFactors <- function() {
   )
 
   # Average total carbon stock (AGB and BGB) per hectare
-  if (debug_frl) print(nfi_tc_ha)
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcEmissionFactors.R", ":630"))
+    print(nfi_tc_ha)
+  }
 
   # Select data needed for the MC simulation
   trees3MC <- trees_r3 # NFI 2006 trees (large circle)
@@ -699,7 +711,10 @@ calcEmissionFactors <- function() {
   }
 
   # MC estimates of average total biomass per hectare
-  if (debug_frl) print(res)
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcEmissionFactors.R", ":715"))
+    print(res)
+  }
 
   # Convert matrix to data.frame
   v_carbon <- as.data.frame(res) # Low- and Upland Natural Forest
@@ -724,10 +739,14 @@ calcEmissionFactors <- function() {
   # Rename rows
   row.names(rs_nfi_mc) <- 1:nrow(rs_nfi_mc)
   # Print results
-  if (debug_frl) print(rs_nfi_mc)
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcEmissionFactors.R", ":743"))
+    print(rs_nfi_mc)
+  }
 
   # Relative error in the estimate of carbon stocks in grassland
   if (debug_frl) {
+    print(paste0("==== debug: ", "CalcEmissionFactors.R", ":749"))
     print(FRLParams$lcicgrass)
     print(FRLParams$ucicgrass)
   }
@@ -739,7 +758,10 @@ calcEmissionFactors <- function() {
     sd = FRLParams$sdcgrass
   )
   # Show simulated values
-  if (debug_frl) print(v_c_grass)
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcEmissionFactors.R", ":762"))
+    print(v_c_grass)
+  }
 
   # Result table for carbon stocks in Fijian grasslands
   rs_c_grass <- data.frame(
@@ -749,7 +771,10 @@ calcEmissionFactors <- function() {
   )
   row.names(rs_c_grass) <- 1
   # Show result table
-  if (debug_frl) print(rs_c_grass)
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcEmissionFactors.R", ":775"))
+    print(rs_c_grass)
+  }
 
   # Carbon stock change (deforestation) for Low- and Upland Natural Forest
   dc <- as.vector(nfi_tc_ha[1:2, 2]) - FRLParams$cgrass
@@ -773,7 +798,10 @@ calcEmissionFactors <- function() {
   # Rename rows
   row.names(rs_nfi_carbonloss) <- 1:nrow(rs_nfi_carbonloss)
   # Show result table
-  if (debug_frl) print(rs_nfi_carbonloss)
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcEmissionFactors.R", ":802"))
+    print(rs_nfi_carbonloss)
+  }
 
   # Emission factors for deforestation in Low- and Upland Natural Forest
   df_ef <- data.frame(
@@ -794,7 +822,10 @@ calcEmissionFactors <- function() {
   # Rename rows
   row.names(df_ef) <- 1:nrow(df_ef)
   # Show result table
-  if (debug_frl) print(df_ef)
+  if (debug_frl) {
+    print(paste0("==== debug: ", "CalcEmissionFactors.R", ":826"))
+    print(df_ef)
+  }
 
 
   result <- list()

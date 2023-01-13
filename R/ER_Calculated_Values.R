@@ -48,8 +48,9 @@ CalcEmRemsValues <- function(MonitoredValues) {
   # Estimate of CO2e removals from felling
 
   result$EstRemFell <- CalcEstRemFell(
-    MonitoredValues$FDegFellArea,
-    MAICFell
+    MonitoredValues$FDegFellArea$area_ha,
+    MAICFell,
+    MonitoredValues$FDegFellArea$age_yrs
   )
 
 
@@ -57,6 +58,19 @@ CalcEmRemsValues <- function(MonitoredValues) {
     result$EstEmFell,
     result$EstRemFell
   )
+
+  ## Yearly EMISSIONS from degradataion in natural forest (tCO2e)
+
+  result$EstEmNFDeg <- CalcEstEmNFDeg(
+    MonitoredValues$NFDegArea,
+    EFNFDeg,
+    RootToShootTropRain
+  )
+
+  result$NetEmRemsNFDeg <- CalcNetEmRemsNFDeg(
+    result$EstEmNFDeg
+  )
+
 
   ##***********************************************************
   ## 2.2 Biomass Burning
@@ -81,8 +95,9 @@ CalcEmRemsValues <- function(MonitoredValues) {
   # Yearly Removals from Afforestation  (tCO2e)
 
   result$EstRemARefor <- CalcGrossRemARefor(
-    MonitoredValues$AReforArea,
-    MAIVar, BiomassConvExpansionARefor, RootToShootTropRain
+    MonitoredValues$AReforArea$area_ha,
+    MAIVar, BiomassConvExpansionARefor, RootToShootTropRain,
+    MonitoredValues$AReforArea$age_yrs
   )
   # 3.2 Forest Plantations
 
@@ -106,9 +121,10 @@ CalcEmRemsValues <- function(MonitoredValues) {
 
   result$EstRemFPlnHwd <- CalcEstRemFPlnHwd(
     MonitoredValues$FPlnAreaJustGrowsHwd,
-    MonitoredValues$FPlnAreaPlantHwd,
+    MonitoredValues$FPlnAreaPlantHwd$area_ha,
     MonitoredValues$FPlnAreaHarvHwd,
-    MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain
+    MAIVhw, BiomassConvExpansionIncHW, RootToShootTropRain,
+    MonitoredValues$FPlnAreaPlantHwd$age_yrs
   )
 
   # Estimate of softwood removals for yr (tCO2e) ####
@@ -116,8 +132,9 @@ CalcEmRemsValues <- function(MonitoredValues) {
   result$EstRemFPlnSwd <- CalcEstRemFPlnSwd(
     MAIBsw,
     MonitoredValues$FPlnAreaJustGrowsSwd,
-    MonitoredValues$FPlnAreaPlantSwd,
-    MonitoredValues$FPlnAreaHarvSwd
+    MonitoredValues$FPlnAreaPlantSwd$area_ha,
+    MonitoredValues$FPlnAreaHarvSwd,
+    MonitoredValues$FPlnAreaPlantSwd$age_yrs
   )
 
   # **************************************************************
@@ -151,7 +168,8 @@ CalcEmRemsValues <- function(MonitoredValues) {
     result$GrossEmDefor,
     result$EstEmFell,
     result$EstEmFire,
-    result$GrossEmFPln
+    result$GrossEmFPln,
+    result$EstEmNFDeg
   )
 
   # Gross Removals Total
@@ -167,7 +185,8 @@ CalcEmRemsValues <- function(MonitoredValues) {
   result$EstEmRemsFDeg <- CalcEstEmRemsFDeg(
     result$EstEmFell,
     result$EstRemFell,
-    result$EstEmFire
+    result$EstEmFire,
+    result$EstEmNFDeg
   )
 
   # Enhancement Total

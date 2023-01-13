@@ -91,6 +91,14 @@ createUC_Values <- function(mrp) {
   )
   names(result$MAIBsw) <- c("MAIBsw")
 
+  result$EFNFDeg <- ValueWithUncertainty(
+    Value = EFNFDeg,
+    LowerCI = EFNFDeg_LCI,
+    UpperCI = EFNFDeg_UCI,
+    model = vwuTriangle, fixed = FALSE
+  )
+  names(result$EFNFDeg) <- c("EFNFDeg")
+
   result$MAICFell <- ValueWithUncertainty(
     Value = MAICFell,
     LowerCI = MAICFell - MAICFell * ErrMAICFell,

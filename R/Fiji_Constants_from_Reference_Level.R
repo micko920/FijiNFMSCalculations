@@ -58,6 +58,26 @@ ErrMAICFell <- 0.5 # Relative error in MAICFell (was param.errmaiclnf)
 #' @export
 ErrAreaFell <- 0.25 # Relative error in area, felling in Natural Forest (was param.errlnf)
 
+# Natural Forest Degradation
+
+#' @export
+EFNFDeg <- 70.75  # EF (Mg AGB/ha)
+
+#' @export
+#EFNFDeg_LCI <- 70.75 - 17.17032  # EF (Mg AGB/ha) 95% CI - From spredsheet
+EFNFDeg_LCI <- 70.75 - 14.41080  # EF (Mg AGB/ha) 90% CI - FCPF spec
+
+#' @export
+#EFNFDeg_UCI <- 70.75 + 17.17032  # EF (Mg AGB/ha) 95% CI - From spredsheet
+EFNFDeg_UCI <- 70.75 + 14.41080  # EF (Mg AGB/ha) 90% CI - FCPF spec
+
+#' @export
+EFNFDeg_SD <- 8.760365  # EF (Mg AGB/ha) 90% CI - FCPF spec
+
+
+#' @export
+ErrAreaNFDeg <- 0.25 # Relative error in area, degradation in Natural Forest
+
 # Burning ####
 
 
@@ -66,6 +86,7 @@ MAIBsw <- 10 # Mean annual biomass increment in Softwood Plantations (was param.
 
 #' @export
 errMAIBsw <- 0.25 # Relative error in 'maibp'(was param.errmaibp)
+
 
 
 # 3. Enhancement of Carbon stocks ####
@@ -94,6 +115,11 @@ MAIVar <- 3.71  # Mean annual volumn increament Affor/Refor (provided by Fiji Ha
 
 #' @export
 errMAIVar <- 0.5 # Relative error for MAI volumn inc Affor/Refor (MAIRVar)
+
+## MGG - patch for ARefor survey area to override Adjusted Areas sampled
+
+#' @export
+ErrAreaARefor <- 0.25 # Relative error in area, Afforestation survey area
 
 # Forest Plantations ####
 
@@ -124,18 +150,15 @@ MAIVhw <- 5.85 # Weighted mean annual volume increment (Hardwood) (was param.mai
 #' @export
 errMAIVhw <- 0.25 # Relative error in MAIVhw and 'maivhww' (was param.errmaivhww )
 
-
 # Error on HW growing area has been removed.
 #errAreaJustGrowsHW <- 0.5 # Relative error in Hardwood Area that just grows
 
 # Mean annual AGB increment in Hardwood plantation [tB ha^-1 yr^-1] (not a parameter in FRL)
 
-#' @export
-MAIAGBhw <- MAIVhw * BiomassConvExpansionIncHW
+# MAIAGBhw <- MAIVhw * BiomassConvExpansionIncHW
 # MAIAGBhw                     <- 6.435  # Mean annual AGB increment in Hardwood plantation [tB ha^-1 yr^-1]
 
 
 
-#' @export
-MAIChw <- (MAIAGBhw * (1 + RootToShootTropRain) * BiomassToCarbonConv)
+# MAIChw <- (MAIAGBhw * (1 + RootToShootTropRain) * BiomassToCarbonConv)
 # MAIChw                       <- 4.14350 # Mean annual increment C for volume m^3 [t ha^-1 yr^-1]

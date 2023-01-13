@@ -82,17 +82,22 @@ CalcEstRemFPlnHwd <- function(AreaJustGrowsHW, # Initial area of forest at start
                               AreaHarvested, # Area from area stocked which is harvested during the year
                               MAIV,
                               BioConvExpInc,
-                              RootToShootRatio) {
-  MAIChw <- MAIV * BioConvExpInc * (1 + RootToShootRatio)
+                              RootToShootRatio,
+                              Age) {
+  MAIBhw <- MAIV * BioConvExpInc * (1 + RootToShootRatio)
   # mean annual removals from forest that just grows (existing stock, neither planted nor harvested)
-  Rem1 <- AreaJustGrowsHW * MAIChw
-  # Carbon from area planted over year
-  Rem2 <- (AreaPlanted) * MAIChw
+  # MGG - patch no leggacy
+  # Rem1 <- AreaJustGrowsHW * MAIChw
+  # Biomass from area planted over year
+  Rem2 <- Age * (sapply(AreaPlanted, as.numeric)) * MAIBhw
   # Carbon from area planted over year (make into months?)
-  Rem3 <- (AreaHarvested) * MAIChw
+  # MGG - patch no leggacy
+  # Rem3 <- (AreaHarvested) * MAIChw
   # total carbon from forest plantations
-  RemTotal <- Rem1 + Rem2 + Rem3
-  CO2e <- ConvBiomassToCO2e(RemTotal) * (-1)
+  # MGG - patch no leggacy
+  #RemTotal <- Rem1 + Rem2 + Rem3
+  RemTotal <- Rem2
+  CO2e <- ConvBiomassToCO2e(sum(RemTotal)) * (-1)
   return(CO2e)
 }
 
@@ -115,19 +120,24 @@ CalcEstRemFPlnHwd <- function(AreaJustGrowsHW, # Initial area of forest at start
 CalcEstRemFPlnSwd <- function(MAIBsw, # Mean annual biomass increment in Softwood Plantations
                               AreaJustGrowsSW, # Area stocked - area harvested in that year
                               AreaPlanted, # Area planted during the year
-                              AreaHarvested # Area from area stocked which is harvested during the year
+                              AreaHarvested, # Area from area stocked which is harvested during the year
+                              Age
 ) {
   # Calc mean annual increment C for volume m^3
   MAICsw <- ConvBiomassToCarbon(MAIBsw)
   # mean annual removals from forest that just grows (existing stock, neither planted nor harvested)
-  Rem1 <- AreaJustGrowsSW * MAICsw
+  # MGG - patch no leggacy
+  # Rem1 <- AreaJustGrowsSW * MAICsw
   # Carbon from area planted over year
-  Rem2 <- (AreaPlanted) * MAICsw
+  Rem2 <- Age * (sapply(AreaPlanted, as.numeric)) * MAICsw
   # Carbon from area planted over year (make into months?)
-  Rem3 <- (AreaHarvested) * MAICsw
+  # MGG - patch no leggacy
+  # Rem3 <- (AreaHarvested) * MAICsw
   # total carbon from forest plantations
-  RemTotal <- Rem1 + Rem2 + Rem3
-  CO2e <- ConvCarbonToCO2e(RemTotal) * (-1)
+  # MGG - patch no leggacy
+  #RemTotal <- Rem1 + Rem2 + Rem3
+  RemTotal <- Rem2
+  CO2e <- ConvCarbonToCO2e(sum(RemTotal)) * (-1)
   return(CO2e)
 }
 

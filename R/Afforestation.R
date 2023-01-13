@@ -1,5 +1,5 @@
 #' Removals from Afforestation - Total of upland and lowland
-#' 
+#'
 #' This function references Equation (34) to calculate the removals from
 #' afforestation/reforestation for the year The resulting value is expressed in
 #' tCO2e.Upland and lowland data was provided for the FRL but total
@@ -7,7 +7,8 @@
 #' for future reporting.
 #'
 #' @references [TBC - ERPD citation - Section 8.3.4.1]
-#' 
+#'
+#' @param Age The number of years of regrowth
 #' @param AreaTotal Total Area of Afforestation over the period
 #' @param MAIV Mean annual volume increment for afforestation/reforestation
 #'    m^3/hectare/year
@@ -19,26 +20,27 @@
 CalcGrossRemARefor <- function(AreaTotal,
                            MAIV,
                            BCEF,
-                           RootToShootRatio) {
+                           RootToShootRatio,
+                           Age = 1) {
   # Biomass gains from afforested area over the yr
   MAIC <- MAIV * BCEF * (1 + RootToShootRatio)
-  Biomass <- AreaTotal * MAIC * (-1)
-  # Removals from afforestation/reforestation for the year
-  CO2e <- ConvBiomassToCO2e(Biomass)
+  Biomass <- Age * (sapply(AreaTotal,as.numeric)) * MAIC * (-1)
+  # Total Removals from afforestation/reforestation for all years
+  CO2e <- ConvBiomassToCO2e(sum(Biomass))
   return(CO2e)
 }
 
 #' Removals from Afforestation - upland and lowland
-#' 
+#'
 #' This function references Equation (34) to calculate the removals from
 #' afforestation/reforestation for the year. The resulting value is expressed in
 #' tCO2e. Upland and lowland data was provided for the FRL but total
 #' afforestation area, not aggregated for upland and lowland,  will be provided
-#' for future reporting. The gross removals can be obtained with the 
+#' for future reporting. The gross removals can be obtained with the
 #' CalcGrossRemARefor() function.
 #'
 #' @references [TBC - ERPD citation - Section 8.3.4.1]
-#' 
+#'
 #' @param AreaUpland Area of afforestation/reforestation in Natural Forest,
 #'   Upland stratum in year
 #' @param AreaLowland Area of afforestation/reforestation in Natural Forest,
@@ -56,5 +58,5 @@ CalcEstRemARefor <- function(AreaUpland,
                       MAIV,
                       BCEF,
                       RootToShootRatio) {
-  return(CalcGrossRemARefor(AreaUpland + AreaLowland, MAIV, BCEF, RootToShootRatio))
+  return(CalcGrossRemARefor(sapply(AreaUpland,as.numeric) + sapply(AreaLowland,as.numeric), MAIV, BCEF, RootToShootRatio))
 }

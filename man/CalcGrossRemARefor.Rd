@@ -4,7 +4,7 @@
 \alias{CalcGrossRemARefor}
 \title{Removals from Afforestation - Total of upland and lowland}
 \usage{
-CalcGrossRemARefor(AreaTotal, MAIV, BCEF, RootToShootRatio)
+CalcGrossRemARefor(AreaTotal, MAIV, BCEF, RootToShootRatio, Age = 1)
 }
 \arguments{
 \item{AreaTotal}{Total Area of Afforestation over the period}
@@ -16,6 +16,8 @@ m^3/hectare/year}
 tropical natural forests}
 
 \item{RootToShootRatio}{Root-to-shoot ratio for tropical forests}
+
+\item{Age}{The number of years of regrowth}
 }
 \value{
 Emission Removals from Afforestation - tCO2e
