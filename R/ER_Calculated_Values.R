@@ -207,7 +207,7 @@ CalcEmRemsValues <- function(MonitoredValues) {
 }
 
 #' @export
-CalcERValues <- function(EmRems, ErpaYearlyFRL, ErpaYearlyFRLFDeg, ErpaYearlyFRLDefor, ErpaYearlyFRLEnh) {
+CalcERValues <- function(EmRems, ErpaYearlyFRL, ErpaYearlyFRLFDeg, ErpaYearlyFRLDefor, ErpaYearlyFRLEnh, ErpaYearlyFRLFDegNonProxy ) {
   ER <- list()
   ER$MpGrossEmDefor <- CalcMpGrossEmDefor(
     EmRems$year1$GrossEmDefor,
@@ -239,7 +239,7 @@ CalcERValues <- function(EmRems, ErpaYearlyFRL, ErpaYearlyFRLFDeg, ErpaYearlyFRL
   ER$MpEstFRLFDeg <- CalcMpEstFRL(ErpaYearlyFRLFDeg)
   ER$MpEstERsFDeg <- CalcMpEstERsFDeg(ER$MpEstFRLFDeg, ER$MpEstEmRemsFDeg)
 
-  ER$MpEstFRLDefEnh <- CalcMpEstFRLDefEnh(ErpaYearlyFRLDefor, ErpaYearlyFRLEnh)
-  ER$MpEstERsDefEnh <- CalcMpEstERsDefEnh(ErpaYearlyFRLDefor, ErpaYearlyFRLEnh, ER$MpGrossEmDefor, ER$MpEstEmRemsEnh)
+  ER$MpEstFRLDefEnh <- CalcMpEstFRLDefEnh(ErpaYearlyFRLDefor, ErpaYearlyFRLEnh, ErpaYearlyFRLFDegNonProxy)
+  ER$MpEstERsDefEnh <- CalcMpEstERsDefEnh(ErpaYearlyFRLDefor, ErpaYearlyFRLEnh, ErpaYearlyFRLFDegNonProxy, ER$MpGrossEmDefor, ER$MpEstEmRemsEnh)
   return(ER)
 }

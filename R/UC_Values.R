@@ -220,5 +220,12 @@ createUC_Values <- function(mrp) {
   )
   names(result$ErpaYearlyFRLEnh) <- c("ErpaYearlyFRLEnh")
 
+  result$ErpaYearlyFRLFDegNonProxy <- ValueWithUncertainty(
+    Value = mrp$ErpaYearlyFRLFDegNonProxy,
+    LowerCI = mrp$ErpaYearlyFRLFDegNonProxyLCI,
+    UpperCI = mrp$ErpaYearlyFRLFDegNonProxyUCI,
+    model = vwuTriangle, fixed = FALSE
+  )
+  names(result$ErpaYearlyFRLFDegNonProxy) <- c("ErpaYearlyFRLFDegNonProxy")
   return(result)
 }

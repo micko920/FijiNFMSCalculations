@@ -58,11 +58,11 @@ CalcMpEstERsFDeg <- function(MpEstFRLFDeg, MpEstEmRemsFDeg) {
 }
 
 #' @export
-CalcMpEstFRLDefEnh <- function(ErpaYearlyFRLDefor, ErpaYearlyFRLEnh) {
-  return(CalcMpEstFRL(ErpaYearlyFRLDefor) + CalcMpEstFRL(ErpaYearlyFRLEnh))
+CalcMpEstFRLDefEnh <- function(ErpaYearlyFRLDefor, ErpaYearlyFRLEnh, ErpaYearlyFRLFDegNonProxy) {
+  return(CalcMpEstFRL(ErpaYearlyFRLDefor) + CalcMpEstFRL(ErpaYearlyFRLEnh) + CalcMpEstFRL(ErpaYearlyFRLFDegNonProxy))
 }
 
 #' @export
-CalcMpEstERsDefEnh <- function(FRLDefor, FRLEnh, EmRemsDefor, EmRemsEnh) {
-  return(CalcMpEstFRLDefEnh(FRLDefor, FRLEnh) - (EmRemsDefor + EmRemsEnh))
+CalcMpEstERsDefEnh <- function(FRLDefor, FRLEnh, FRLFDegNonProxy, EmRemsDefor, EmRemsEnh) {
+  return(CalcMpEstFRLDefEnh(FRLDefor, FRLEnh, FRLFDegNonProxy) - (EmRemsDefor + EmRemsEnh))
 }
