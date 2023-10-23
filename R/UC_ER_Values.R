@@ -514,16 +514,17 @@ createUC_ERValues <- function(UC_EmRems, UC_MV, UC, MRparams) {
   MpEstERsDefEnhValue <- CalcMpEstERsDefEnh(
     ValueWithUncertaintyValue(UC$ErpaYearlyFRLDefor),
     ValueWithUncertaintyValue(UC$ErpaYearlyFRLEnh),
+    ValueWithUncertaintyValue(UC$ErpaYearlyFRLFDegNonProxy),
     ValueWithUncertaintyValue(MpGrossEmDefor),
     ValueWithUncertaintyValue(MpEstEmRemsEnh)
   )
 
   CalcMpEstERsDefEnhArgs <- function() {
-    return(list(UC$ErpaYearlyFRLDefor, UC$ErpaYearlyFRLEnh, MpGrossEmDefor, MpEstEmRemsEnh))
+    return(list(UC$ErpaYearlyFRLDefor, UC$ErpaYearlyFRLEnh, UC$ErpaYearlyFRLFDegNonProxy, MpGrossEmDefor, MpEstEmRemsEnh))
   }
 
   result$McMpEstERsDefEnh <- CalcMonteCarlo("MpEstERsDefEnh", MpEstERsDefEnhValue, CalcMpEstERsDefEnh, CalcMpEstERsDefEnhArgs)
-  # FRLDef + FRLEnh + EmRemsDefor + EmRemsEnh
+  # FRLDef + FRLEnh + FRLFDegNonProxy + EmRemsDefor + EmRemsEnh
 
 
 
