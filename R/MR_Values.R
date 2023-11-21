@@ -90,7 +90,7 @@ create_MRValues <- function(UC_ER, ER, EmRems, MV, MRparams) {
     0
   )
 
-  browser()
+
   # Table8
   # The Reporting Period Pro-rata is applied at this level to the Monitoring Period Numbers
   # A - MR$RpEstERs
