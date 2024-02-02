@@ -21,18 +21,18 @@ CalcEstEmFire <- function(Age,
                        RootToShootDryLandSmall,
                        Area) {
   # Estimate AGB
-  AGB <- Age * (MAIBsw / (1 + RootToShootDryLandSmall))
+  AGB <- Age * (MAIBsw * (1 - RootToShootDryLandSmall))
   # Estimate BGB
   BGB <- Age * (MAIBsw * RootToShootDryLandSmall)
-  # CO2 ABG emissions
-  EmCO2AGB <- Area * AGB * CombustFactor * GWPCO2 * EFCO2  * 0.001
-  # CO2 BGB emissions
-  EmCO2BGB <- Area * BGB * CombustFactor * GWPCO2 * EFCO2 * 0.001
-  # CH4 ABG emissions
+  # CO2 ABG emissions -> CO2e
+  EmCO2_AG <- Area * AGB * CombustFactor * GWPCO2 * EFCO2  * 0.001
+  # CO2 BGB emissions -> CO2e
+  EmCO2_BG <- ConvBiomassToCO2e(Area * BGB)
+  # CH4 ABG emissions -> CO2e
   EmCH4 <- Area * AGB * CombustFactor * GWPCH4 * EFCH4 * 0.001
-  # N_2O (above-ground biomass)
+  # N_2O ABG -> CO2e
   EmN2O <- Area * AGB * CombustFactor * GWPN2O  * EFN2O * 0.001
   # sum emissions for each gas and put into dataframe
-  df <-data.frame(sum(EmCO2AGB), sum(EmCO2BGB), sum(EmCH4), sum(EmN2O))
+  df <-data.frame(sum(EmCO2_AG), sum(EmCO2_BG), sum(EmCH4), sum(EmN2O))
   return(sum(df))
 }
