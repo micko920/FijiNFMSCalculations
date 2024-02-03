@@ -14,6 +14,18 @@ FDegBurnData2018 <- FDegBurnData[235:294, c("year", "area_ha", "age_yrs")]
 bioburn_ghgs <- read.table("../../data/bioburn_ghgs.txt", header = T)
 
 
+compare_summary_equal <- function(samples, min, qtr1, med, u, qtr3, max, sigfig, ...) {
+  sample_summary <- stats::quantile(samples)
+  sample_summary <- signif(c(sample_summary[1L:3L], mean(samples), sample_summary[4L:5L]), sigfig)
+  names(sample_summary) <- c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max.")
+  
+  expect_summary <- c(min, qtr1, med, u, qtr3, max)
+  names(expect_summary) <- c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max.")
+  
+  return(expect_equal(sample_summary, expect_summary, ...))
+}
+
+
 get_test_data <- function(yrs,ha) {
   test_data <- list()
   #    COMF i 	Gg,i 
@@ -79,9 +91,28 @@ get_test_data <- function(yrs,ha) {
   
   #Em = CO2_AGB + N2O_AGB + CH4_AGB + CO2_BGB
   test_data$EM <- test_data$EM_CO2_ABG + test_data$EM_N2O_ABG + test_data$EM_CH4_ABG + test_data$EM_CO2_BGB
+  
+  ## FRL params
+  test_data$params <- list()
+  test_data$params$etacf    <- 0.47
+  test_data$params$etacc    <- 44/12 
+  test_data$params$rdlk1    <- 0.20
+  test_data$params$lcirdlk1 <- 0.09
+  test_data$params$ucirdlk1 <- 0.25
+  test_data$params$maibp    <- 10
+  test_data$params$errmaibp <- 0.25
+  test_data$params$sdCO2EF  <- 90
+  test_data$params$errghg   <- 0.00001
+  test_data$params$runs     <- 10000
+  test_data$params$qlci     <- 0.05
+  test_data$params$quci     <- 0.95
+  
   return(test_data)
   
 }
+
+
+
 
 
 test_that("Single Data example", {
@@ -244,4 +275,25 @@ test_that("Test Function - Multi Data example", {
 
   
   expect_equal(floor(sum(test_data$EM)),20415)
+})
+
+
+test_that("FRL - test basic call calcFRLBurning", {
+  sw_barea <- FDegBurnData
+  debug_frl <- 0
+  FRLParams <- get_test_data(c(1),c(1))$params
+  #FRLParams$runs <- 100
+  set.seed(08121976) # Seed set to remove random nature of MC Analysis for LCI & UCI
+  
+  fire <- calcFRLBurningRun(debug_frl, FDegBurnData,FRLParams,bioburn_ghgs)
+  #expect_equal(floor(fire$rs_fd_bb$aa_em_tco2e_yr),157487)
+  expect_equal(floor(fire$rs_fd_bb$aa_em_tco2e_yr),186535)
+  #expect_equal(floor(fire$rs_fd_bb$lci_aa_em_tco2e_yr),128967)
+  expect_equal(floor(fire$rs_fd_bb$lci_aa_em_tco2e_yr),150304)
+  #expect_equal(floor(fire$rs_fd_bb$uci_aa_em_tco2e_yr),185801)
+  expect_equal(floor(fire$rs_fd_bb$uci_aa_em_tco2e_yr),218021)
+  #expect_equal(floor(fire$fd_bb_aae),157487)
+  expect_equal(floor(fire$fd_bb_aae),186535)
+  #compare_summary_equal(fire$v_fd_bb_aae,107818,144465,156477,156794,168709,219855,6)
+  compare_summary_equal(fire$v_fd_bb_aae,123041,168522,182767,183242,197406,256134,6)
 })

@@ -4,7 +4,19 @@
 \alias{CalcEstEmFire}
 \title{Emissions From Fire}
 \usage{
-CalcEstEmFire(Age, MAIBsw, RootToShootDryLandSmall, Area)
+CalcEstEmFire(
+  Age,
+  MAIBsw,
+  RootToShootDryLandSmall,
+  Area,
+  local_CombustFactor = CombustFactor,
+  local_GWP_CO2 = GWPCO2,
+  local_EF_CO2 = EFCO2,
+  local_GWP_CH4 = GWPCH4,
+  local_EF_CH4 = EFCH4,
+  local_GWP_N2O = GWPN2O,
+  local_EF_N2O = EFN2O
+)
 }
 \arguments{
 \item{Age}{The age of the compartment that burnt in the year}

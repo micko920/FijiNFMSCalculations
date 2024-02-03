@@ -1,15 +1,45 @@
 
+
+
 #' @export
-calcFRLBurning <- function() {
+calcFRLBurningAlg <- function(sw_barea,maibp,rdlk1,bioburn_ghgs) {
+  result <- list()
+  result$sw_barea <- sw_barea
+  # Sum of emissions per year
+  result$swfiret$total <- sapply(split(result$sw_barea[,c(1:3)],
+                                  f = result$sw_barea$year),
+    function(x) {
+      return(CalcEstEmFire(x["age_yrs"], maibp, rdlk1,x["area_ha"],
+                           local_CombustFactor = bioburn_ghgs[1,"combustion_factor"],
+                           local_GWP_CO2 = bioburn_ghgs[1,"global_warming_potential"], 
+                           local_EF_CO2 = bioburn_ghgs[1,"emission_factor"],
+                           local_GWP_CH4 = bioburn_ghgs[2,"global_warming_potential"], 
+                           local_EF_CH4 = bioburn_ghgs[2,"emission_factor"],
+                           local_GWP_N2O = bioburn_ghgs[3,"global_warming_potential"], 
+                           local_EF_N2O = bioburn_ghgs[3,"emission_factor"]))
+    }
+  )
+  
+  
+  # Average annual emissions [tCO2e yr^-1] from biomass burning in Softwood Plantations .
+  result$fd_bb_aae <- mean(result$swfiret$total)
+
+  return(result)
+}
+
+
+  
+#' @export
+calcFRLBurningRun <- function(debug_frl,sw_barea,FRLParams,bioburn_ghgs) {
   # Structure of 'sw_barea'
   if (debug_frl) {
-    print(paste0("==== debug: ", "CalcFRLBurning.R", ":6"))
+    print(paste0("==== debug: ", "CalcFRLBurning.R", ":36"))
     print(str(sw_barea))
   }
 
 
   if (debug_frl) {
-    print(paste0("==== debug: ", "CalcFRLBurning.R", ":12"))
+    print(paste0("==== debug: ", "CalcFRLBurning.R", ":42"))
     # Aggregate compartment data for the years 2015 to 2018 ................................
     ## Total area burnt in year t
     sw_barea_agg <- aggregate(area_ha ~ year, sw_barea, sum)
@@ -23,46 +53,25 @@ calcFRLBurning <- function() {
     print(sw_barea_agg)
   }
 
-  # Above- and below-ground biomass in compartments
-  # 0.2 = Rdll Root-to-shoot ratio tropical moist deciduous forest < 125 tB ha-1
-  sw_barea$agb <- sw_barea$age_yrs * (FRLParams$maibp / (1 + FRLParams$rdlk1)) # AGB
-  sw_barea$bgb <- sw_barea$age_yrs * (FRLParams$maibp * FRLParams$rdlk1) # BGB
-
   # Table of greenhouse gases
   names(bioburn_ghgs)[1] <- "GHG"
 
   # Table of greenhouse gases
   if (debug_frl) {
-    print(paste0("==== debug: ", "CalcFRLBurning.R", ":36"))
+    print(paste0("==== debug: ", "CalcFRLBurning.R", ":61"))
     print(bioburn_ghgs)
   }
 
-  # Emissions (in tCO2e) for each gas (and each compartment)
-  # CO_2 (above-ground biomass)
-  sw_barea$co2agb <- sw_barea$area_ha * sw_barea$agb * bioburn_ghgs[1, 2] *
-    bioburn_ghgs[1, 3] * bioburn_ghgs[1, 4] * 0.001
-  # CO_2 (below-ground biomass)
-  sw_barea$co2bgb <- sw_barea$area_ha * sw_barea$bgb * FRLParams$etacf *
-    FRLParams$etacc * bioburn_ghgs[1, 2]
-  # CH_4 (above-ground biomass)
-  sw_barea$ch4 <- sw_barea$area_ha * sw_barea$agb * bioburn_ghgs[2, 2] *
-    bioburn_ghgs[2, 3] * bioburn_ghgs[2, 4] * 0.001
-  # N_2O (above-ground biomass)
-  sw_barea$n2o <- sw_barea$area_ha * sw_barea$agb * bioburn_ghgs[3, 2] *
-    bioburn_ghgs[3, 3] * bioburn_ghgs[3, 4] * 0.001
-
-  # Sum of emissions per year
-  swfiret <- aggregate(. ~ year, sw_barea[, c(1, 6:9)], sum)
-
-  # Compute totals of gases for each year
-  swfiret$total <- rowSums(swfiret[, -1])
+  fire <- calcFRLBurningAlg(sw_barea,
+                            FRLParams$maibp,
+                            FRLParams$rdlk1,
+                            bioburn_ghgs
+                            )
+  
   if (debug_frl) {
-    print(paste0("==== debug: ", "CalcFRLBurning.R", ":57"))
-    print(swfiret)
+    print(paste0("==== debug: ", "CalcFRLBurning.R", ":72"))
+    print(fire$swfiret)
   }
-
-  # Average annual emissions [tCO2e yr^-1] from biomass burning in Softwood Plantations .
-  fd_bb_aae <- mean(swfiret$total)
 
   # Uncertainty analysis
   # Create vectors that collect the results of the MC simulation
@@ -127,33 +136,27 @@ calcFRLBurning <- function() {
 
   # MC simulation
   for (i in 1:FRLParams$runs) { # i <- 1
-    # Create a copy of 'sw_barea'
-    sw_bareai <- sw_barea
-
-    # Compute AGB and BGB for each compartment .........................................
-    sw_bareai$agb <- sw_bareai$age_yrs * (mcf$maibsw[i] / (1 + mcf$r2s[i]))
-    sw_bareai$bgb <- sw_bareai$age_yrs * (mcf$maibsw[i] * mcf$r2s[i])
-
+    
+    bioburn_ghgsi <- bioburn_ghgs
+    bioburn_ghgsi[1, 2] <- mcf[i, "cfsw"] 
+    bioburn_ghgsi[1, 3] <- mcf[i, "gefco2"]
+    bioburn_ghgsi[1, 4] <- mcf[i, "gwpco2"]
+    bioburn_ghgsi[2, 2] <- mcf[i, "cfsw"]
+    bioburn_ghgsi[2, 3] <- mcf[i, "gefch4"]
+    bioburn_ghgsi[2, 4] <- mcf[i, "gwpch4"]
+    bioburn_ghgsi[3, 2] <- mcf[i, "cfsw"]
+    bioburn_ghgsi[3, 3] <- mcf[i, "gefn2o"]
+    bioburn_ghgsi[3, 4] <- mcf[i, "gwpn2o"]
+    
     # Compute emissions ................................................................
-    # CO_2 (AGB)
-    sw_bareai$co2agb <- sw_bareai$area_ha * sw_bareai$agb * mcf[i, "cfsw"] *
-      mcf[i, "gefco2"] * mcf[i, "gwpco2"] * 0.001
-    # CO_2 (BGB)
-    sw_bareai$co2bgb <- sw_bareai$area_ha * sw_bareai$bgb * FRLParams$etacf *
-      FRLParams$etacc * mcf[i, "cfsw"]
-    # CH_4 (AGB)
-    sw_bareai$ch4 <- sw_bareai$area_ha * sw_bareai$agb * mcf[i, "cfsw"] *
-      mcf[i, "gefch4"] * mcf[i, "gwpch4"] * 0.001
-    # N_2O (AGB)
-    sw_bareai$n2o <- sw_bareai$area_ha * sw_bareai$agb * mcf[i, "cfsw"] *
-      mcf[i, "gefn2o"] * mcf[i, "gwpn2o"] * 0.001
-
-    # Aggregate results ................................................................
-    swfireti <- aggregate(. ~ year, sw_bareai[, c(1, 6:9)], sum)
-    swfireti$total <- rowSums(swfireti[, -1])
-
+    firei <- calcFRLBurningAlg(sw_barea,
+                              mcf$maibsw[i],
+                              mcf$r2s[i],
+                              bioburn_ghgsi
+                             )
+    
     # Annual average emissions .........................................................
-    v_fd_bb_aae[i] <- mean(swfireti$total) # Including AGB and BGB
+    v_fd_bb_aae[i] <- mean(firei$swfiret$total) # Including AGB and BGB
   }
 
   # Get 90%-confidence bounds of emission estimates (including AGB and BGB)
@@ -162,7 +165,7 @@ calcFRLBurning <- function() {
 
   # Result table (AGB and BGB) ...........................................................
   rs_fd_bb <- data.frame(
-    aa_em_tco2e_yr = fd_bb_aae,
+    aa_em_tco2e_yr = fire$fd_bb_aae,
     lci_aa_em_tco2e_yr = lcifdfsweaae,
     uci_aa_em_tco2e_yr = ucifdfsweaae
   )
@@ -170,14 +173,20 @@ calcFRLBurning <- function() {
 
   # Show result table
   if (debug_frl) {
-    print(paste0("==== debug: ", "CalcFRLBurning.R", ":170"))
+    print(paste0("==== debug: ", "CalcFRLBurning.R", ":176"))
     print(rs_fd_bb)
   }
 
   result <- list()
   result$rs_fd_bb <- rs_fd_bb
-  result$fd_bb_aae <- fd_bb_aae
+  result$fd_bb_aae <- fire$fd_bb_aae
   result$v_fd_bb_aae <- v_fd_bb_aae
 
   return(result)
+}
+
+
+#' @export
+calcFRLBurning <- function() {
+  return(calcFRLBurningRun(debug_frl,sw_barea,FRLParams,bioburn_ghgs))
 }
