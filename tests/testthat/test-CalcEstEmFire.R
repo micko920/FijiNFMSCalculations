@@ -7,13 +7,14 @@ library(testthat)
 
 # input FDegBurnData2018 is a data frame with 2 columns, one age, one area.
 # bioburn_ghgs is a table of greenhouse gas data with 4 columns and 3 rows.
-# output file "EmFireResults2018"  below, is total emissions for each type of gas for 2018
+
 
 FDegBurnData <- read.table("../../data/FRLBurnData.txt", header = T)
 FDegBurnData2018 <- FDegBurnData[235:294, c("year", "area_ha", "age_yrs")]
 bioburn_ghgs <- read.table("../../data/bioburn_ghgs.txt", header = T)
 
 
+# This is a helper function to enable comparison of random samples to an expected sample summary
 compare_summary_equal <- function(samples, min, qtr1, med, u, qtr3, max, sigfig, ...) {
   sample_summary <- stats::quantile(samples)
   sample_summary <- signif(c(sample_summary[1L:3L], mean(samples), sample_summary[4L:5L]), sigfig)
@@ -116,6 +117,7 @@ get_test_data <- function(yrs,ha) {
 
 
 test_that("Single Data example", {
+  # Hand calculated data for tests
   #PlantingYear_YEAR	AREABURNT	YEARBURN	AGE	AbovegroundBiomass Stock	BelowgroundBiomass Stock	CO2	N20	CH4	CO2
   #2012	              4.9	      2015	    4	  32	                      8	                        114	4	  14	68
   test_data <- get_test_data(c(4),c(4.9))
@@ -158,6 +160,7 @@ test_that("Single Data example", {
 })
 
 test_that("Multi Data example", {
+  # Hand calculated data for tests
   #PlantingYear_YEAR	AREABURNT	YEARBURN	AGE	AbovegroundBiomass Stock	BelowgroundBiomass Stock	CO2	N20	CH4	CO2
   #2012	              4.9	  2015	4	  32	8	  114	  4	  14	  68
   #2014	              8.1	  2015	2	  16	4	  94	  3	  11	  56
@@ -211,6 +214,7 @@ test_that("Multi Data example", {
 })
 
 test_that("Test function - Single Data example", {
+  # Hand calculated data for tests
   #PlantingYear_YEAR	AREABURNT	YEARBURN	AGE	AbovegroundBiomass Stock	BelowgroundBiomass Stock	CO2	N20	CH4	CO2
   #2012	              4.9	      2015	    4	  32	                      8	                        114	4	  14	68
   test_data <- get_test_data(c(4),c(4.9))
@@ -238,6 +242,7 @@ test_that("Test function - Single Data example", {
 
 
 test_that("Test Function - Multi Data example", {
+  # Hand calculated data for tests
   #PlantingYear_YEAR	AREABURNT	YEARBURN	AGE	AbovegroundBiomass Stock	BelowgroundBiomass Stock	CO2	N20	CH4	CO2
   #2012	              4.9	  2015	4	  32	8	  114	  4	  14	  68
   #2014	              8.1	  2015	2	  16	4	  94	  3	  11	  56
@@ -282,18 +287,21 @@ test_that("FRL - test basic call calcFRLBurning", {
   sw_barea <- FDegBurnData
   debug_frl <- 0
   FRLParams <- get_test_data(c(1),c(1))$params
-  #FRLParams$runs <- 100
   set.seed(08121976) # Seed set to remove random nature of MC Analysis for LCI & UCI
   
+  ## Commented code lines are previous, prior to SCS audit, values. The correct values 
+  # are from a spread sheet calculation. 
   fire <- calcFRLBurningRun(debug_frl, FDegBurnData,FRLParams,bioburn_ghgs)
   #expect_equal(floor(fire$rs_fd_bb$aa_em_tco2e_yr),157487)
-  expect_equal(floor(fire$rs_fd_bb$aa_em_tco2e_yr),186535)
   #expect_equal(floor(fire$rs_fd_bb$lci_aa_em_tco2e_yr),128967)
-  expect_equal(floor(fire$rs_fd_bb$lci_aa_em_tco2e_yr),150304)
   #expect_equal(floor(fire$rs_fd_bb$uci_aa_em_tco2e_yr),185801)
-  expect_equal(floor(fire$rs_fd_bb$uci_aa_em_tco2e_yr),218021)
   #expect_equal(floor(fire$fd_bb_aae),157487)
-  expect_equal(floor(fire$fd_bb_aae),186535)
   #compare_summary_equal(fire$v_fd_bb_aae,107818,144465,156477,156794,168709,219855,6)
+  
+  # Correct value after audit
+  expect_equal(floor(fire$rs_fd_bb$aa_em_tco2e_yr),186535)
+  expect_equal(floor(fire$rs_fd_bb$lci_aa_em_tco2e_yr),150304)
+  expect_equal(floor(fire$rs_fd_bb$uci_aa_em_tco2e_yr),218021)
+  expect_equal(floor(fire$fd_bb_aae),186535)
   compare_summary_equal(fire$v_fd_bb_aae,123041,168522,182767,183242,197406,256134,6)
 })
