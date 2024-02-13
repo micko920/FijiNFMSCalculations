@@ -196,7 +196,8 @@ createUC_EmRemsValues <- function(UC, UC_MV, EmRems, MV) {
   # Uncertainty with the estimated total MAICAGBar and Root To Shoot Tropical Rain Ratio
   # Calculate arguments
   CalcEstRemAReforArgs <- function() {
-    return(list(MV$AReforArea$area_ha, UC$MAIVar, UC$BiomassConvExpansionARefor, UC$RootToShootTropRain,MV$AReforArea$age_yrs))
+    return(list(UC_MV$AReforArea, 
+                UC$MAIVar, UC$BiomassConvExpansionARefor, UC$RootToShootTropRain,MV$AReforArea$age_yrs))
   }
 
 
