@@ -105,7 +105,7 @@ test_that("Test it can be called", {
 
   # This value does not match the FRL. The FRL uses an average of 2015-2018, this value is 2018 only.
   # Results Table has expected Forest Degradation Estimate
-  expect_equal(round(result$EstEmRemsFDeg), 310218)
+  expect_equal(round(result$EstEmRemsFDeg), 326770)
 
   #############
   # Enhancement
@@ -117,5 +117,5 @@ test_that("Test it can be called", {
   # Total
 
   # Results Table has expected Total Estimate
-  expect_equal(round(result$NetEmRems), 3552523)
+  expect_equal(round(result$NetEmRems), 3569075)
 })

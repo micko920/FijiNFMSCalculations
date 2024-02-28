@@ -25,16 +25,16 @@ createUC_MV_Values <- function(MV) {
   )
   names(result$DeforAreaUp) <- c("DeforAreaUp")
 
-  ## MGG - patch for ARefor survey area to override Adjusted Areas sampled
-  ## TODO: still to be implimented with variance
-  # result$AReforArea <- ValueWithUncertainty(
-  #   Value = MV$AReforArea,
-  #   LowerCI = quantile(MV$McAReforArea,probs=QLCI),
-  #   UpperCI = quantile(MV$McAReforArea,probs=QUCI),
-  #   model = create_vwuSampled(MV$McAReforArea), fixed = FALSE
-  # )
-  # names(result$AReforArea) <- c("AReforArea")
-
+  ## MGG - patch to ARefor allow growth tables.
+  # This only allows 1 value for all years
+  # TBD Fix this to allow a different value for each MP year
+  result$AReforArea <- ValueWithUncertainty(
+   Value = MV$AReforArea$area_ha[1],
+   LowerCI = quantile(MV$McAReforArea,probs=QLCI),
+   UpperCI = quantile(MV$McAReforArea,probs=QUCI),
+   model = create_vwuSampled(MV$McAReforArea), fixed = FALSE
+  )
+  names(result$AReforArea) <- c("AReforArea")
 
   ## MGG - patch for FDeg growth tables
   result$FDegFellArea <- ValueWithUncertainty(

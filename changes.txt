@@ -1,0 +1,657 @@
+diff --git a/DESCRIPTION b/DESCRIPTION
+index 5543f72..b74e294 100644
+--- a/DESCRIPTION
++++ b/DESCRIPTION
+@@ -1,6 +1,6 @@
+ Package: FijiNFMSCalculations
+ Title: Fiji NFMS Calculations
+-Version: 1.0.6
++Version: 1.0.7
+ Authors@R:
+     person(given = "Michael",
+            family = "Green",
+diff --git a/NAMESPACE b/NAMESPACE
+index bdbb881..79ee423 100644
+--- a/NAMESPACE
++++ b/NAMESPACE
+@@ -91,6 +91,8 @@ export(calcEmissionFactors)
+ export(calcFRLAdjustedAreas)
+ export(calcFRLAfforestation)
+ export(calcFRLBurning)
++export(calcFRLBurningAlg)
++export(calcFRLBurningRun)
+ export(calcFRLContributions)
+ export(calcFRLDeforestation)
+ export(calcFRLDegradation)
+diff --git a/R/Burning.R b/R/Burning.R
+index 3f90fa3..c4c430c 100644
+--- a/R/Burning.R
++++ b/R/Burning.R
+@@ -19,20 +19,25 @@
+ CalcEstEmFire <- function(Age,
+                        MAIBsw, # Mean Annual Increment Biomass softwood
+                        RootToShootDryLandSmall,
+-                       Area) {
++                       Area,
++                       local_CombustFactor = CombustFactor,
++                       local_GWP_CO2 = GWPCO2, local_EF_CO2 = EFCO2,
++                       local_GWP_CH4 = GWPCH4, local_EF_CH4 = EFCH4,
++                       local_GWP_N2O = GWPN2O, local_EF_N2O = EFN2O
++                       ) {
+   # Estimate AGB
+-  AGB <- Age * (MAIBsw / (1 + RootToShootDryLandSmall))
++  AGB <- Age * (MAIBsw * (1 - RootToShootDryLandSmall))
+   # Estimate BGB
+   BGB <- Age * (MAIBsw * RootToShootDryLandSmall)
+-  # CO2 ABG emissions
+-  EmCO2AGB <- Area * AGB * CombustFactor * GWPCO2 * EFCO2  * 0.001
+-  # CO2 BGB emissions
+-  EmCO2BGB <- Area * BGB * CombustFactor * GWPCO2 * EFCO2 * 0.001
+-  # CH4 ABG emissions
+-  EmCH4 <- Area * AGB * CombustFactor * GWPCH4 * EFCH4 * 0.001
+-  # N_2O (above-ground biomass)
+-  EmN2O <- Area * AGB * CombustFactor * GWPN2O  * EFN2O * 0.001
++  # CO2 ABG emissions -> CO2e
++  EmCO2_AG <- Area * AGB * local_CombustFactor * local_GWP_CO2 * local_EF_CO2  * 0.001
++  # CO2 BGB emissions -> CO2e
++  EmCO2_BG <- ConvBiomassToCO2e(Area * BGB)
++  # CH4 ABG emissions -> CO2e
++  EmCH4 <- Area * AGB * local_CombustFactor * local_GWP_CH4 * local_EF_CH4 * 0.001
++  # N_2O ABG -> CO2e
++  EmN2O <- Area * AGB * local_CombustFactor * local_GWP_N2O  * local_EF_N2O * 0.001
+   # sum emissions for each gas and put into dataframe
+-  df <-data.frame(sum(EmCO2AGB), sum(EmCO2BGB), sum(EmCH4), sum(EmN2O))
++  df <-data.frame(sum(EmCO2_AG), sum(EmCO2_BG), sum(EmCH4), sum(EmN2O))
+   return(sum(df))
+ }
+diff --git a/R/CalcFRLBurning.R b/R/CalcFRLBurning.R
+index 7b139ea..4ba96a1 100644
+--- a/R/CalcFRLBurning.R
++++ b/R/CalcFRLBurning.R
+@@ -1,15 +1,45 @@
+ 
++
++
+ #' @export
+-calcFRLBurning <- function() {
++calcFRLBurningAlg <- function(sw_barea,maibp,rdlk1,bioburn_ghgs) {
++  result <- list()
++  result$sw_barea <- sw_barea
++  # Sum of emissions per year
++  result$swfiret$total <- sapply(split(result$sw_barea[,c(1:3)],
++                                  f = result$sw_barea$year),
++    function(x) {
++      return(CalcEstEmFire(x["age_yrs"], maibp, rdlk1,x["area_ha"],
++                           local_CombustFactor = bioburn_ghgs[1,"combustion_factor"],
++                           local_GWP_CO2 = bioburn_ghgs[1,"global_warming_potential"], 
++                           local_EF_CO2 = bioburn_ghgs[1,"emission_factor"],
++                           local_GWP_CH4 = bioburn_ghgs[2,"global_warming_potential"], 
++                           local_EF_CH4 = bioburn_ghgs[2,"emission_factor"],
++                           local_GWP_N2O = bioburn_ghgs[3,"global_warming_potential"], 
++                           local_EF_N2O = bioburn_ghgs[3,"emission_factor"]))
++    }
++  )
++  
++  
++  # Average annual emissions [tCO2e yr^-1] from biomass burning in Softwood Plantations .
++  result$fd_bb_aae <- mean(result$swfiret$total)
++
++  return(result)
++}
++
++
++  
++#' @export
++calcFRLBurningRun <- function(debug_frl,sw_barea,FRLParams,bioburn_ghgs) {
+   # Structure of 'sw_barea'
+   if (debug_frl) {
+-    print(paste0("==== debug: ", "CalcFRLBurning.R", ":6"))
++    print(paste0("==== debug: ", "CalcFRLBurning.R", ":36"))
+     print(str(sw_barea))
+   }
+ 
+ 
+   if (debug_frl) {
+-    print(paste0("==== debug: ", "CalcFRLBurning.R", ":12"))
++    print(paste0("==== debug: ", "CalcFRLBurning.R", ":42"))
+     # Aggregate compartment data for the years 2015 to 2018 ................................
+     ## Total area burnt in year t
+     sw_barea_agg <- aggregate(area_ha ~ year, sw_barea, sum)
+@@ -23,47 +53,26 @@ calcFRLBurning <- function() {
+     print(sw_barea_agg)
+   }
+ 
+-  # Above- and below-ground biomass in compartments
+-  # 0.2 = Rdll Root-to-shoot ratio tropical moist deciduous forest < 125 tB ha-1
+-  sw_barea$agb <- sw_barea$age_yrs * (FRLParams$maibp / (1 + FRLParams$rdlk1)) # AGB
+-  sw_barea$bgb <- sw_barea$age_yrs * (FRLParams$maibp * FRLParams$rdlk1) # BGB
+-
+   # Table of greenhouse gases
+   names(bioburn_ghgs)[1] <- "GHG"
+ 
+   # Table of greenhouse gases
+   if (debug_frl) {
+-    print(paste0("==== debug: ", "CalcFRLBurning.R", ":36"))
++    print(paste0("==== debug: ", "CalcFRLBurning.R", ":61"))
+     print(bioburn_ghgs)
+   }
+ 
+-  # Emissions (in tCO2e) for each gas (and each compartment)
+-  # CO_2 (above-ground biomass)
+-  sw_barea$co2agb <- sw_barea$area_ha * sw_barea$agb * bioburn_ghgs[1, 2] *
+-    bioburn_ghgs[1, 3] * bioburn_ghgs[1, 4] * 0.001
+-  # CO_2 (below-ground biomass)
+-  sw_barea$co2bgb <- sw_barea$area_ha * sw_barea$bgb * FRLParams$etacf *
+-    FRLParams$etacc * bioburn_ghgs[1, 2]
+-  # CH_4 (above-ground biomass)
+-  sw_barea$ch4 <- sw_barea$area_ha * sw_barea$agb * bioburn_ghgs[2, 2] *
+-    bioburn_ghgs[2, 3] * bioburn_ghgs[2, 4] * 0.001
+-  # N_2O (above-ground biomass)
+-  sw_barea$n2o <- sw_barea$area_ha * sw_barea$agb * bioburn_ghgs[3, 2] *
+-    bioburn_ghgs[3, 3] * bioburn_ghgs[3, 4] * 0.001
+-
+-  # Sum of emissions per year
+-  swfiret <- aggregate(. ~ year, sw_barea[, c(1, 6:9)], sum)
+-
+-  # Compute totals of gases for each year
+-  swfiret$total <- rowSums(swfiret[, -1])
++  fire <- calcFRLBurningAlg(sw_barea,
++                            FRLParams$maibp,
++                            FRLParams$rdlk1,
++                            bioburn_ghgs
++                            )
++  
+   if (debug_frl) {
+-    print(paste0("==== debug: ", "CalcFRLBurning.R", ":57"))
+-    print(swfiret)
++    print(paste0("==== debug: ", "CalcFRLBurning.R", ":72"))
++    print(fire$swfiret)
+   }
+ 
+-  # Average annual emissions [tCO2e yr^-1] from biomass burning in Softwood Plantations .
+-  fd_bb_aae <- mean(swfiret$total)
+-
+   # Uncertainty analysis
+   # Create vectors that collect the results of the MC simulation
+   v_fd_bb_aae <- vector()
+@@ -127,33 +136,27 @@ calcFRLBurning <- function() {
+ 
+   # MC simulation
+   for (i in 1:FRLParams$runs) { # i <- 1
+-    # Create a copy of 'sw_barea'
+-    sw_bareai <- sw_barea
+-
+-    # Compute AGB and BGB for each compartment .........................................
+-    sw_bareai$agb <- sw_bareai$age_yrs * (mcf$maibsw[i] / (1 + mcf$r2s[i]))
+-    sw_bareai$bgb <- sw_bareai$age_yrs * (mcf$maibsw[i] * mcf$r2s[i])
+-
++    
++    bioburn_ghgsi <- bioburn_ghgs
++    bioburn_ghgsi[1, 2] <- mcf[i, "cfsw"] 
++    bioburn_ghgsi[1, 3] <- mcf[i, "gefco2"]
++    bioburn_ghgsi[1, 4] <- mcf[i, "gwpco2"]
++    bioburn_ghgsi[2, 2] <- mcf[i, "cfsw"]
++    bioburn_ghgsi[2, 3] <- mcf[i, "gefch4"]
++    bioburn_ghgsi[2, 4] <- mcf[i, "gwpch4"]
++    bioburn_ghgsi[3, 2] <- mcf[i, "cfsw"]
++    bioburn_ghgsi[3, 3] <- mcf[i, "gefn2o"]
++    bioburn_ghgsi[3, 4] <- mcf[i, "gwpn2o"]
++    
+     # Compute emissions ................................................................
+-    # CO_2 (AGB)
+-    sw_bareai$co2agb <- sw_bareai$area_ha * sw_bareai$agb * mcf[i, "cfsw"] *
+-      mcf[i, "gefco2"] * mcf[i, "gwpco2"] * 0.001
+-    # CO_2 (BGB)
+-    sw_bareai$co2bgb <- sw_bareai$area_ha * sw_bareai$bgb * FRLParams$etacf *
+-      FRLParams$etacc * mcf[i, "cfsw"]
+-    # CH_4 (AGB)
+-    sw_bareai$ch4 <- sw_bareai$area_ha * sw_bareai$agb * mcf[i, "cfsw"] *
+-      mcf[i, "gefch4"] * mcf[i, "gwpch4"] * 0.001
+-    # N_2O (AGB)
+-    sw_bareai$n2o <- sw_bareai$area_ha * sw_bareai$agb * mcf[i, "cfsw"] *
+-      mcf[i, "gefn2o"] * mcf[i, "gwpn2o"] * 0.001
+-
+-    # Aggregate results ................................................................
+-    swfireti <- aggregate(. ~ year, sw_bareai[, c(1, 6:9)], sum)
+-    swfireti$total <- rowSums(swfireti[, -1])
+-
++    firei <- calcFRLBurningAlg(sw_barea,
++                              mcf$maibsw[i],
++                              mcf$r2s[i],
++                              bioburn_ghgsi
++                             )
++    
+     # Annual average emissions .........................................................
+-    v_fd_bb_aae[i] <- mean(swfireti$total) # Including AGB and BGB
++    v_fd_bb_aae[i] <- mean(firei$swfiret$total) # Including AGB and BGB
+   }
+ 
+   # Get 90%-confidence bounds of emission estimates (including AGB and BGB)
+@@ -162,7 +165,7 @@ calcFRLBurning <- function() {
+ 
+   # Result table (AGB and BGB) ...........................................................
+   rs_fd_bb <- data.frame(
+-    aa_em_tco2e_yr = fd_bb_aae,
++    aa_em_tco2e_yr = fire$fd_bb_aae,
+     lci_aa_em_tco2e_yr = lcifdfsweaae,
+     uci_aa_em_tco2e_yr = ucifdfsweaae
+   )
+@@ -170,14 +173,20 @@ calcFRLBurning <- function() {
+ 
+   # Show result table
+   if (debug_frl) {
+-    print(paste0("==== debug: ", "CalcFRLBurning.R", ":170"))
++    print(paste0("==== debug: ", "CalcFRLBurning.R", ":176"))
+     print(rs_fd_bb)
+   }
+ 
+   result <- list()
+   result$rs_fd_bb <- rs_fd_bb
+-  result$fd_bb_aae <- fd_bb_aae
++  result$fd_bb_aae <- fire$fd_bb_aae
+   result$v_fd_bb_aae <- v_fd_bb_aae
+ 
+   return(result)
+ }
++
++
++#' @export
++calcFRLBurning <- function() {
++  return(calcFRLBurningRun(debug_frl,sw_barea,FRLParams,bioburn_ghgs))
++}
+diff --git a/man/CalcEstEmFire.Rd b/man/CalcEstEmFire.Rd
+index 1182ead..9a4926d 100644
+--- a/man/CalcEstEmFire.Rd
++++ b/man/CalcEstEmFire.Rd
+@@ -4,7 +4,19 @@
+ \alias{CalcEstEmFire}
+ \title{Emissions From Fire}
+ \usage{
+-CalcEstEmFire(Age, MAIBsw, RootToShootDryLandSmall, Area)
++CalcEstEmFire(
++  Age,
++  MAIBsw,
++  RootToShootDryLandSmall,
++  Area,
++  local_CombustFactor = CombustFactor,
++  local_GWP_CO2 = GWPCO2,
++  local_EF_CO2 = EFCO2,
++  local_GWP_CH4 = GWPCH4,
++  local_EF_CH4 = EFCH4,
++  local_GWP_N2O = GWPN2O,
++  local_EF_N2O = EFN2O
++)
+ }
+ \arguments{
+ \item{Age}{The age of the compartment that burnt in the year}
+diff --git a/tests/testthat/test-CalcERValues.R b/tests/testthat/test-CalcERValues.R
+index 5e58172..f8bec28 100644
+--- a/tests/testthat/test-CalcERValues.R
++++ b/tests/testthat/test-CalcERValues.R
+@@ -105,7 +105,7 @@ test_that("Test it can be called", {
+ 
+   # This value does not match the FRL. The FRL uses an average of 2015-2018, this value is 2018 only.
+   # Results Table has expected Forest Degradation Estimate
+-  expect_equal(round(result$EstEmRemsFDeg), 310218)
++  expect_equal(round(result$EstEmRemsFDeg), 326770)
+ 
+   #############
+   # Enhancement
+@@ -117,5 +117,5 @@ test_that("Test it can be called", {
+   # Total
+ 
+   # Results Table has expected Total Estimate
+-  expect_equal(round(result$NetEmRems), 3552523)
++  expect_equal(round(result$NetEmRems), 3569075)
+ })
+diff --git a/tests/testthat/test-CalcEstEmFire.R b/tests/testthat/test-CalcEstEmFire.R
+index 5c72364..b7b2774 100644
+--- a/tests/testthat/test-CalcEstEmFire.R
++++ b/tests/testthat/test-CalcEstEmFire.R
+@@ -1,3 +1,5 @@
++library(testthat)
++
+ ## This test needs to be reviewed/redone ##
+ 
+ # Test CalcEmFire: Emissions from Biomass Burning
+@@ -12,71 +14,286 @@ FDegBurnData2018 <- FDegBurnData[235:294, c("year", "area_ha", "age_yrs")]
+ bioburn_ghgs <- read.table("../../data/bioburn_ghgs.txt", header = T)
+ 
+ 
+-# add this and full file from sw_barea[235:294,6:9]***********
++compare_summary_equal <- function(samples, min, qtr1, med, u, qtr3, max, sigfig, ...) {
++  sample_summary <- stats::quantile(samples)
++  sample_summary <- signif(c(sample_summary[1L:3L], mean(samples), sample_summary[4L:5L]), sigfig)
++  names(sample_summary) <- c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max.")
++  
++  expect_summary <- c(min, qtr1, med, u, qtr3, max)
++  names(expect_summary) <- c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max.")
++  
++  return(expect_equal(sample_summary, expect_summary, ...))
++}
+ 
+-# make one of these wrong and see if the cell is given************
+-EstEmFireResults2018 <- data.frame(
+-  X.EmCO2AGB. = 58505.16630,
+-  X.EmCO2BGB. = 15315.02328,
+-  X.EmCH4. = 7050.242825,
+-  X.EmN2O. = 1962.515072
+-)
+ 
++get_test_data <- function(yrs,ha) {
++  test_data <- list()
++  #    COMF i 	Gg,i 
++  #CO2	0.46	1580
++  #N2O	0.46	6.8
++  #CH4	0.46	0.2
++  test_data$COMF_CO2 <- 0.46
++  test_data$COMF_N2O <- 0.46
++  test_data$COMF_CH4 <- 0.46
++  
++  test_data$EF_CO2 <- 1580
++  test_data$EF_N2O <- 0.2
++  test_data$EF_CH4 <- 6.8
++  
++  #GWP - AR5
++  #CO2	1
++  #N2O	28
++  #CH4	265
++  test_data$GWP_CO2 <- 1
++  test_data$GWP_N2O <- 265
++  test_data$GWP_CH4 <- 28
++  
++  #Annual increment in Pine Plantation (tB ha-1 yr-1) 			          10	From Waterloo [1994]
++  #Annual increment in Pine Plantation (tB ha-1 yr-1) Aboveground			8	
++  #Annual increment in Pine Plantation (tB ha-1 yr-1) Belowground			2	
++  
++  #Root:to:Shoott ratio			0.2	
++  test_data$RootToShootRatio <- 0.2
++  
++  #MAIB_AGB = 10 * 0.8 = 8
++  #MAIB_BGB = 10 * 0.2 = 2
++  test_data$MAIB <- 10
++  test_data$MAIB_AGB <- test_data$MAIB * (1 - test_data$RootToShootRatio)
++  test_data$MAIB_BGB <- test_data$MAIB * test_data$RootToShootRatio
++  
++  expect_equal(MAIBsw,test_data$MAIB)
++  
++  test_data$AreaBurnt <- ha
++  test_data$Age       <- yrs
++  
++  test_data$AGB_Stock <- test_data$Age * test_data$MAIB_AGB
++  
++  test_data$BGB_Stock <- test_data$Age * test_data$MAIB_BGB
++  
++  #EM_CO2_ABG = ((AreaBurent * AGB_Stock * COMF_CO2 * EF_CO2) / 1000) * GWP_CO2
++  #EM_CO2_ABG = ((4.9 * 32 * 0.46 * 1580) / 1000) * 1 = 114
++  test_data$EM_CO2_ABG <- test_data$AreaBurnt * test_data$AGB_Stock * 
++    test_data$COMF_CO2 * test_data$EF_CO2 * 0.001 * test_data$GWP_CO2
++  
++  #EM_CO2_BGB = AreaBurent * BGB * 0.47 * (44/12)
++  #EM_CO2_BGB = 4.9 * 8 * 0.47 * (44/12) = 68
++  test_data$EM_CO2_BGB <- test_data$AreaBurnt * test_data$BGB_Stock * 0.47 * (44/12)
++  
++  #EM_N2O_ABG = ((AreaBurent * AGB_Stock * COMF_N2O * EF_N2O) / 1000) * GWP_N2O
++  #EM_N2O_ABG = ((4.9 * 32 * 0.46 * 1580) / 1000) * 1 = 114
++  test_data$EM_N2O_ABG <- test_data$AreaBurnt * test_data$AGB_Stock * 
++    test_data$COMF_N2O * test_data$EF_N2O * 0.001 * test_data$GWP_N2O
++  
++  #EM_CH4_ABG = ((AreaBurent * AGB_Stock * COMF_CH4 * EF_CH4) / 1000) * GWP_CH4
++  #EM_CH4_ABG = ((4.9 * 32 * 0.46 * 1580) / 1000) * 1 = 114
++  test_data$EM_CH4_ABG <- test_data$AreaBurnt * test_data$AGB_Stock * 
++    test_data$COMF_CH4 * test_data$EF_CH4 * 0.001 * test_data$GWP_CH4
++  
++  #Em = CO2_AGB + N2O_AGB + CH4_AGB + CO2_BGB
++  test_data$EM <- test_data$EM_CO2_ABG + test_data$EM_N2O_ABG + test_data$EM_CH4_ABG + test_data$EM_CO2_BGB
++  
++  ## FRL params
++  test_data$params <- list()
++  test_data$params$etacf    <- 0.47
++  test_data$params$etacc    <- 44/12 
++  test_data$params$rdlk1    <- 0.20
++  test_data$params$lcirdlk1 <- 0.09
++  test_data$params$ucirdlk1 <- 0.25
++  test_data$params$maibp    <- 10
++  test_data$params$errmaibp <- 0.25
++  test_data$params$sdCO2EF  <- 90
++  test_data$params$errghg   <- 0.00001
++  test_data$params$runs     <- 10000
++  test_data$params$qlci     <- 0.05
++  test_data$params$quci     <- 0.95
++  
++  return(test_data)
++  
++}
+ 
+-# test_that("2018 Data example", {
+-#   expect_equal(CalcEstEmFire(
+-#     FDegBurnData2018$age_yrs, MAIBsw, RootToShootDryLandSmall, FDegBurnData2018$area_ha,
+-#     bioburn_ghgs
+-#   ), EstEmFireResults2018)
+-# })
+ 
+-# # Get an error:
+-# test_that("2018 Data example divide by zero", {
+-#   expect_equal(CalcEstEmFire(
+-#     FDegBurnData2018$age_yrs, MAIBsw, -1, FDegBurnData2018$area_ha,
+-#     bioburn_ghgs
+-#   ), EstEmFireResults2018)
+-# })
+ 
+-# test_that("2018 Data example", {
+-# Error
+-# expect_equal(CalcEstEmFire(FDegBurnData2018$age_yrs,  MAIBsw, RootToShootDryLandSmall, FDegBurnData2018$area_ha,
+-#                        bioburn_ghgs, BiomassToCarbonConv, CarbonToCO2eRatio), sw_barea[235:294,6:9])
+-# })
+ 
+ 
++test_that("Single Data example", {
++  #PlantingYear_YEAR	AREABURNT	YEARBURN	AGE	AbovegroundBiomass Stock	BelowgroundBiomass Stock	CO2	N20	CH4	CO2
++  #2012	              4.9	      2015	    4	  32	                      8	                        114	4	  14	68
++  test_data <- get_test_data(c(4),c(4.9))
++  expect_equal(bioburn_ghgs$combustion_factor[1],test_data$COMF_CO2)
++  expect_equal(bioburn_ghgs$combustion_factor[3],test_data$COMF_N2O)
++  expect_equal(bioburn_ghgs$combustion_factor[2],test_data$COMF_CH4)
++  expect_equal(CombustFactor,test_data$COMF_CO2)
++  expect_equal(CombustFactor,test_data$COMF_N2O)
++  expect_equal(CombustFactor,test_data$COMF_CH4)
++  
++  expect_equal(bioburn_ghgs$emission_factor[1],test_data$EF_CO2)
++  expect_equal(bioburn_ghgs$emission_factor[3],test_data$EF_N2O)
++  expect_equal(bioburn_ghgs$emission_factor[2],test_data$EF_CH4)
++  expect_equal(EFCO2,test_data$EF_CO2)
++  expect_equal(EFN2O,test_data$EF_N2O)
++  expect_equal(EFCH4,test_data$EF_CH4)
++  
++  expect_equal(bioburn_ghgs$global_warming_potential[1],test_data$GWP_CO2)
++  expect_equal(bioburn_ghgs$global_warming_potential[3],test_data$GWP_N2O)
++  expect_equal(bioburn_ghgs$global_warming_potential[2],test_data$GWP_CH4)
++  expect_equal(GWPCO2,test_data$GWP_CO2)
++  expect_equal(GWPN2O,test_data$GWP_N2O)
++  expect_equal(GWPCH4,test_data$GWP_CH4)
++  
++  
++  expect_equal(RootToShootDryLandSmall,test_data$RootToShootRatio)
++  expect_equal(MAIBsw,test_data$MAIB)
++  expect_equal(8,test_data$MAIB_AGB)
++  expect_equal(2,test_data$MAIB_BGB)
++  expect_equal(32,test_data$AGB_Stock)
++  expect_equal(8,test_data$BGB_Stock)
++  expect_equal(signif(test_data$EM_CO2_ABG,7),113.9622)
++  expect_equal(signif(test_data$EM_CO2_BGB,5),67.555)
++  expect_equal(signif(test_data$EM_N2O_ABG,5),3.8228)
++  expect_equal(signif(test_data$EM_CH4_ABG,5),13.7330)
++  expect_equal(signif(test_data$EM,6),199.073)
++  
++  
++ 
++})
+ 
+-# From the FRL the average Emissions from Fire for 4 years was calculated to be 157,487.87.
+-# For this function below total emissions will be average * 4 (i.e. 2018 - 2015) = 629,951.4765 when using
+-# all burn data from the 4 years
++test_that("Multi Data example", {
++  #PlantingYear_YEAR	AREABURNT	YEARBURN	AGE	AbovegroundBiomass Stock	BelowgroundBiomass Stock	CO2	N20	CH4	CO2
++  #2012	              4.9	  2015	4	  32	8	  114	  4	  14	  68
++  #2014	              8.1	  2015	2	  16	4	  94	  3	  11	  56
++  #2015	              25.93	2015	1	  8	  2	  151	  5	  18	  89
++  #2015	              9.7	  2015	1	  8	  2	  56	  2	  7	    33
++  #1994	              7.8	  2015	22	176	44	998	  33	120	  591
++  #2002	              15	  2015	14	112	28	1221	41	147	  724
++  #2001	              6.2	  2015	15	120	30	541	  18	65	  321
++  #1991	              47.8	2015	25	200	50	6948	233	837	  4119
++  #2015	              2.4	  2015	1	  8	  2	  14	  0	  2	    8
++  #2014	              3.9	  2015	2	  16	4	  45	  2	  5	    27
++  #2012	              5.5	  2015	4	  32	8	  128	  4	  15	  76
++  #2012	              18	  2015	4	  32	8	  419	  14	50	  248
++  #2012	              41.2	2015	4	  32	8	  958	  32	115	  568
++  #Total              196.43 ##   #   792 198 11687 392 1408  6927
++  #Grand Total 20415
++  
++  test_data <- get_test_data(c(4,2,1,1,22,14,15,25,1,2,4,4,4),
++                             c(4.9,8.1,25.93,9.7,7.8,15,6.2,47.8,2.4,3.9,5.5,18,41.2))
++  
++  expect_equal(c(32,16,8,8,176,112,120,200,8,16,32,32,32),
++               test_data$AGB_Stock)
++  expect_equal(c(8,4,2,2,44,28,30,50,2,4,8,8,8),
++               test_data$BGB_Stock)
++  
++  expect_equal(
++    floor(test_data$EM_CO2_ABG),
++    c(113,94,150,56,997,1221,540,6948,13,45,127,418,958)
++  )
++  expect_equal(floor(sum(test_data$EM_CO2_ABG)),11687)
++  
++  expect_equal(
++    floor(test_data$EM_N2O_ABG),
++    c(3,3,5,1,33,40,18,233,0,1,4,14,32)
++  )
++  expect_equal(floor(sum(test_data$EM_N2O_ABG)),392)
++  
++  expect_equal(
++    floor(test_data$EM_CH4_ABG),
++    c(13,11,18,6,120,147,65,837,1,5,15,50,115)
++  )
++  expect_equal(floor(sum(test_data$EM_CH4_ABG)),1408)
++  
++  expect_equal(
++    floor(test_data$EM_CO2_BGB),
++    c(67,55,89,33,591,723,320,4118,8,26,75,248,568)
++  )
++  expect_equal(floor(sum(test_data$EM_CO2_BGB)), 6927)
++  
++  expect_equal(floor(sum(test_data$EM)),20415)
++})
+ 
+-# swfiret # emissions from each gas type for each year
+-# FRLTotal <- sum(swfiret$total) # sum of all gas emissions
++test_that("Test function - Single Data example", {
++  #PlantingYear_YEAR	AREABURNT	YEARBURN	AGE	AbovegroundBiomass Stock	BelowgroundBiomass Stock	CO2	N20	CH4	CO2
++  #2012	              4.9	      2015	    4	  32	                      8	                        114	4	  14	68
++  test_data <- get_test_data(c(4),c(4.9))
+ 
+-# test_that("FRL Data example", {
+-# Error
+-#  expect_equal(sum(CalcEstEmFire(FDegBurnData$age_yrs,  MAIBsw, RootToShootDryLandSmall, FDegBurnData$area_ha,
+-#                          bioburn_ghgs, BiomassToCarbonConv, CarbonToCO2eRatio)),FRLTotal )
+-# })
++  expect_equal(
++    CalcEstEmFire(
++      c(4), 
++      MAIBsw, RootToShootDryLandSmall, 
++      c(4.9)
++    ), 
++    sum(test_data$EM))
++  
++  expect_equal(signif(
++    CalcEstEmFire(
++      c(4), 
++      MAIBsw, RootToShootDryLandSmall, 
++      c(4.9)
++    ), 6), 
++    199.0730)
++  
++  expect_equal(signif(CalcEstEmFire(
++    FDegBurnData2018$age_yrs, MAIBsw, RootToShootDryLandSmall, FDegBurnData2018$area_ha
++  ), 6), 98110.7)
++})
+ 
+-# test_that("FRL Data example", {
+-#   expect_equal(CalcEstEmFire(
+-#     FDegBurnData$age_yrs, MAIBsw, RootToShootDryLandSmall, FDegBurnData$area_ha,
+-#     bioburn_ghgs
+-#   ), 629951.4765)
+-# })
+ 
++test_that("Test Function - Multi Data example", {
++  #PlantingYear_YEAR	AREABURNT	YEARBURN	AGE	AbovegroundBiomass Stock	BelowgroundBiomass Stock	CO2	N20	CH4	CO2
++  #2012	              4.9	  2015	4	  32	8	  114	  4	  14	  68
++  #2014	              8.1	  2015	2	  16	4	  94	  3	  11	  56
++  #2015	              25.93	2015	1	  8	  2	  151	  5	  18	  89
++  #2015	              9.7	  2015	1	  8	  2	  56	  2	  7	    33
++  #1994	              7.8	  2015	22	176	44	998	  33	120	  591
++  #2002	              15	  2015	14	112	28	1221	41	147	  724
++  #2001	              6.2	  2015	15	120	30	541	  18	65	  321
++  #1991	              47.8	2015	25	200	50	6948	233	837	  4119
++  #2015	              2.4	  2015	1	  8	  2	  14	  0	  2	    8
++  #2014	              3.9	  2015	2	  16	4	  45	  2	  5	    27
++  #2012	              5.5	  2015	4	  32	8	  128	  4	  15	  76
++  #2012	              18	  2015	4	  32	8	  419	  14	50	  248
++  #2012	              41.2	2015	4	  32	8	  958	  32	115	  568
++  #Total              196.43 ##   #   792 198 11687 392 1408  6927
++  #Grand Total 20415
++  
++  test_data <- get_test_data(c(4,2,1,1,22,14,15,25,1,2,4,4,4),
++                             c(4.9,8.1,25.93,9.7,7.8,15,6.2,47.8,2.4,3.9,5.5,18,41.2))
++  expect_equal(
++    CalcEstEmFire(
++      c(4,2,1,1,22,14,15,25,1,2,4,4,4), 
++      MAIBsw, RootToShootDryLandSmall, 
++      c(4.9,8.1,25.93,9.7,7.8,15,6.2,47.8,2.4,3.9,5.5,18,41.2)
++    ), 
++    sum(test_data$EM))
++  
++  expect_equal(signif(
++    CalcEstEmFire(
++      c(4,2,1,1,22,14,15,25,1,2,4,4,4), 
++      MAIBsw, RootToShootDryLandSmall, 
++      c(4.9,8.1,25.93,9.7,7.8,15,6.2,47.8,2.4,3.9,5.5,18,41.2)
++    ), 6), 
++    20415.4)
+ 
+-# test_that("FRL Data example - divide by zero", {
+-# error
+-#  expect_equal(sum(CalcEstEmFire(FDegBurnData$age_yrs,  MAIBsw, -1, FDegBurnData$area_ha,
+-#                              bioburn_ghgs, BiomassToCarbonConv, CarbonToCO2eRatio)),FRLTotal )
+-# })
++  
++  expect_equal(floor(sum(test_data$EM)),20415)
++})
+ 
+-# test_that("FRL Data example", {
+-# error
+-#  expect_equal(sum(CalcEstEmFire(FDegBurnData$age_yrs,  MAIBsw, RootToShootDryLandSmall, FDegBurnData$area_ha,
+-#                              bioburn_ghgs, BiomassToCarbonConv, CarbonToCO2eRatio)),sw_barea[,6:9] )
+-# })
+ 
+-# sw_barea[,6:9]
++test_that("FRL - test basic call calcFRLBurning", {
++  sw_barea <- FDegBurnData
++  debug_frl <- 0
++  FRLParams <- get_test_data(c(1),c(1))$params
++  #FRLParams$runs <- 100
++  set.seed(08121976) # Seed set to remove random nature of MC Analysis for LCI & UCI
++  
++  fire <- calcFRLBurningRun(debug_frl, FDegBurnData,FRLParams,bioburn_ghgs)
++  #expect_equal(floor(fire$rs_fd_bb$aa_em_tco2e_yr),157487)
++  expect_equal(floor(fire$rs_fd_bb$aa_em_tco2e_yr),186535)
++  #expect_equal(floor(fire$rs_fd_bb$lci_aa_em_tco2e_yr),128967)
++  expect_equal(floor(fire$rs_fd_bb$lci_aa_em_tco2e_yr),150304)
++  #expect_equal(floor(fire$rs_fd_bb$uci_aa_em_tco2e_yr),185801)
++  expect_equal(floor(fire$rs_fd_bb$uci_aa_em_tco2e_yr),218021)
++  #expect_equal(floor(fire$fd_bb_aae),157487)
++  expect_equal(floor(fire$fd_bb_aae),186535)
++  #compare_summary_equal(fire$v_fd_bb_aae,107818,144465,156477,156794,168709,219855,6)
++  compare_summary_equal(fire$v_fd_bb_aae,123041,168522,182767,183242,197406,256134,6)
++})
+\ No newline at end of file
