@@ -26,19 +26,19 @@ errTEF <- 0.25 # Relative error of TEF  (was param.errtef)
 EFDeforUp <- 199.679 # Emissions Factor Deforestation Upland, extracted from FRL data
 
 #' @export
-EFDeforUp_UCI   <- 200.0    # TODO: get real number
+EFDeforUp_UCI   <- 234.353  # Taken from FRL 28 May 2024
 
 #' @export
-EFDeforUp_LCI   <- 199.0    # TODO: get real number
+EFDeforUp_LCI   <- 155.402  # Taken from FRL 28 May 2024
 
 #' @export
-EFDeforLow <- 259.400 # Emissions Factor  Deforestation Lowland, extracted from FRL data
+EFDeforLow <- 259.401 # Emissions Factor  Deforestation Lowland, extracted from FRL data
 
 #' @export
-EFDeforLow_UCI   <- 260.0   # TODO: get real number
+EFDeforLow_UCI   <- 288.785  # Taken from FRL 28 May 2024
 
 #' @export
-EFDeforLow_LCI   <- 259.0   # TODO: get real number
+EFDeforLow_LCI   <- 214.277  # Taken from FRL 28 May 2024
 
 
 
