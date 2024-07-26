@@ -24,9 +24,10 @@ calcFRLNaturalForestDegradation <- function() {
       sd = dnf_area$se
     )
 
-    EFNFDegi <- rnorm(
-      n = 1, mean = EFNFDeg,
-      sd = EFNFDeg_SD
+    EFNFDegi <- rtriangle(
+      n = 1, theta = EFNFDeg,
+      lower = EFNFDeg  - EFNFDeg_LCI,
+      upper = EFNFDeg  + EFNFDeg_UCI
     )
 
     R2shooti <- rtriangle(

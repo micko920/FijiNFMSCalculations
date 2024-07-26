@@ -60,19 +60,28 @@ ErrAreaFell <- 0.25 # Relative error in area, felling in Natural Forest (was par
 
 # Natural Forest Degradation
 
+# Dr. Julian Gonzalo Update
+# Email to Dr Carly Gree, Tuesday 23 July, 2024, 
+# numbers 72.60 Mg/ha, CI(90%) Upper 77.10, Lower 68.09
+# SE 4.51
+
 #' @export
-EFNFDeg <- 70.75  # EF (Mg AGB/ha)
+#EFNFDeg <- 70.75  # EF (Mg AGB/ha)
+EFNFDeg <- 72.60  # EF (Mg AGB/ha)
 
 #' @export
 #EFNFDeg_LCI <- 70.75 - 17.17032  # EF (Mg AGB/ha) 95% CI - From spredsheet
-EFNFDeg_LCI <- 70.75 - 14.41080  # EF (Mg AGB/ha) 90% CI - FCPF spec
+#EFNFDeg_LCI <- 70.75 - 14.41080  # EF (Mg AGB/ha) 90% CI - FCPF spec
+EFNFDeg_LCI <- 68.09  # EF (Mg AGB/ha) 90% CI 
 
 #' @export
 #EFNFDeg_UCI <- 70.75 + 17.17032  # EF (Mg AGB/ha) 95% CI - From spredsheet
-EFNFDeg_UCI <- 70.75 + 14.41080  # EF (Mg AGB/ha) 90% CI - FCPF spec
+#EFNFDeg_UCI <- 70.75 + 14.41080  # EF (Mg AGB/ha) 90% CI - FCPF spec
+EFNFDeg_UCI <- 77.10  # EF (Mg AGB/ha) 90% CI 
 
 #' @export
-EFNFDeg_SD <- 8.760365  # EF (Mg AGB/ha) 90% CI - FCPF spec
+#EFNFDeg_SD <- 8.760365  # EF (Mg AGB/ha) 90% CI - FCPF spec
+EFNFDeg_SE <- 4.51  # Standard Error for EF (Mg AGB/ha) - Dr. Julian Gonzalo
 
 
 #' @export
