@@ -81,10 +81,10 @@ $year2$EstEmFell
 [1] 80237.8
 
 $year2$EstRemFell
-[1] -10964.4
+[1] -8706.55
 
 $year2$NetEmRemsFell
-[1] 69273.4
+[1] 71531.3
 
 $year2$EstEmNFDeg
 [1] 36728.8
@@ -96,7 +96,7 @@ $year2$EstEmFire
 [1] 5213.78
 
 $year2$EstRemARefor
-[1] -90811
+[1] -68108.3
 
 $year2$EstEmFPlnHwd
 [1] 55168
@@ -105,34 +105,34 @@ $year2$EstEmFPlnSwd
 [1] 509202
 
 $year2$EstRemFPlnHwd
-[1] -91339.2
+[1] -60892.8
 
 $year2$EstRemFPlnSwd
-[1] -68364.6
+[1] -51062.4
 
 $year2$GrossEmFPln
 [1] 564370
 
 $year2$GrossRemFPln
-[1] -159704
+[1] -111955
 
 $year2$NetEmRemsFPln
-[1] 404666
+[1] 452415
 
 $year2$GrossEm
 [1] 752882
 
 $year2$GrossRem
-[1] -261479
+[1] -188770
 
 $year2$EstEmRemsFDeg
-[1] 111216
+[1] 113474
 
 $year2$EstEmRemsEnh
-[1] 313855
+[1] 384306
 
 $year2$NetEmRems
-[1] 491402
+[1] 564112
 
 
 [1] "****** ER_Values *******"
@@ -140,34 +140,34 @@ $MpGrossEmDefor
 [1] 132663
 
 $MpEstEmRemsFDeg
-[1] 235021
+[1] 237278
 
 $MpEstEmRemsEnh
-[1] 849925
+[1] 920377
 
 $MpEstEmRemsDefEnh
-[1] 982588
+[1] 1053039
 
 $MpNetEmRems
-[1] 1217608
+[1] 1290318
 
 $MpEstFRL
 [1] 2965026
 
 $MpEstERs
-[1] 1747417
+[1] 1674708
 
 $MpEstFRLFDeg
 [1] 716656
 
 $MpEstERsFDeg
-[1] 481635
+[1] 479377
 
 $MpEstFRLDefEnh
 [1] 2248370
 
 $MpEstERsDefEnh
-[1] 1265782
+[1] 1195331
 
 [1] "***** MR_Values ********"
 $year1
@@ -195,29 +195,29 @@ $year2$GrossEmDefor
 [1] 66331.4
 
 $year2$EstEmRemsFDeg
-[1] 111216
+[1] 113474
 
 $year2$EstEmRemsEnh
-[1] 313855
+[1] 384306
 
 $year2$NetEmRems
-[1] 491402
+[1] 564112
 
 
 $MpGrossEmDefor
 [1] 132663
 
 $MpEstEmRemsFDeg
-[1] 235021
+[1] 237278
 
 $MpEstEmRemsEnh
-[1] 849925
+[1] 920377
 
 $MpNetEmRems
-[1] 1217608
+[1] 1290318
 
 $RpNetEmRems
-[1] 899029
+[1] 952714
 
 $MpEstFRL
 [1] 2965026
@@ -226,13 +226,13 @@ $RpEstFRL
 [1] 2189245
 
 $MpEstERs
-[1] 1747417
+[1] 1674708
 
 $RpEstERs
-[1] 1290216
+[1] 1236531
 
 $RpEstEmRemsFDeg
-[1] 173529
+[1] 175196
 
 $MpEstFRLFDeg
 [1] 716656
@@ -241,16 +241,16 @@ $RpEstFRLFDeg
 [1] 529147
 
 $MpEstERsFDeg
-[1] 481635
+[1] 479377
 
 $RpEstERsFDeg
-[1] 355618
+[1] 353951
 
 $MpEstEmRemsDefEnh
-[1] 982588
+[1] 1053039
 
 $RpEstEmRemsDefEnh
-[1] 725500
+[1] 777518
 
 $MpEstFRLDefEnh
 [1] 2248370
@@ -259,8 +259,8 @@ $RpEstFRLDefEnh
 [1] 1660098
 
 $MpEstERsDefEnh
-[1] 1265782
+[1] 1195331
 
 $RpEstERsDefEnh
-[1] 934598
+[1] 882580
 
