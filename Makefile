@@ -50,9 +50,9 @@ run-create-reports-ER:
 		reports/Fiji_MonitoringReportExtraTables.html
 	Rscript -e 'source("./createReport_ER.R")'
 	cp Fiji_ER_Estimate_AccuracyAssessment.pdf ./Data/mrAuditJuly24/
-	cp Fiji_ER_Estimate_Sensitivity.pdf ./Data/mrAuditJuly24/
 	cp Fiji_ER_Estimate_UC.pdf ./Data/mrAuditJuly24/
 	cp Fiji_ER_Estimate_Values.pdf ./Data/mrAuditJuly24/
+	#cp Fiji_ER_Estimate_Sensitivity.pdf ./Data/mrAuditJuly24/
 	cp ./reports/Fiji_ER_*.html ./Data/mrAuditJuly24/
 	-rm -rf reports/*_cache
 

@@ -566,7 +566,7 @@ pre code {
 
 
 <h1 class="title toc-ignore">Monitoring Report Extra Tables</h1>
-<h4 class="date">28 July, 2024</h4>
+<h4 class="date">02 October, 2024</h4>
 
 </div>
 
@@ -653,13 +653,13 @@ Net emissions and removals (tCO2e/yr)
 66331
 </td>
 <td style="text-align:left;">
-124385
+123805
 </td>
 <td style="text-align:left;">
 536070
 </td>
 <td style="text-align:left;">
-726787
+726206
 </td>
 </tr>
 <tr>
@@ -670,13 +670,13 @@ Net emissions and removals (tCO2e/yr)
 66331
 </td>
 <td style="text-align:left;">
-113833
+111216
 </td>
 <td style="text-align:left;">
 313855
 </td>
 <td style="text-align:left;">
-494020
+491402
 </td>
 </tr>
 <tr>
@@ -687,13 +687,13 @@ Total
 132663
 </td>
 <td style="text-align:left;">
-238219
+235021
 </td>
 <td style="text-align:left;">
 849925
 </td>
 <td style="text-align:left;">
-1220806
+1217608
 </td>
 </tr>
 </tbody>
@@ -800,27 +800,27 @@ ER_{NFH,2020,vol}  &amp;= AD_{NFH,2020,vol} \times EF_{NFHvol} \times \frac{44}{
 <h4>Monitoring Period, Year 2020, Forest Degradation from native forest timber harvest (felling area)</h4>
 <p><span class="math display">\[ 
 \begin{align}
-%AD_{NFH,2020,area} &amp;= 1350, 1083 \\
+%AD_{NFH,2020,area} &amp;= 1670, 1457 \\
 %AD_{NFH,2020,age}  &amp;= 0.5, 1.5 \\
 %MAIC_{NFHrem}      &amp;= 0.99 \\
 %ER_{NFH,2020,rem}  &amp;=  AD_{NFH,2020,area} \times AD_{NFH,2020,age} \times MAIC_{NFHrem} \times \frac{44}{12} %\times -1\\
-%                  &amp;= ( 1350, 1083 \times 
+%                  &amp;= ( 1670, 1457 \times 
 %     0.5, 1.5 \times 0.99 ) \times 
 %     \frac{44}{12} \times -1\\
-%                  &amp;= -2450.25, -5896.935
+%                  &amp;= -3031.05, -7933.365
 %                  
 \end{align}
 \]</span></p>
 <pre class="r"><code>&gt; MonitoredValues$year2$FDegFellArea$area_ha</code></pre>
-<pre><code>## [1] 1350 1083</code></pre>
+<pre><code>## [1] 1670 1457</code></pre>
 <pre class="r"><code>&gt; MonitoredValues$year2$FDegFellArea$age_yrs</code></pre>
 <pre><code>## [1] 0.5 1.5</code></pre>
 <pre class="r"><code>&gt; MAICFell</code></pre>
 <pre><code>## [1] 0.99</code></pre>
 <pre class="r"><code>&gt; ConvCarbonToCO2e(MonitoredValues$year2$FDegFellArea$area_ha * MonitoredValues$year2$FDegFellArea$age_yrs * MAICFell) * (-1)</code></pre>
-<pre><code>## [1] -2450.250 -5896.935</code></pre>
+<pre><code>## [1] -3031.050 -7933.365</code></pre>
 <pre class="r"><code>&gt; sum(ConvCarbonToCO2e(MonitoredValues$year2$FDegFellArea$area_ha * MonitoredValues$year2$FDegFellArea$age_yrs * MAICFell) * (-1))</code></pre>
-<pre><code>## [1] -8347.185</code></pre>
+<pre><code>## [1] -10964.41</code></pre>
 </div>
 <div id="monitoring-period-year-2020-forest-degradation-from-closed-to-open-native-forest" class="section level4">
 <h4>Monitoring Period, Year 2020, Forest Degradation from closed to open native forest</h4>
@@ -941,10 +941,10 @@ ER_{FSW,2020}&amp;=  \sum EmCO_2AGB_{i} + \sum EmCO_2BGB_{i}  + \sum {EmCH_{4}}_
 <p><span class="math display">\[ 
 \begin{align}
 ER_{FDeg,2020} &amp;= 8.023785\times 10^{4} 
-  + (-8347.185)
+  + (-1.0964415\times 10^{4})
   + 3.6728753\times 10^{4}
   + 5213.779193 \\
-  &amp;= 113833.20
+  &amp;= 111215.97
 \end{align}
 \]</span></p>
 <pre class="r"><code>ER_FDEG_2020 &lt;- ConvCarbonToCO2e(MonitoredValues$year2$FDegFellVol * TEF) +
@@ -955,7 +955,7 @@ sum(ConvBiomassToCO2e(MonitoredValues$year2$FDegBurnData$area_ha * BGB)) +
 sum(MonitoredValues$year2$FDegBurnData$area_ha * AGB * CombustFactor * GWPCH4 * EFCH4 * 0.001)  +
 sum(MonitoredValues$year2$FDegBurnData$area_ha * AGB * CombustFactor * GWPN2O * EFN2O * 0.001)
 ER_FDEG_2020</code></pre>
-<pre><code>## [1] 113833.2</code></pre>
+<pre><code>## [1] 111216</code></pre>
 </div>
 </div>
 <div id="removals-by-enhancments" class="section level3">
@@ -1211,13 +1211,13 @@ ER_{Enh,2020} &amp;= 4.0466604\times 10^{5} + (-9.0811048\times 10^{4}) \\
 <p><span class="math display">\[
 \begin{align}
 ER_{2020} &amp;= ER_{Defor,2020} + ER_{FDeg,2020} + ER_{Enh,2020} \\
-          &amp;= 6.6331357\times 10^{4} + 1.138332\times 10^{5} + 3.13855\times 10^{5} \\
-          &amp;= 4.9401955\times 10^{5} 
+          &amp;= 6.6331357\times 10^{4} + 1.1121597\times 10^{5} + 3.13855\times 10^{5} \\
+          &amp;= 4.9140232\times 10^{5} 
 \end{align}
 \]</span></p>
 <pre class="r"><code>&gt; ER_2020 &lt;- ER_DEF_2020 + ER_FDEG_2020 + ER_Enh_2020
 &gt; ER_2020</code></pre>
-<pre><code>## [1] 494019.6</code></pre>
+<pre><code>## [1] 491402.3</code></pre>
 </div>
 </div>
 
