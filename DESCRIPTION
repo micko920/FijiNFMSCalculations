@@ -1,6 +1,6 @@
 Package: FijiNFMSCalculations
 Title: Fiji NFMS Calculations
-Version: 1.0.8
+Version: 1.0.10
 Authors@R:
     person(given = "Michael",
            family = "Green",
