@@ -98,15 +98,22 @@ test_that("Test it can be called", {
 
   expect_silent(result <- CalcEmRemsValues(dummyMonitoredValues))
   # Results Table has expected Deforestation Estimate
-  expect_equal(round(result$GrossEmDefor), 2696827)
+  expect_equal(round(result$GrossEmDefor), 2696835)
 
   ####################
   # Forest Degradation
 
   # This value does not match the FRL. The FRL uses an average of 2015-2018, this value is 2018 only.
   # Results Table has expected Forest Degradation Estimate
-  expect_equal(round(result$EstEmRemsFDeg), 326770)
+  expect_equal(round(result$EstEmRemsFDeg), 192866)
 
+  ####################
+  # Forest Degradation Non Proxy
+  
+  # This value does not match the FRL. The FRL uses an average of 2015-2018, this value is 2018 only.
+  # Results Table has expected Forest Degradation Estimate
+  expect_equal(round(result$EstEmRemsFDegNonProxy), 134839)
+  
   #############
   # Enhancement
 
@@ -117,5 +124,5 @@ test_that("Test it can be called", {
   # Total
 
   # Results Table has expected Total Estimate
-  expect_equal(round(result$NetEmRems), 3569075)
+  expect_equal(round(result$NetEmRems), 3570019)
 })

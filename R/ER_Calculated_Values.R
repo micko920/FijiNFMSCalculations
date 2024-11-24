@@ -184,11 +184,15 @@ CalcEmRemsValues <- function(MonitoredValues) {
 
   result$EstEmRemsFDeg <- CalcEstEmRemsFDeg(
     result$EstEmFell,
-    result$EstRemFell,
+    result$EstRemFell
+  )
+
+  result$EstEmRemsFDegNonProxy <- CalcEstEmRemsFDegNonProxy(
     result$EstEmFire,
     result$EstEmNFDeg
   )
-
+  
+  
   # Enhancement Total
 
   result$EstEmRemsEnh <- CalcEstEmRemsEnh(
@@ -217,6 +221,10 @@ CalcERValues <- function(EmRems, ErpaYearlyFRL, ErpaYearlyFRLFDeg, ErpaYearlyFRL
     EmRems$year1$EstEmRemsFDeg,
     EmRems$year2$EstEmRemsFDeg
   )
+  ER$MpEstEmRemsFDegNonProxy <- CalcMpEstEmRemsFDegNonProxy(
+    EmRems$year1$EstEmRemsFDegNonProxy,
+    EmRems$year2$EstEmRemsFDegNonProxy
+  )
   ER$MpEstEmRemsEnh <- CalcMpEstEmRemsEnh(
     EmRems$year1$EstEmRemsEnh,
     EmRems$year2$EstEmRemsEnh
@@ -225,7 +233,9 @@ CalcERValues <- function(EmRems, ErpaYearlyFRL, ErpaYearlyFRLFDeg, ErpaYearlyFRL
     EmRems$year1$GrossEmDefor,
     EmRems$year2$GrossEmDefor,
     EmRems$year1$EstEmRemsEnh,
-    EmRems$year2$EstEmRemsEnh
+    EmRems$year2$EstEmRemsEnh,
+    EmRems$year1$EstEmRemsFDegNonProxy,
+    EmRems$year2$EstEmRemsFDegNonProxy
   )
   ER$MpNetEmRems <- CalcMpNetEmRems(
     EmRems$year1$NetEmRems,
@@ -240,6 +250,7 @@ CalcERValues <- function(EmRems, ErpaYearlyFRL, ErpaYearlyFRLFDeg, ErpaYearlyFRL
   ER$MpEstERsFDeg <- CalcMpEstERsFDeg(ER$MpEstFRLFDeg, ER$MpEstEmRemsFDeg)
 
   ER$MpEstFRLDefEnh <- CalcMpEstFRLDefEnh(ErpaYearlyFRLDefor, ErpaYearlyFRLEnh, ErpaYearlyFRLFDegNonProxy)
-  ER$MpEstERsDefEnh <- CalcMpEstERsDefEnh(ErpaYearlyFRLDefor, ErpaYearlyFRLEnh, ErpaYearlyFRLFDegNonProxy, ER$MpGrossEmDefor, ER$MpEstEmRemsEnh)
+  ER$MpEstERsDefEnh <- CalcMpEstERsDefEnh(ErpaYearlyFRLDefor, ErpaYearlyFRLEnh, ErpaYearlyFRLFDegNonProxy, 
+                                          ER$MpGrossEmDefor, ER$MpEstEmRemsEnh, ER$MpEstEmRemsFDegNonProxy)
   return(ER)
 }

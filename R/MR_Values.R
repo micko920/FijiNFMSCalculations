@@ -18,6 +18,10 @@ create_EstMRValues <- function(UC_ER, ER, EmRems, MV, MRparams) {
   MR$year2$EstEmRemsFDeg <- EmRems$year2$EstEmRemsFDeg
   MR$MpEstEmRemsFDeg <- ER$MpEstEmRemsFDeg
 
+  MR$year1$EstEmRemsFDegNonProxy <- EmRems$year1$EstEmRemsFDegNonProxy
+  MR$year2$EstEmRemsFDegNonProxy <- EmRems$year2$EstEmRemsFDegNonProxy
+  MR$MpEstEmRemsFDegNonProxy <- ER$MpEstEmRemsFDegNonProxy
+  
   MR$year1$EstEmRemsEnh <- EmRems$year1$EstEmRemsEnh
   MR$year2$EstEmRemsEnh <- EmRems$year2$EstEmRemsEnh
   MR$MpEstEmRemsEnh <- ER$MpEstEmRemsEnh
@@ -39,13 +43,23 @@ create_EstMRValues <- function(UC_ER, ER, EmRems, MV, MRparams) {
   MR$MpEstEmRemsFDeg <- ER$MpEstEmRemsFDeg
   MR$RpEstEmRemsFDeg <- ER$MpEstEmRemsFDeg * MRparams$RpMpRatio
 
+  MR$MpEstEmRemsFDegNonProxy <- ER$MpEstEmRemsFDegNonProxy
+  MR$RpEstEmRemsFDegNonProxy <- ER$MpEstEmRemsFDegNonProxy * MRparams$RpMpRatio
+  
   MR$MpEstFRLFDeg <- ER$MpEstFRLFDeg
   MR$RpEstFRLFDeg <- ER$MpEstFRLFDeg * MRparams$RpMpRatio
+  
+  MR$MpEstFRLFDegNonProxy <- ER$MpEstFRLFDegNonProxy
+  MR$RpEstFRLFDegNonProxy <- ER$MpEstFRLFDegNonProxy * MRparams$RpMpRatio
 
   MR$MpEstERsFDeg <- ER$MpEstERsFDeg
   MR$RpEstERsFDeg <- ER$MpEstERsFDeg * MRparams$RpMpRatio
   MR$McMpEstERsFDeg <- ER$McMpEstERsFDeg
 
+  MR$MpEstERsFDegNonProxy <- ER$MpEstERsFDegNonProxy
+  MR$RpEstERsFDegNonProxy <- ER$MpEstERsFDegNonProxy * MRparams$RpMpRatio
+  MR$McMpEstERsFDegNonProxy <- ER$McMpEstERsFDegNonProxy
+  
   MR$MpEstEmRemsDefEnh <- ER$MpEstEmRemsDefEnh
   MR$RpEstEmRemsDefEnh <- ER$MpEstEmRemsDefEnh * MRparams$RpMpRatio
 
@@ -55,6 +69,11 @@ create_EstMRValues <- function(UC_ER, ER, EmRems, MV, MRparams) {
   MR$MpEstERsDefEnh <- ER$MpEstERsDefEnh
   MR$RpEstERsDefEnh <- ER$MpEstERsDefEnh * MRparams$RpMpRatio
   MR$McMpEstERsDefEnh <- ER$McMpEstERsDefEnh
+  
+  MR$MpEstEmRemsARefor <- EmRems$EstRemARefor #no Em
+  MR$RpEstEmRemsARefor <- EmRems$EstRemARefor * MRparams$RpMpRatio
+  
+  
   return(MR)
 }
 

@@ -14,6 +14,10 @@ CalcMpEstEmRemsFDeg <- function(Year1EstEmRemsFDeg, Year2EstEmRemsFDeg) {
   return(Year1EstEmRemsFDeg + Year2EstEmRemsFDeg)
 }
 
+#' @export
+CalcMpEstEmRemsFDegNonProxy <- function(Year1EstEmRemsFDegNonProxy, Year2EstEmRemsFDegNonProxy) {
+  return(Year1EstEmRemsFDegNonProxy + Year2EstEmRemsFDegNonProxy)
+}
 
 #' @export
 CalcMpEstEmRemsEnh <- function(Year1EstEmRemsEnh, Year2EstEmRemsEnh) {
@@ -21,10 +25,12 @@ CalcMpEstEmRemsEnh <- function(Year1EstEmRemsEnh, Year2EstEmRemsEnh) {
 }
 
 #' @export
-CalcMpEstEmRemsDeforEnh <- function(Year1GrossEmDefor, Year2GrossEmDefor, Year1EstEmRemsEnh, Year2EstEmRemsEnh) {
+CalcMpEstEmRemsDeforEnh <- function(Year1GrossEmDefor, Year2GrossEmDefor, Year1EstEmRemsEnh, Year2EstEmRemsEnh, Year1EstEmRemsFDegNonProxy, Year2EstEmRemsFDegNonProxy) {
   return(
     CalcMpGrossEmDefor(Year1GrossEmDefor,Year2GrossEmDefor) +
-      CalcMpEstEmRemsEnh(Year1EstEmRemsEnh,Year2EstEmRemsEnh)
+      CalcMpEstEmRemsEnh(Year1EstEmRemsEnh,Year2EstEmRemsEnh) +
+      CalcMpEstEmRemsFDegNonProxy(Year1EstEmRemsFDegNonProxy,Year2EstEmRemsFDegNonProxy)
+      
   )
 }
 
@@ -58,11 +64,17 @@ CalcMpEstERsFDeg <- function(MpEstFRLFDeg, MpEstEmRemsFDeg) {
 }
 
 #' @export
+CalcMpEstERsFDegNonProxy <- function(MpEstFRLFDeg, MpEstEmRemsFDeg) {
+  return(MpEstFRLFDeg - MpEstEmRemsFDeg)
+}
+
+
+#' @export
 CalcMpEstFRLDefEnh <- function(ErpaYearlyFRLDefor, ErpaYearlyFRLEnh, ErpaYearlyFRLFDegNonProxy) {
   return(CalcMpEstFRL(ErpaYearlyFRLDefor) + CalcMpEstFRL(ErpaYearlyFRLEnh) + CalcMpEstFRL(ErpaYearlyFRLFDegNonProxy))
 }
 
 #' @export
-CalcMpEstERsDefEnh <- function(FRLDefor, FRLEnh, FRLFDegNonProxy, EmRemsDefor, EmRemsEnh) {
-  return(CalcMpEstFRLDefEnh(FRLDefor, FRLEnh, FRLFDegNonProxy) - (EmRemsDefor + EmRemsEnh))
+CalcMpEstERsDefEnh <- function(FRLDefor, FRLEnh, FRLFDegNonProxy, EmRemsDefor, EmRemsEnh, EmRemsFDegNonProxy) {
+  return(CalcMpEstFRLDefEnh(FRLDefor, FRLEnh, FRLFDegNonProxy) - (EmRemsDefor + EmRemsEnh + EmRemsFDegNonProxy))
 }

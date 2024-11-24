@@ -601,9 +601,9 @@ calcFRLMonitoringPeriodProjection <- function() {
       colSums(overall_frl[c(2,3,4,8),]),  #12
       colSums(overall_frl[c(5,6,7,9,10),]), #13
       colSums(overall_frl[c(1,2,3,4,5,6,7,8,9,10),]), #14
-      colSums(overall_frl[c(2,3,8),]), #15
+      colSums(overall_frl[c(3,8),]), #15
       colSums(overall_frl[c(1),]), #16
-      colSums(overall_frl[c(4),]) #17
+      colSums(overall_frl[c(2,4),]) #17
   )
 
   overall_frl <- rbind(overall_frl,total_frl)
@@ -678,9 +678,9 @@ calcFRLMonitoringPeriodProjection <- function() {
       apply(uc_yearly$v[c(2,3,4,8),],2,function(v) { list(Reduce("+",v)) }), #12
       apply(uc_yearly$v[c(5,6,7,9,10),],2,function(v) { list(Reduce("+",v)) }), #13
       apply(uc_yearly$v[c(1,2,3,4,5,6,7,8,9,10),],2,function(v) { list(Reduce("+",v)) }), #14
-      apply(uc_yearly$v[c(2,3,8),],2,function(v) { list(Reduce("+",v)) }), #15
+      apply(uc_yearly$v[c(3,8),],2,function(v) { list(Reduce("+",v)) }), #15
       apply(uc_yearly$v[c(1),],2,function(v) { list(Reduce("+",v)) }), #16
-      apply(uc_yearly$v[c(4),],2,function(v) { list(Reduce("+",v)) }) #17
+      apply(uc_yearly$v[c(2,4),],2,function(v) { list(Reduce("+",v)) }) #17
   ))
   names(total_frl$v) <- c(2019:2023)
   total_frl$mu <- apply(total_frl$v,c(1,2),function(v) { mean(unlist(v)) })

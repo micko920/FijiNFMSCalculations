@@ -381,12 +381,22 @@ createUC_EmRemsValues <- function(UC, UC_MV, EmRems, MV) {
 
   # Forest Degradation Total
   CalcEstEmRemsFDegArgs <- function() {
-    return(list(local$EstEmFell, local$EstRemFell, local$EstEmFire, local$EstEmNFDeg))
+    # PROXY
+    return(list(local$EstEmFell, local$EstRemFell))
   }
 
   ## MGG - UC
   result$McFDeg <- CalcMonteCarlo("McFDeg", EmRems$EstEmRemsFDeg, CalcEstEmRemsFDeg, CalcEstEmRemsFDegArgs)
 
+  # Forest Degradation Non Proxy Total
+  CalcEstEmRemsFDegNonProxyArgs <- function() {
+    # No PROXY
+    return(list(local$EstEmFire, local$EstEmNFDeg))
+  }
+  
+  ## MGG - UC
+  result$McFDegNonProxy <- CalcMonteCarlo("McFDegNonProxy", EmRems$EstEmRemsFDegNonProxy, CalcEstEmRemsFDegNonProxy, CalcEstEmRemsFDegNonProxyArgs)
+  
 
   # Enhancement Total
   CalcEstEmRemsEnhArgs <- function() {
@@ -446,9 +456,68 @@ createUC_ERValues <- function(UC_EmRems, UC_MV, UC, MRparams) {
 
   # TODO: rename to ER$MpNetEmRems
   result$McNetEmRems <- CalcMonteCarlo("NetEmissions", NetEmValue, CalcMpNetEmRems, CalcMpNetEmRemsArgs)
+  
+  ##################################
+  # monitoring Period ERs Forest Deg Non Proxy 
+
+  year1$MpEstEmRemsFDegNonProxy <- ValueWithUncertainty(
+    Value = UC_EmRems$year1$McFDegNonProxy$value[1],
+    LowerCI = UC_EmRems$year1$McFDegNonProxy$value[2],
+    UpperCI = UC_EmRems$year1$McFDegNonProxy$value[3],
+    model = create_vwuSampled(UC_EmRems$year1$McFDegNonProxy$MCresults), fixed = FALSE
+  )
+  names(year1$MpEstEmRemsFDegNonProxy) <- c("MpEstEmRemsFDegNonProxy")
+
+
+  year2$MpEstEmRemsFDegNonProxy <- ValueWithUncertainty(
+    Value = UC_EmRems$year2$McFDegNonProxy$value[1],
+    LowerCI = UC_EmRems$year2$McFDegNonProxy$value[2],
+    UpperCI = UC_EmRems$year2$McFDegNonProxy$value[3],
+    model = create_vwuSampled(UC_EmRems$year2$McFDegNonProxy$MCresults), fixed = FALSE
+  )
+  names(year2$MpEstEmRemsFDegNonProxy) <- c("MpEstEmRemsFDegNonProxy")
+
+  MpEstEmRemsFDegNonProxyValue <- CalcMpEstEmRemsFDegNonProxy(
+    ValueWithUncertaintyValue(year1$MpEstEmRemsFDegNonProxy),
+    ValueWithUncertaintyValue(year2$MpEstEmRemsFDegNonProxy)
+  )
+        
+  CalcMpEstEmRemsFDegNonProxyArgs <- function() {
+    return(list(year1$MpEstEmRemsFDegNonProxy, year2$MpEstEmRemsFDegNonProxy))
+  }
+  
+  result$McMpEstEmRemsFDegNonProxy <- CalcMonteCarlo("MpEstEmRemsFDegNonProxy", MpEstEmRemsFDegNonProxyValue, CalcMpEstEmRemsFDegNonProxy, CalcMpEstEmRemsFDegNonProxyArgs)
+  MpEstEmRemsFDegNonProxy <- ValueWithUncertainty(
+    Value = result$McMpEstEmRemsFDegNonProxy$value[1],
+    LowerCI = result$McMpEstEmRemsFDegNonProxy$value[2],
+    UpperCI = result$McMpEstEmRemsFDegNonProxy$value[3],
+    model = create_vwuSampled(result$McMpEstEmRemsFDegNonProxy$MCresults), fixed = FALSE
+  )
+  CalcFDegNonProxy <- function(FRLFDegNonProxy, EmRemsFDegNonProxy) {
+    return(CalcMpEstERsFDegNonProxy(CalcMpEstFRL(FRLFDegNonProxy), EmRemsFDegNonProxy))
+  }
+  CalcFDegNonProxyArgs <- function() {
+    return(list(UC$ErpaYearlyFRLFDegNonProxy, MpEstEmRemsFDegNonProxy))
+  }
+  
+  MpEstERsFDegNonProxyValue <- CalcFDegNonProxy(
+    ValueWithUncertaintyValue(UC$ErpaYearlyFRLFDegNonProxy),
+    ValueWithUncertaintyValue(MpEstEmRemsFDegNonProxy)
+  )
+  
+  result$McMpEstERsFDegNonProxy <- CalcMonteCarlo("MpEstERsFDegNonProxy", MpEstERsFDegNonProxyValue, CalcFDegNonProxy, CalcFDegNonProxyArgs)
+  # FRLFDegNonProxy + EmRemsFDegNonProxy
+  
+  # forestDegNonProxy ERs
+  result$McMpEstERsFDegNonProxy$UCModel <- calcUCModel(
+    result$McMpEstERsFDegNonProxy$value[2],
+    median(result$McMpEstERsFDegNonProxy$MCresults),
+    result$McMpEstERsFDegNonProxy$value[3]
+  )
+  
 
   #####################################################################
-  # Monitoring Period ERs Defor and Enhancements (excluding Forest Deg)
+  # Monitoring Period ERs Defor and Enhancements (excluding Proxy Forest Deg)
 
   year1$MpGrossEmDefor <- ValueWithUncertainty(
     Value = UC_EmRems$year1$McGrossEmDefor$value[1],
@@ -487,6 +556,8 @@ createUC_ERValues <- function(UC_EmRems, UC_MV, UC, MRparams) {
     UpperCI = UC_EmRems$year1$McEnh$value[3],
     model = create_vwuSampled(UC_EmRems$year1$McEnh$MCresults), fixed = FALSE
   )
+  names(year1$MpEstEmRemsEnh) <- c("MpEstEmRemsEnh")
+  
 
   year2$MpEstEmRemsEnh <- ValueWithUncertainty(
     Value = UC_EmRems$year2$McEnh$value[1],
@@ -494,16 +565,17 @@ createUC_ERValues <- function(UC_EmRems, UC_MV, UC, MRparams) {
     UpperCI = UC_EmRems$year2$McEnh$value[3],
     model = create_vwuSampled(UC_EmRems$year2$McEnh$MCresults), fixed = FALSE
   )
-
+  names(year2$MpEstEmRemsEnh) <- c("MpEstEmRemsEnh")
+  
   MpEstEmRemsEnhValue <- CalcMpEstEmRemsEnh(
     ValueWithUncertaintyValue(year1$MpEstEmRemsEnh),
     ValueWithUncertaintyValue(year2$MpEstEmRemsEnh)
   )
-
+    
   CalcMpEstEmRemsEnhArgs <- function() {
     return(list(year1$MpEstEmRemsEnh, year2$MpEstEmRemsEnh))
   }
-
+  
   result$McMpEstEmRemsEnh <- CalcMonteCarlo("MpEstEmRemsEnh", MpEstEmRemsEnhValue, CalcMpEstEmRemsEnh, CalcMpEstEmRemsEnhArgs)
   MpEstEmRemsEnh <- ValueWithUncertainty(
     Value = result$McMpEstEmRemsEnh$value[1],
@@ -517,27 +589,30 @@ createUC_ERValues <- function(UC_EmRems, UC_MV, UC, MRparams) {
     ValueWithUncertaintyValue(UC$ErpaYearlyFRLEnh),
     ValueWithUncertaintyValue(UC$ErpaYearlyFRLFDegNonProxy),
     ValueWithUncertaintyValue(MpGrossEmDefor),
-    ValueWithUncertaintyValue(MpEstEmRemsEnh)
+    ValueWithUncertaintyValue(MpEstEmRemsEnh),
+    ValueWithUncertaintyValue(MpEstEmRemsFDegNonProxy)
   )
 
   CalcMpEstERsDefEnhArgs <- function() {
-    return(list(UC$ErpaYearlyFRLDefor, UC$ErpaYearlyFRLEnh, UC$ErpaYearlyFRLFDegNonProxy, MpGrossEmDefor, MpEstEmRemsEnh))
+    return(list(UC$ErpaYearlyFRLDefor, UC$ErpaYearlyFRLEnh, UC$ErpaYearlyFRLFDegNonProxy, MpGrossEmDefor, MpEstEmRemsEnh, MpEstEmRemsFDegNonProxy))
   }
 
   result$McMpEstERsDefEnh <- CalcMonteCarlo("MpEstERsDefEnh", MpEstERsDefEnhValue, CalcMpEstERsDefEnh, CalcMpEstERsDefEnhArgs)
-  # FRLDef + FRLEnh + FRLFDegNonProxy + EmRemsDefor + EmRemsEnh
+  # FRLDef + FRLEnh + FRLFDegNonProxy + EmRemsDefor + EmRemsEnh + EmRemsFDegNonProxy
 
 
 
-  # ERs not including FDeg
+  # ERs not including FDeg Proxy
   result$McMpEstERsDefEnh$UCModel <- calcUCModel(
     result$McMpEstERsDefEnh$value[2],
     median(result$McMpEstERsDefEnh$MCresults),
     result$McMpEstERsDefEnh$value[3]
   )
+  
+
 
   ##################################
-  # monitoring Period ERs Forest Deg
+  # monitoring Period ERs Forest Deg Proxy
 
   year1$NetEmFDeg <- ValueWithUncertainty(
     Value = UC_EmRems$year1$McFDeg$value[1],
