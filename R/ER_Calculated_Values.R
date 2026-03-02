@@ -87,7 +87,8 @@ CalcEmRemsValues <- function(MonitoredValues) {
   #*********************************************************
   # 2.3 Fuelwood - Excluded from ER calculations
   #**********************************************************
-
+  
+  
   #*******************************************************************
   ############## 3. Enhancement ##########
   # 3.1 Afforestation
@@ -192,6 +193,14 @@ CalcEmRemsValues <- function(MonitoredValues) {
     result$EstEmNFDeg
   )
   
+  result$EstEmRemsDegradation <- CalcEstEmRemsDegradation(
+    result$EstEmFell,
+    result$EstRemFell,
+    result$EstEmFire,
+    result$EstEmNFDeg
+  )
+  
+  
   
   # Enhancement Total
 
@@ -211,12 +220,28 @@ CalcEmRemsValues <- function(MonitoredValues) {
 }
 
 #' @export
-CalcERValues <- function(EmRems, ErpaYearlyFRL, ErpaYearlyFRLFDeg, ErpaYearlyFRLDefor, ErpaYearlyFRLEnh, ErpaYearlyFRLFDegNonProxy ) {
+CalcERValues <- function(EmRems, period, mp_frl, frl) {
   ER <- list()
   ER$MpGrossEmDefor <- CalcMpGrossEmDefor(
     EmRems$year1$GrossEmDefor,
     EmRems$year2$GrossEmDefor
   )
+  
+  ER$MpEstRemARefor <- CalcMpEstRemARefor(
+    EmRems$year1$EstRemARefor,
+    EmRems$year2$EstRemARefor
+  )
+  
+  ER$MpNetEmRemsFPln <- CalcMpNetEmRemsFPln(
+    EmRems$year1$NetEmRemsFPln,
+    EmRems$year2$NetEmRemsFPln
+  )
+  
+  ER$MpEstEmRemsDegradation <- CalcMpEstEmRemsDegradation(
+    EmRems$year1$EstEmRemsDegradation,
+    EmRems$year2$EstEmRemsDegradation
+  )
+  
   ER$MpEstEmRemsFDeg <- CalcMpEstEmRemsFDeg(
     EmRems$year1$EstEmRemsFDeg,
     EmRems$year2$EstEmRemsFDeg
@@ -242,13 +267,95 @@ CalcERValues <- function(EmRems, ErpaYearlyFRL, ErpaYearlyFRLFDeg, ErpaYearlyFRL
     EmRems$year2$NetEmRems
   )
 
+  ### Yearly FRL Hack TODO - FIX
+  
+  ErpaYearlyFRL = mp_frl$MP_FRL["NetFRL", period]
+  ErpaYearlyFRLUCI = mp_frl$UCI["NetFRL", period]
+  ErpaYearlyFRLLCI = mp_frl$LCI["NetFRL", period]
+  ErpaYearlyFRLDefor = mp_frl$MP_FRL["Defor", period]
+  ErpaYearlyFRLDeforUCI = mp_frl$UCI["Defor", period]
+  ErpaYearlyFRLDeforLCI = mp_frl$LCI["Defor", period]
+  ErpaYearlyFRLDegradation = mp_frl$MP_FRL["Degradation", period]
+  ErpaYearlyFRLDegradationUCI =  mp_frl$UCI["Degradation", period]
+  ErpaYearlyFRLDegradationLCI = mp_frl$LCI["Degradation", period]
+  ErpaYearlyFRLARefor = mp_frl$MP_FRL["ARefor", period]
+  ErpaYearlyFRLAReforUCI =  mp_frl$UCI["ARefor", period]
+  ErpaYearlyFRLAReforLCI = mp_frl$LCI["ARefor", period]
+  ErpaYearlyFRLFPln = mp_frl$MP_FRL["FPln", period]
+  ErpaYearlyFRLFPlnUCI =  mp_frl$UCI["FPln", period]
+  ErpaYearlyFRLFPlnLCI = mp_frl$LCI["FPln", period]
+  ErpaYearlyFRLFDeg = mp_frl$MP_FRL["FDeg", period]
+  ErpaYearlyFRLFDegUCI =  mp_frl$UCI["FDeg", period]
+  ErpaYearlyFRLFDegLCI = mp_frl$LCI["FDeg", period]
+  ErpaYearlyFRLEnh = mp_frl$MP_FRL["Sinks", period]
+  ErpaYearlyFRLEnhUCI = mp_frl$UCI["Sinks", period]
+  ErpaYearlyFRLEnhLCI = mp_frl$LCI["Sinks", period]
+  ErpaYearlyFRLFDegNonProxy = mp_frl$MP_FRL["FDegNonProxy", period]
+  ErpaYearlyFRLFDegNonProxyUCI = mp_frl$UCI["FDegNonProxy", period]
+  ErpaYearlyFRLFDegNonProxyLCI = mp_frl$LCI["FDegNonProxy", period]
 
+  ER$year1$EstFRL <- frl["NetFRL",2]
+  ER$year2$EstFRL <- frl["NetFRL",3]
+  ER$year1$EstERs <- CalcMpEstERs(ER$year1$EstFRL, EmRems$year1$NetEmRems)
+  ER$year2$EstERs <- CalcMpEstERs(ER$year2$EstFRL, EmRems$year2$NetEmRems)
   ER$MpEstFRL <- CalcMpEstFRL(ErpaYearlyFRL)
   ER$MpEstERs <- CalcMpEstERs(ER$MpEstFRL, ER$MpNetEmRems)
-
+  
+  ER$year1$EstFRLDefor <- frl["Defor",2]
+  ER$year2$EstFRLDefor <- frl["Defor",3]
+  ER$year1$EstERsDefor <- CalcMpEstERsDefor(ER$year1$EstFRLDefor, EmRems$year1$GrossEmDefor)
+  ER$year2$EstERsDefor <- CalcMpEstERsDefor(ER$year2$EstFRLDefor, EmRems$year2$GrossEmDefor)
+  ER$MpEstFRLDefor <- CalcMpEstFRL(ErpaYearlyFRLDefor)
+  ER$MpEstERsDefor <- CalcMpEstERsDefor(ER$MpEstFRLDefor, ER$MpGrossEmDefor) 
+  
+  ER$year1$EstFRLDegradation <- frl["Degradation",2]
+  ER$year2$EstFRLDegradation <- frl["Degradation",3]
+  ER$year1$EstERsDegradation <- CalcMpEstERsDegradation(ER$year1$EstFRLDegradation, EmRems$year1$EstEmRemsDegradation)
+  ER$year2$EstERsDegradation <- CalcMpEstERsDegradation(ER$year2$EstFRLDegradation, EmRems$year2$EstEmRemsDegradation)
+  ER$MpEstFRLDegradation <- CalcMpEstFRL(ErpaYearlyFRLDegradation)
+  ER$MpEstERsDegradation <- CalcMpEstERsDegradation(ER$MpEstFRLDegradation, ER$MpEstEmRemsDegradation) 
+  
+  ER$year1$EstFRLARefor <- frl["ARefor",2]
+  ER$year2$EstFRLARefor <- frl["ARefor",3]
+  ER$year1$EstERsARefor <- CalcMpEstERsARefor(ER$year1$EstFRLARefor, EmRems$year1$EstRemARefor)
+  ER$year2$EstERsARefor <- CalcMpEstERsARefor(ER$year2$EstFRLARefor, EmRems$year2$EstRemARefor)
+  ER$MpEstFRLARefor <- CalcMpEstFRL(ErpaYearlyFRLARefor)
+  ER$MpEstERsARefor <- CalcMpEstERsARefor(ER$MpEstFRLARefor, ER$MpEstRemARefor) 
+  
+  ER$year1$EstFRLFPln <- frl["FPln",2]
+  ER$year2$EstFRLFPln <- frl["FPln",3]
+  ER$year1$EstERsFPln <- CalcMpEstERsFPln(ER$year1$EstFRLFPln, EmRems$year1$NetEmRemsFPln)
+  ER$year2$EstERsFPln <- CalcMpEstERsFPln(ER$year2$EstFRLFPln, EmRems$year2$NetEmRemsFPln)
+  ER$MpEstFRLFPln <- CalcMpEstFRL(ErpaYearlyFRLFPln)
+  ER$MpEstERsFPln <- CalcMpEstERsFPln(ER$MpEstFRLFPln, ER$MpNetEmRemsFPln) 
+  
+  ER$year1$EstFRLFDeg <- frl["FDeg",2]
+  ER$year2$EstFRLFDeg <- frl["FDeg",3]
+  ER$year1$EstERsFDeg <- CalcMpEstERsFDeg(ER$year1$EstFRLFDeg, EmRems$year1$EstEmRemsFDeg)
+  ER$year2$EstERsFDeg <- CalcMpEstERsFDeg(ER$year2$EstFRLFDeg, EmRems$year2$EstEmRemsFDeg)
   ER$MpEstFRLFDeg <- CalcMpEstFRL(ErpaYearlyFRLFDeg)
   ER$MpEstERsFDeg <- CalcMpEstERsFDeg(ER$MpEstFRLFDeg, ER$MpEstEmRemsFDeg)
 
+  ER$year1$EstFRLFDegNonProxy <- frl["FDegNonProxy",2]
+  ER$year2$EstFRLFDegNonProxy <- frl["FDegNonProxy",3]
+  ER$year1$EstERsFDegNonProxy <- CalcMpEstERsFDeg(ER$year1$EstFRLFDegNonProxy, EmRems$year1$EstEmRemsFDegNonProxy)
+  ER$year2$EstERsFDegNonProxy <- CalcMpEstERsFDeg(ER$year2$EstFRLFDegNonProxy, EmRems$year2$EstEmRemsFDegNonProxy)
+  
+  ER$MpEstFRLFDegNonProxy <- CalcMpEstFRL(ErpaYearlyFRLFDegNonProxy)
+  ER$MpEstERsFDegNonProxy <- CalcMpEstERsFDeg(ER$MpEstFRLFDegNonProxy, ER$MpEstEmRemsFDegNonProxy)
+  
+  ER$year1$EstFRLEnh <- frl["Sinks",2]
+  ER$year2$EstFRLEnh <- frl["Sinks",3]
+  ER$year1$EstERsEnh <- CalcMpEstERsEnh(ER$year1$EstFRLEnh, EmRems$year1$EstEmRemsEnh)
+  ER$year2$EstERsEnh <- CalcMpEstERsEnh(ER$year2$EstFRLEnh, EmRems$year2$EstEmRemsEnh)
+  ER$MpEstFRLEnh <- CalcMpEstFRL(ErpaYearlyFRLEnh)
+  ER$MpEstERsEnh <- CalcMpEstERsEnh(ER$MpEstFRLEnh, ER$MpEstEmRemsEnh)
+  
+  
+  ER$year1$EstERsDefEnh <- CalcMpEstERsDefEnh(ER$year1$EstFRLDefor, ER$year1$EstFRLEnh, ER$year1$EstFRLFDegNonProxy, 
+                                                EmRems$year1$GrossEmDefor, EmRems$year1$EstEmRemsEnh, EmRems$year1$EstEmRemsFDegNonProxy)
+  ER$year2$EstERsDefEnh <- CalcMpEstERsDefEnh(ER$year2$EstFRLDefor, ER$year2$EstFRLEnh, ER$year2$EstFRLFDegNonProxy, 
+                                                EmRems$year2$GrossEmDefor, EmRems$year2$EstEmRemsEnh, EmRems$year2$EstEmRemsFDegNonProxy)
   ER$MpEstFRLDefEnh <- CalcMpEstFRLDefEnh(ErpaYearlyFRLDefor, ErpaYearlyFRLEnh, ErpaYearlyFRLFDegNonProxy)
   ER$MpEstERsDefEnh <- CalcMpEstERsDefEnh(ErpaYearlyFRLDefor, ErpaYearlyFRLEnh, ErpaYearlyFRLFDegNonProxy, 
                                           ER$MpGrossEmDefor, ER$MpEstEmRemsEnh, ER$MpEstEmRemsFDegNonProxy)

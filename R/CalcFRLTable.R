@@ -553,28 +553,31 @@ calcFRLTable <- function() {
 
 #' @export
 calcFRLMonitoringPeriodProjection <- function() {
+  
+  value_names <- list(
+      "Deforestation Em" = c(1), # 1
+      "Burning Em"= c(2),  # 2
+      "Felling Em"= c(3), # 3
+      "NaturalForestDegradation Em"= c(4),  # 4
+      "HardwoodPlantations Em"= c(5),  # 5
+      "SoftwoodPlantations Em"= c(6),  # 6
+      "Afforestation Rem"= c(7),  # 7
+      "Felling Rem"= c(8),  # 8
+      "HardwoodPlantations Rem"= c(9),  # 9
+      "SoftwoodPlantations Rem"= c(10),  # 10
+      "Defor"= c(1), # 11
+      "Degradation"= c(2,3,4,8), # 12
+      "Sinks"= c(5,6,7,9,10),  # 13
+      "NetFRL"= c(1,2,3,4,5,6,7,8,9,10), # 14
+      "FDeg"= c(3,8), # 15
+      "FDegNonProxy"= c(2,4), #16
+      "FPln"= c(5,6,9,10), #17
+      "ARefor"= c(7) #18
+      )
 
-  names <- data.frame(value = c(
-      "FRLDeforestation Em", # 1
-      "FRLBurning Em",  # 2
-      "FRLFelling Em", # 3
-      "FRLNaturalForestDegradation Em",  # 4
-      "FRLHardwoodPlantations Em",  # 5
-      "FRLSoftwoodPlantations Em",  # 6
-      "FRLAfforestation Rem",  # 7
-      "FRLFelling Rem",  # 8
-      "FRLHardwoodPlantations Rem",  # 9
-      "FRLSoftwoodPlantations Rem",  # 10
-      "FCPF 4.1 Deforestation", # 11
-      "FCPF 4.1 Degradation", # 12
-      "FCPF 4.1 Sinks",  # 13
-      "FCPF 4.1 Net Yearly Referenece Level", # 14
-      "FDeg", # 15
-      "Defor", # 16
-      "FDegNonProxy" #17
-      ))
-
-  base_yearly <- data.frame(replicate(5, c(
+  
+  
+  base_yearly <- data.frame(replicate(FRLMonitoringPeriodProjectionLength, c(
     FRLDeforestation$rs_df$aa_em_tco2e_yr,
     FRLBurning$rs_fd_bb$aa_em_tco2e_yr,
     FRLFelling$rs_fd_lg$em[1],
@@ -582,40 +585,32 @@ calcFRLMonitoringPeriodProjection <- function() {
     FRLHardwoodPlantations$ec_hw_aae,
     FRLSoftwoodPlantations$ec_sw_aae
     )))
-  names(base_yearly) <- c(2019:2023)
-
-
-
+  names(base_yearly) <- FRLMonitoringPeriodProjectionYears
 
   overall_frl <- rbind(
     base_yearly,
-    FRLAfforestation$rs_ec_ar_cstock[6,],
-    FRLFelling$rs_ec_lnf_cstock[6,],
-    FRLHardwoodPlantations$rs_ec_hw_cstock[6,],
-    FRLSoftwoodPlantations$rs_ec_sw_cstock[6,]
+    FRLAfforestation$rs_ec_ar_cstock[7,],
+    FRLFelling$rs_ec_lnf_cstock[7,],
+    FRLHardwoodPlantations$rs_ec_hw_cstock[7,],
+    FRLSoftwoodPlantations$rs_ec_sw_cstock[7,]
   )
 
-
   total_frl <- rbind(
-      colSums(overall_frl[c(1),]),  #11
-      colSums(overall_frl[c(2,3,4,8),]),  #12
-      colSums(overall_frl[c(5,6,7,9,10),]), #13
-      colSums(overall_frl[c(1,2,3,4,5,6,7,8,9,10),]), #14
-      colSums(overall_frl[c(3,8),]), #15
-      colSums(overall_frl[c(1),]), #16
-      colSums(overall_frl[c(2,4),]) #17
+      colSums(overall_frl[value_names[["Defor"]],]), 
+      colSums(overall_frl[value_names[["Degradation"]],]), 
+      colSums(overall_frl[value_names[["Sinks"]],]), 
+      colSums(overall_frl[value_names[["NetFRL"]],]), 
+      colSums(overall_frl[value_names[["FDeg"]],]), 
+      colSums(overall_frl[value_names[["FDegNonProxy"]],]), 
+      colSums(overall_frl[value_names[["FPln"]],]),
+      colSums(overall_frl[value_names[["ARefor"]],]) 
   )
 
   overall_frl <- rbind(overall_frl,total_frl)
-
-
-  overall_frl <- cbind(names, overall_frl)
-
-  row.names(overall_frl) <- NULL
-
+  row.names(overall_frl) <- names(value_names)
 
   uc_base_yearly <- list()
-  uc_base_yearly$v <- data.frame(replicate(5, rbind(
+  uc_base_yearly$v <- data.frame(replicate(FRLMonitoringPeriodProjectionLength, rbind(
       list(FRLDeforestation$v_df_U_aae + FRLDeforestation$v_df_L_aae),
       list(FRLBurning$v_fd_bb_aae),
       list(FRLFelling$v_fd_lg_aae),
@@ -623,7 +618,7 @@ calcFRLMonitoringPeriodProjection <- function() {
       list(FRLHardwoodPlantations$v_ec_hw_aae),
       list(FRLSoftwoodPlantations$v_ec_sw_aae)
       )))
-  uc_base_yearly$uci <- data.frame(replicate(5, c(
+  uc_base_yearly$uci <- data.frame(replicate(FRLMonitoringPeriodProjectionLength, c(
       FRLDeforestation$rs_df$uci_aa_em_tco2e_yr,
       FRLBurning$rs_fd_bb$uci_aa_em_tco2e_yr,
       FRLFelling$rs_fd_lg$uci[1],
@@ -631,7 +626,7 @@ calcFRLMonitoringPeriodProjection <- function() {
       FRLHardwoodPlantations$uci_ec_hw_aae,
       FRLSoftwoodPlantations$uci_ec_sw_aae
       )))
-  uc_base_yearly$lci <- data.frame(replicate(5, c(
+  uc_base_yearly$lci <- data.frame(replicate(FRLMonitoringPeriodProjectionLength, c(
       FRLDeforestation$rs_df$lci_aa_em_tco2e_yr,
       FRLBurning$rs_fd_bb$lci_aa_em_tco2e_yr,
       FRLFelling$rs_fd_lg$lci[1],
@@ -639,9 +634,9 @@ calcFRLMonitoringPeriodProjection <- function() {
       FRLHardwoodPlantations$lci_ec_hw_aae,
       FRLSoftwoodPlantations$lci_ec_sw_aae
       )))
-  names(uc_base_yearly$v) <- c(2019:2023)
-  names(uc_base_yearly$uci) <- c(2019:2023)
-  names(uc_base_yearly$lci) <- c(2019:2023)
+  names(uc_base_yearly$v) <- FRLMonitoringPeriodProjectionYears
+  names(uc_base_yearly$uci) <- FRLMonitoringPeriodProjectionYears
+  names(uc_base_yearly$lci) <- FRLMonitoringPeriodProjectionYears
 
 
 
@@ -653,6 +648,24 @@ calcFRLMonitoringPeriodProjection <- function() {
       apply(FRLHardwoodPlantations$v_ec_hw_cstock,2,list),
       apply(FRLSoftwoodPlantations$v_ec_sw_cstock,2,list)
     )
+  
+  doit <- function(v) { list(Reduce("+",v)) }
+  total_frl_v <- NULL
+  total_frl_v <- apply(
+    data.frame(rbind(
+    apply(uc_yearly$v[value_names[["Defor"]],],2,doit), #11
+    apply(uc_yearly$v[value_names[["Degradation"]],],2,doit), #12
+    apply(uc_yearly$v[value_names[["Sinks"]],],2,doit), #13
+    apply(uc_yearly$v[value_names[["NetFRL"]],],2,doit), #14
+    apply(uc_yearly$v[value_names[["FDeg"]],],2,doit), #15
+    apply(uc_yearly$v[value_names[["FDegNonProxy"]],],2,doit), #16
+    apply(uc_yearly$v[value_names[["FPln"]],],2,doit), #17
+    apply(uc_yearly$v[value_names[["ARefor"]],],2,doit) #18
+  )), 2 , unlist, recursive=FALSE)
+  names(total_frl_v) <- FRLMonitoringPeriodProjectionYears
+  uc_yearly$v <- rbind(uc_yearly$v,total_frl_v)
+  row.names(uc_yearly$v) <- names(value_names)
+  
   uc_yearly$uci <- rbind(
       uc_base_yearly$uci,
       FRLAfforestation$rs_ec_ar_cstock[8,],
@@ -667,81 +680,143 @@ calcFRLMonitoringPeriodProjection <- function() {
       FRLHardwoodPlantations$rs_ec_hw_cstock[7,],
       FRLSoftwoodPlantations$rs_ec_sw_cstock[7,]
     )
+  
 
-  row.names(uc_yearly$lci) <- NULL
-  row.names(uc_yearly$uci) <- NULL
-
-
-  total_frl <- list()
-  total_frl$v <- data.frame(rbind(
-      apply(uc_yearly$v[c(1),],2,function(v) { list(Reduce("+",v)) }), #11
-      apply(uc_yearly$v[c(2,3,4,8),],2,function(v) { list(Reduce("+",v)) }), #12
-      apply(uc_yearly$v[c(5,6,7,9,10),],2,function(v) { list(Reduce("+",v)) }), #13
-      apply(uc_yearly$v[c(1,2,3,4,5,6,7,8,9,10),],2,function(v) { list(Reduce("+",v)) }), #14
-      apply(uc_yearly$v[c(3,8),],2,function(v) { list(Reduce("+",v)) }), #15
-      apply(uc_yearly$v[c(1),],2,function(v) { list(Reduce("+",v)) }), #16
-      apply(uc_yearly$v[c(2,4),],2,function(v) { list(Reduce("+",v)) }) #17
-  ))
-  names(total_frl$v) <- c(2019:2023)
-  total_frl$mu <- apply(total_frl$v,c(1,2),function(v) { mean(unlist(v)) })
-  total_frl$lci <- apply(total_frl$v,c(1,2),function(v) { quantile(unlist(v), probs = FRLParams$qlci) })
-  total_frl$uci <- apply(total_frl$v,c(1,2),function(v) { quantile(unlist(v), probs = FRLParams$quci) })
-
-
-  uc_yearly$uci <- rbind(uc_yearly$uci,total_frl$uci)
-  uc_yearly$lci <- rbind(uc_yearly$lci,total_frl$lci)
-
-
-  uc_yearly$uci <- cbind(
-      names,
-      uc_yearly$uci
-    )
-  uc_yearly$lci <- cbind(
-      names,
-      uc_yearly$lci
-    )
-
-  uc_mp_frl <- list()
-  uc_mp_frl$v <- data.frame(rbind(
-      list(apply(total_frl$v[1,c(2,3)],1,function(v) { Reduce("+",list(unlist(v[1]), unlist(v[2]) )) })), # 11
-      list(apply(total_frl$v[2,c(2,3)],1,function(v) { Reduce("+",list(unlist(v[1]), unlist(v[2]) )) })), # 12
-      list(apply(total_frl$v[3,c(2,3)],1,function(v) { Reduce("+",list(unlist(v[1]), unlist(v[2]) )) })), # 13
-      list(apply(total_frl$v[4,c(2,3)],1,function(v) { Reduce("+",list(unlist(v[1]), unlist(v[2]) )) })), # 14
-      list(apply(total_frl$v[5,c(2,3)],1,function(v) { Reduce("+",list(unlist(v[1]), unlist(v[2]) )) })), # 15
-      list(apply(total_frl$v[6,c(2,3)],1,function(v) { Reduce("+",list(unlist(v[1]), unlist(v[2]) )) })), # 16
-      list(apply(total_frl$v[7,c(2,3)],1,function(v) { Reduce("+",list(unlist(v[1]), unlist(v[2]) )) })) # 17
-  ))
-
-
- mp_frl <- data.frame(
-      MP_FRL = c(
-        sum(overall_frl[13,c(2,3)]),
-        sum(overall_frl[14,c(2,3)]),
-        sum(overall_frl[15,c(2,3)]),
-        sum(overall_frl[16,c(2,3)]),
-        sum(overall_frl[17,c(2,3)])
-      ),
-      MU = unlist(lapply(uc_mp_frl$v[3:7,],mean)),
-      LCI = unlist(lapply(uc_mp_frl$v[3:7,],quantile,probs= FRLParams$qlci)),
-      UCI = unlist(lapply(uc_mp_frl$v[3:7,],quantile,probs= FRLParams$quci)),
-      halfwidth = NA
+  total_frl_uc <- rbind(
+    apply(uc_yearly$v["Defor",], 2, function(x) quantile(unlist(x), probs= FRLParams$quci)),
+    apply(uc_yearly$v["Degradation",], 2, function(x) quantile(unlist(x), probs= FRLParams$quci)),
+    apply(uc_yearly$v["Sinks",], 2, function(x) quantile(unlist(x), probs= FRLParams$quci)),
+    apply(uc_yearly$v["NetFRL",], 2, function(x) quantile(unlist(x), probs= FRLParams$quci)),
+    apply(uc_yearly$v["FDeg",], 2, function(x) quantile(unlist(x), probs= FRLParams$quci)),
+    apply(uc_yearly$v["FDegNonProxy",], 2, function(x) quantile(unlist(x), probs= FRLParams$quci)),
+    apply(uc_yearly$v["FPln",], 2, function(x) quantile(unlist(x), probs= FRLParams$quci)),
+    apply(uc_yearly$v["ARefor",], 2, function(x) quantile(unlist(x), probs= FRLParams$quci))
   )
+  names(total_frl_uc) <- FRLMonitoringPeriodProjectionYears
+  uc_yearly$uci <- rbind(uc_yearly$uci,total_frl_uc)
+  row.names(uc_yearly$uci) <- names(value_names)
+  
+  total_frl_uc <- rbind(
+    apply(uc_yearly$v["Defor",], 2, function(x) quantile(unlist(x), probs= FRLParams$qlci)),
+    apply(uc_yearly$v["Degradation",], 2, function(x) quantile(unlist(x), probs= FRLParams$qlci)),
+    apply(uc_yearly$v["Sinks",], 2, function(x) quantile(unlist(x), probs= FRLParams$qlci)),
+    apply(uc_yearly$v["NetFRL",], 2, function(x) quantile(unlist(x), probs= FRLParams$qlci)),
+    apply(uc_yearly$v["FDeg",], 2, function(x) quantile(unlist(x), probs= FRLParams$qlci)),
+    apply(uc_yearly$v["FDegNonProxy",], 2, function(x) quantile(unlist(x), probs= FRLParams$qlci)),
+    apply(uc_yearly$v["FPln",], 2, function(x) quantile(unlist(x), probs= FRLParams$qlci)),
+    apply(uc_yearly$v["ARefor",], 2, function(x) quantile(unlist(x), probs= FRLParams$qlci))
+  )
+  names(total_frl_uc) <- FRLMonitoringPeriodProjectionYears
+  uc_yearly$lci <- rbind(uc_yearly$lci,total_frl_uc)
+  row.names(uc_yearly$lci) <- names(value_names)
+  
 
-  mp_frl$halfwidth<-round(100*
-          (
-            mp_frl[4] - mp_frl[3]
-            )
-            /2
-            /mp_frl[2],
-          1
+  # Add a string value column for easy debug
+  overall_frl <- cbind(value=names(value_names), overall_frl)
+  uc_yearly$v <- cbind(value=names(value_names), uc_yearly$v)
+  uc_yearly$lci <- cbind(value=names(value_names), uc_yearly$lci)
+  uc_yearly$uci <- cbind(value=names(value_names), uc_yearly$uci)
+  
+  
+  #bi-yearly monitoring period
+  uc_mp_frl <- list()
+  uc_mp_frl<- data.frame(apply(
+    rbind(
+      c("2019","2020"),
+      c("2021","2022"),
+      c("2023","2024")
+    ),
+    1, function(x) 
+    {
+      rbind(
+        list(apply(uc_yearly$v["Defor",    x],1,function(v) { Reduce("+",list(unlist(v[1]), unlist(v[2]) )) })), # 11
+        list(apply(uc_yearly$v["Degradation", x],1,function(v) { Reduce("+",list(unlist(v[1]), unlist(v[2]) )) })), # 12
+        list(apply(uc_yearly$v["Sinks",       x],1,function(v) { Reduce("+",list(unlist(v[1]), unlist(v[2]) )) })), # 13
+        list(apply(uc_yearly$v["NetFRL", x],1,function(v) { Reduce("+",list(unlist(v[1]), unlist(v[2]) )) })), # 14
+        list(apply(uc_yearly$v["FDeg",        x],1,function(v) { Reduce("+",list(unlist(v[1]), unlist(v[2]) )) })), # 15
+        list(apply(uc_yearly$v["FDegNonProxy",x],1,function(v) { Reduce("+",list(unlist(v[1]), unlist(v[2]) )) })), # 16
+        list(apply(uc_yearly$v["FPln", x],1,function(v) { Reduce("+",list(unlist(v[1]), unlist(v[2]) )) })), # 17
+        list(apply(uc_yearly$v["ARefor", x],1,function(v) { Reduce("+",list(unlist(v[1]), unlist(v[2]) )) })) # 18
+      )  
+    }
+  ))
+  
+  names(uc_mp_frl) <- c("2019-2020", "2021-2022", "2023-2024")
+  row.names(uc_mp_frl) <- names(value_names[11:18])  
+
+  mp_frl <- list()
+  mp_frl$MP_FRL <- NULL
+  mp_frl$MP_FRL <- data.frame(
+    row.names = names(value_names[11:18])  
+  )
+  
+  mp_frl$MU <- data.frame(
+    row.names = names(value_names[11:18])  
+  )
+  mp_frl$LCI <- data.frame(
+    row.names = names(value_names[11:18])  
+  )
+  mp_frl$UCI <- data.frame(
+    row.names = names(value_names[11:18])  
+  )
+  mp_frl$halfwidth <- data.frame(
+    row.names = names(value_names[11:18])  
+  )
+  
+  
+  apply(
+    rbind(
+      c("2019","2020"),
+      c("2021","2022"),
+      c("2023","2024")
+    ),
+    1, function(x)
+  {
+    period <- paste0(x[1],"-",x[2])
+    
+    mp_frl$MP_FRL[period]<<-data.frame(
+      row.names = names(value_names[11:18]),
+      MP_FRL = c(
+        sum(overall_frl["Defor",x]),
+        sum(overall_frl["Degradation",x]),
+        sum(overall_frl["Sinks",x]),
+        sum(overall_frl["NetFRL",x]),
+        sum(overall_frl["FDeg",x]),
+        sum(overall_frl["FDegNonProxy",x]),
+        sum(overall_frl["FPln",x]),
+        sum(overall_frl["ARefor",x])
       )
-  row.names(mp_frl) <- c("Enh", "NetFRL", "FDeg", "Defor", "FDegNonProxy")
-
-
+    )
+    
+    mp_frl$MU[period]<<-data.frame(
+      row.names = names(value_names[11:18]),
+      MU = apply(uc_mp_frl[period], 1, function(v) mean(unlist(v)))
+    )
+    mp_frl$LCI[period]<<-data.frame(
+      row.names = names(value_names[11:18]),
+      LCI = apply(uc_mp_frl[period], 1, function(v) quantile(unlist(v), probs= FRLParams$qlci))
+    )
+    mp_frl$UCI[period]<<-data.frame(
+      row.names = names(value_names[11:18]),
+      UCI = apply(uc_mp_frl[period], 1, function(v) quantile(unlist(v), probs= FRLParams$quci))
+    )
+    mp_frl$halfwidth[period]<<-data.frame(
+      row.names = names(value_names[11:18]),
+      halfwidth = round(100*(mp_frl$UCI[period] - mp_frl$LCI[period])
+                        /2
+                        /mp_frl$MU[period],
+                        1)
+    )
+    return(period)
+  })
+  
+  
+  
   ErpaYearlyFRL <- list()
   ErpaYearlyFRL$yearly <- overall_frl
   ErpaYearlyFRL$uc_yearly <- uc_yearly
   ErpaYearlyFRL$mp_frl <- mp_frl
+  
 
 
   result <- list()

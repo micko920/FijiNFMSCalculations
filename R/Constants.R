@@ -3,6 +3,7 @@
 
 
 #' @export
+#CarbonToCO2eConv <- 3.67
 CarbonToCO2eConv <- 44 / 12 # Carbon to CO_2e conversion (IPCC default * -1) (was param.etacc)
 
 # Tropical Carbon fraction of AGB (IPCC, 2006; Vol. 4, Chap. 4, Table 4.3)

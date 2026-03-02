@@ -173,7 +173,7 @@ createUC_EmRemsValues <- function(UC, UC_MV, EmRems, MV) {
       MV$FDegBurnData$age_yrs, UC$MAIBsw, UC$RootToShootDryLandSmall, MV$FDegBurnData$area_ha
     ))
   }
-
+  
   ## MGG - UC
   # Yearly Emissions from biomass burning  (tCO2e)
   result$McEstEmFire <- CalcMonteCarlo("EstEmFire", EmRems$EstEmFire, CalcEstEmFire, CalcEstEmFireArgs)
@@ -385,7 +385,6 @@ createUC_EmRemsValues <- function(UC, UC_MV, EmRems, MV) {
     return(list(local$EstEmFell, local$EstRemFell))
   }
 
-  ## MGG - UC
   result$McFDeg <- CalcMonteCarlo("McFDeg", EmRems$EstEmRemsFDeg, CalcEstEmRemsFDeg, CalcEstEmRemsFDegArgs)
 
   # Forest Degradation Non Proxy Total
@@ -394,8 +393,15 @@ createUC_EmRemsValues <- function(UC, UC_MV, EmRems, MV) {
     return(list(local$EstEmFire, local$EstEmNFDeg))
   }
   
-  ## MGG - UC
   result$McFDegNonProxy <- CalcMonteCarlo("McFDegNonProxy", EmRems$EstEmRemsFDegNonProxy, CalcEstEmRemsFDegNonProxy, CalcEstEmRemsFDegNonProxyArgs)
+  
+  
+  # Forest Degradation Total
+  CalcEstEmRemsDegradationArgs <- function() {
+    return(list(local$EstEmFell, local$EstRemFell,local$EstEmFire, local$EstEmNFDeg))
+  }
+  
+  result$McDegradation <- CalcMonteCarlo("McDegradation", EmRems$EstEmRemsDegradation, CalcEstEmRemsDegradation, CalcEstEmRemsDegradationArgs)
   
 
   # Enhancement Total
@@ -403,7 +409,6 @@ createUC_EmRemsValues <- function(UC, UC_MV, EmRems, MV) {
     return(list(local$NetEmRemsFPln, local$EstRemARefor))
   }
 
-  ## MGG - UC
   result$McEnh <- CalcMonteCarlo("McEnh", EmRems$EstEmRemsEnh, CalcEstEmRemsEnh, CalcEstEmRemsEnhArgs)
 
 

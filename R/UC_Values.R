@@ -3,7 +3,7 @@
 
 
 #' @export
-createUC_Values <- function(mrp) {
+createUC_Values <- function(mrp,frl) {
   result <- list()
 
   ## TODO: these are still to be implimented with variance
@@ -188,42 +188,60 @@ createUC_Values <- function(mrp) {
   )
   names(result$WoodDensity) <- c("WoodDensity")
 
+  ### Yearly FRL Hack TODO - FIX
+  ErpaYearlyFRL = frl$erpa_yearly$mp_frl$MP_FRL["NetFRL", "2019-2020"]
+  ErpaYearlyFRLUCI = frl$erpa_yearly$mp_frl$UCI["NetFRL", "2019-2020"]
+  ErpaYearlyFRLLCI = frl$erpa_yearly$mp_frl$LCI["NetFRL", "2019-2020"]
+  ErpaYearlyFRLDefor = frl$erpa_yearly$mp_frl$MP_FRL["Defor", "2019-2020"]
+  ErpaYearlyFRLDeforUCI = frl$erpa_yearly$mp_frl$UCI["Defor", "2019-2020"]
+  ErpaYearlyFRLDeforLCI = frl$erpa_yearly$mp_frl$LCI["Defor", "2019-2020"]
+  ErpaYearlyFRLFDeg = frl$erpa_yearly$mp_frl$MP_FRL["FDeg", "2019-2020"]
+  ErpaYearlyFRLFDegUCI =  frl$erpa_yearly$mp_frl$UCI["FDeg", "2019-2020"]
+  ErpaYearlyFRLFDegLCI = frl$erpa_yearly$mp_frl$LCI["FDeg", "2019-2020"]
+  ErpaYearlyFRLEnh = frl$erpa_yearly$mp_frl$MP_FRL["Sinks", "2019-2020"]
+  ErpaYearlyFRLEnhUCI = frl$erpa_yearly$mp_frl$UCI["Sinks", "2019-2020"]
+  ErpaYearlyFRLEnhLCI = frl$erpa_yearly$mp_frl$LCI["Sinks", "2019-2020"]
+  ErpaYearlyFRLFDegNonProxy = frl$erpa_yearly$mp_frl$MP_FRL["FDegNonProxy", "2019-2020"]
+  ErpaYearlyFRLFDegNonProxyUCI = frl$erpa_yearly$mp_frl$UCI["FDegNonProxy", "2019-2020"]
+  ErpaYearlyFRLFDegNonProxyLCI = frl$erpa_yearly$mp_frl$LCI["FDegNonProxy", "2019-2020"]
+  
+  
   result$ErpaYearlyFRL <- ValueWithUncertainty(
-    Value = mrp$ErpaYearlyFRL,
-    LowerCI = mrp$ErpaYearlyFRLLCI,
-    UpperCI = mrp$ErpaYearlyFRLUCI,
+    Value = ErpaYearlyFRL,
+    LowerCI = ErpaYearlyFRLLCI,
+    UpperCI = ErpaYearlyFRLUCI,
     model = vwuTriangle, fixed = FALSE
   )
   names(result$ErpaYearlyFRL) <- c("ErpaYearlyFRL")
 
   result$ErpaYearlyFRLDefor <- ValueWithUncertainty(
-      Value = mrp$ErpaYearlyFRLDefor,
-    LowerCI = mrp$ErpaYearlyFRLDeforLCI,
-    UpperCI = mrp$ErpaYearlyFRLDeforUCI,
+      Value = ErpaYearlyFRLDefor,
+    LowerCI = ErpaYearlyFRLDeforLCI,
+    UpperCI = ErpaYearlyFRLDeforUCI,
     model = vwuTriangle, fixed = FALSE
   )
   names(result$ErpaYearlyFRLDefor) <- c("ErpaYearlyFRLDefor")
 
   result$ErpaYearlyFRLFDeg <- ValueWithUncertainty(
-    Value = mrp$ErpaYearlyFRLFDeg,
-    LowerCI = mrp$ErpaYearlyFRLFDegLCI,
-    UpperCI = mrp$ErpaYearlyFRLFDegUCI,
+    Value = ErpaYearlyFRLFDeg,
+    LowerCI = ErpaYearlyFRLFDegLCI,
+    UpperCI = ErpaYearlyFRLFDegUCI,
     model = vwuTriangle, fixed = FALSE
   )
   names(result$ErpaYearlyFRLFDeg) <- c("ErpaYearlyFRLFDeg")
 
   result$ErpaYearlyFRLEnh <- ValueWithUncertainty(
-    Value = mrp$ErpaYearlyFRLEnh,
-    LowerCI = mrp$ErpaYearlyFRLEnhLCI,
-    UpperCI = mrp$ErpaYearlyFRLEnhUCI,
+    Value = ErpaYearlyFRLEnh,
+    LowerCI = ErpaYearlyFRLEnhLCI,
+    UpperCI = ErpaYearlyFRLEnhUCI,
     model = vwuTriangle, fixed = FALSE
   )
   names(result$ErpaYearlyFRLEnh) <- c("ErpaYearlyFRLEnh")
 
   result$ErpaYearlyFRLFDegNonProxy <- ValueWithUncertainty(
-    Value = mrp$ErpaYearlyFRLFDegNonProxy,
-    LowerCI = mrp$ErpaYearlyFRLFDegNonProxyLCI,
-    UpperCI = mrp$ErpaYearlyFRLFDegNonProxyUCI,
+    Value = ErpaYearlyFRLFDegNonProxy,
+    LowerCI = ErpaYearlyFRLFDegNonProxyLCI,
+    UpperCI = ErpaYearlyFRLFDegNonProxyUCI,
     model = vwuTriangle, fixed = FALSE
   )
   names(result$ErpaYearlyFRLFDegNonProxy) <- c("ErpaYearlyFRLFDegNonProxy")

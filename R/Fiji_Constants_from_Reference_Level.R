@@ -171,3 +171,15 @@ errMAIVhw <- 0.25 # Relative error in MAIVhw and 'maivhww' (was param.errmaivhww
 
 # MAIChw <- (MAIAGBhw * (1 + RootToShootTropRain) * BiomassToCarbonConv)
 # MAIChw                       <- 4.14350 # Mean annual increment C for volume m^3 [t ha^-1 yr^-1]
+
+
+# FRL projection into monitoring period - Corrected Jan 2025
+#' @export
+FRLMonitoringPeriodProjectionYears <- c(2019:2024)
+#' @export
+FRLMonitoringPeriodProjectionLength <- length(FRLMonitoringPeriodProjectionYears)
+#' @export
+FRLMonitoringPeriodProjectionGrowthLength <- FRLMonitoringPeriodProjectionLength + 2
+#' @export
+FRLMonitoringPeriodProjectionGrowthOffset <- 14
+
