@@ -191,8 +191,8 @@ calcFRLHardwoodPlantations <- function() {
         growthMatrix(FRLParams$Ty,
                      area,
                      yearly_growth,
-                     projection=7, offset = 14) * maicm,
-        projection=7, offset = 14)
+                     projection=FRLMonitoringPeriodProjectionGrowthLength, offset = FRLMonitoringPeriodProjectionGrowthOffset) * maicm,
+        projection=FRLMonitoringPeriodProjectionGrowthLength, offset = FRLMonitoringPeriodProjectionGrowthOffset)
 
   if (debug_frl) {
     print(paste0("==== debug: ", "CalcFRLHardwoodPlantations", ":204"))
@@ -201,7 +201,7 @@ calcFRLHardwoodPlantations <- function() {
 
   # Uncertainty analysis
   vhwcstock <- matrix(nrow=0,ncol=length(FRLParams$Ty)+4)
-  gm <- growthMatrix(FRLParams$Ty,rep_len(1,length(FRLParams$Ty)),c(0.5,rep_len(1,length(FRLParams$Ty)-1)), projection=7, offset = 14)
+  gm <- growthMatrix(FRLParams$Ty,rep_len(1,length(FRLParams$Ty)),c(0.5,rep_len(1,length(FRLParams$Ty)-1)), projection=FRLMonitoringPeriodProjectionGrowthLength, offset = FRLMonitoringPeriodProjectionGrowthOffset)
 
   mArea  <- mean(area)
   # MC simulation
@@ -236,14 +236,14 @@ calcFRLHardwoodPlantations <- function() {
     if (i==1) vhwcstock <- r
     else vhwcstock <- rbind(vhwcstock, r)
   }
-  colnames(vhwcstock) <- colnames(gm)
-
+  
   # Yearly removals
   ec_hw_cstock <- hwd_planted_cstock[c(-1,-2)] * FRLParams$etacc# Estimate
   mucstock <- apply(vhwcstock * FRLParams$etacc,2, mean)
   lcihwcstock <- apply(vhwcstock * FRLParams$etacc,2, quantile, probs = FRLParams$qlci) # Lower confidence limit
   ucihwcstock <- apply(vhwcstock * FRLParams$etacc,2, quantile, probs = FRLParams$quci) # Upper confidence limit
   v_ec_hw_cstock <- vhwcstock * FRLParams$etacc * -1# MC estimates
+  row.names(v_ec_hw_cstock) <- NULL
   # Result table CStock
   rs_ec_hw_cstock <- data.frame(
     rbind(

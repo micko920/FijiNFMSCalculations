@@ -148,12 +148,12 @@ calcFRLFelling <- function() {
           growthMatrix(FRLParams$Ty,
                        area,
                        yearly_growth,
-                       projection=7, offset = 14),
+                       projection=FRLMonitoringPeriodProjectionGrowthLength, offset = FRLMonitoringPeriodProjectionGrowthOffset),
           function(v) {
             sapply(v, CalcEstRemFell, FRLParams$maiclnf,c(1))
           }
         ),
-        projection=7, offset = 14)
+        projection=FRLMonitoringPeriodProjectionGrowthLength, offset = FRLMonitoringPeriodProjectionGrowthOffset)
 
   if (debug_frl) {
     print(paste0("==== debug: ", "CalcFRLHardwoodPlantations", ":204"))
@@ -162,7 +162,7 @@ calcFRLFelling <- function() {
 
   # Uncertainty analysis
   vlnfcstock <- matrix(nrow=0,ncol=length(FRLParams$Ty)+4)
-  gm <- growthMatrix(FRLParams$Ty,rep_len(1,length(FRLParams$Ty)),c(0.5,rep_len(1,length(FRLParams$Ty)-1)), projection=7, offset = 14)
+  gm <- growthMatrix(FRLParams$Ty,rep_len(1,length(FRLParams$Ty)),c(0.5,rep_len(1,length(FRLParams$Ty)-1)), projection=FRLMonitoringPeriodProjectionGrowthLength, offset = FRLMonitoringPeriodProjectionGrowthOffset)
 
   mArea  <- mean(area)
   # MC simulation
@@ -185,7 +185,7 @@ calcFRLFelling <- function() {
     if (i==1) vlnfcstock <- r
     else vlnfcstock <- rbind(vlnfcstock, r)
   }
-  colnames(vlnfcstock) <- colnames(gm)
+  
 
   # Yearly removals
   ec_lnf_cstock <- lnf_planted_cstock[c(-1,-2)]# Estimate
@@ -193,6 +193,7 @@ calcFRLFelling <- function() {
   lcilnfcstock <- apply(vlnfcstock,2, quantile, probs = FRLParams$qlci) # Lower confidence limit
   ucilnfcstock <- apply(vlnfcstock,2, quantile, probs = FRLParams$quci) # Upper confidence limit
   v_ec_lnf_cstock <- vlnfcstock# MC estimates
+  row.names(v_ec_lnf_cstock) <- NULL
   # Result table CStock
   rs_ec_lnf_cstock <- data.frame(
     rbind(

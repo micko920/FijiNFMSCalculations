@@ -81,8 +81,8 @@ calcFRLAfforestation <- function() {
         rep(AdjustedAreas$ARareas, FRLParams$Tl),
         growthMatrix(FRLParams$Ty,
                      rep(AdjustedAreas$ARareas, FRLParams$Tl),
-                     yearly_growth, projection=7, offset = 14) * FRLParams$maicar * (1 + FRLParams$Rlwk),
-        projection=7, offset = 14
+                     yearly_growth, projection=FRLMonitoringPeriodProjectionGrowthLength, offset = FRLMonitoringPeriodProjectionGrowthOffset) * FRLParams$maicar * (1 + FRLParams$Rlwk),
+        projection=FRLMonitoringPeriodProjectionGrowthLength, offset = FRLMonitoringPeriodProjectionGrowthOffset
   )
 
   if (debug_frl) {
@@ -92,7 +92,7 @@ calcFRLAfforestation <- function() {
 
   # Uncertainty analysis
   varcstock <- matrix(nrow=0,ncol=length(FRLParams$Ty)+4)
-  gm <- growthMatrix(FRLParams$Ty,rep_len(1,length(FRLParams$Ty)),c(0.5,rep_len(1,length(FRLParams$Ty)-1)), projection=7, offset = 14)
+  gm <- growthMatrix(FRLParams$Ty,rep_len(1,length(FRLParams$Ty)),c(0.5,rep_len(1,length(FRLParams$Ty)-1)), projection=FRLMonitoringPeriodProjectionGrowthLength, offset = FRLMonitoringPeriodProjectionGrowthOffset)
 
   # MC simulation
   for (i in 1:FRLParams$runs) { # i <- 1
@@ -115,14 +115,14 @@ calcFRLAfforestation <- function() {
     if (i==1) varcstock <- r
     else varcstock <- rbind(varcstock, r)
   }
-  colnames(varcstock) <- colnames(gm)
-
+  
   # Yearly removals from afforestation/reforestation (AR)
   ec_ar_cstock <- arcstock[c(-1,-2)] * FRLParams$etacc# Estimate
   mucstock <- apply(varcstock * FRLParams$etacc,2, mean)
   lciarcstock <- apply(varcstock * FRLParams$etacc,2, quantile, probs = FRLParams$qlci) # Lower confidence limit
   uciarcstock <- apply(varcstock * FRLParams$etacc,2, quantile, probs = FRLParams$quci) # Upper confidence limit
   v_ec_ar_cstock <- varcstock* FRLParams$etacc # MC estimates
+  row.names(v_ec_ar_cstock) <- NULL
   # Result table AR CStock
   rs_ec_ar_cstock <- data.frame(
     rbind(

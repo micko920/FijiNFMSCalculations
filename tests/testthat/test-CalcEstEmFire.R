@@ -1,5 +1,5 @@
 library(testthat)
-
+library(VGAM)
 ## This test needs to be reviewed/redone ##
 
 # Test CalcEmFire: Emissions from Biomass Burning

@@ -61,9 +61,56 @@ CalcGrossRem <- function (EstRemFell, EstRemARefor, GrossRemFPln) {
 #' @return Forest Degradation Net Emissions - tCO2e
 #' @export
 
-CalcEstEmRemsFDeg <- function (EstEmFell, EstRemFell, EstEmFire, EstEmNFDeg) {
+CalcEstEmRemsFDeg <- function (EstEmFell, EstRemFell) {
+  # No Proxy
+  # return (EstEmFell + EstRemFell + EstEmFire + EstEmNFDeg)
+  return (EstEmFell + EstRemFell)
+}
+
+
+#
+#' Forest Degradation Non Proxy Net Emissions
+#'
+#' @description This function uses equation (3) to calculate the net emissions
+#' from Forest Degradation. Emissions are presented in tco2e.
+#'
+#' @references [TBC - ERPD citation - Section 8.3.1]
+#'
+#' @param EstEmFire Gross emissions from burning
+#' @param EstEmNFDeg Gross emissions from degradation
+#' @seealso [CalcEstEmFire()]
+#' @seealso [CalcEstEmNFDeg()]
+#' @return Forest Degradation Non Proxy Net Emissions - tCO2e
+#' @export
+
+CalcEstEmRemsFDegNonProxy <- function (EstEmFire, EstEmNFDeg) {
+  # No Proxy
+  return (EstEmFire + EstEmNFDeg)
+}
+
+#
+#' Forest Degradation Net Emissions
+#'
+#' @description This function calculates the net emissions
+#' from Forest Degradation. Emissions are presented in tco2e.
+#'
+#' @references [TBC - ERPD citation - Section 8.3.1]
+#'
+#' @param EstEmFell Gross emissions from logging
+#' @param EstRemFell Gross removals from regrowth on logged areas
+#' @param EstEmFire Gross emissions from burning
+#' @param EstEmNFDeg Gross emissions from degradation
+#' @seealso [CalcEstEmFell()]
+#' @seealso [CalcEstRemFell()]
+#' @seealso [CalcEstEmFire()]
+#' @seealso [CalcEstEmNFDeg()]
+#' @return Forest Degradation Net Emissions - tCO2e
+#' @export
+
+CalcEstEmRemsDegradation <- function (EstEmFell, EstRemFell, EstEmFire, EstEmNFDeg) {
   return (EstEmFell + EstRemFell + EstEmFire + EstEmNFDeg)
 }
+
 
 
 #' Gross Removals from Enhancements

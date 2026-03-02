@@ -30,7 +30,6 @@ calcFRLPlantations <- function() {
     (FRLSoftwoodPlantations$v_ec_sw_aar + FRLHardwoodPlantations$v_ec_hw_aar),
   probs = FRLParams$quci
   )
-
   rs_ec_pl <- data.frame(
       plantations = c(
         " Gross em. Hardw.", # Gross emissions Hardwood Plantations

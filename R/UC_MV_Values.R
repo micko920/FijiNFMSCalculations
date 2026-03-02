@@ -11,28 +11,38 @@ createUC_MV_Values <- function(MV) {
 
   result$DeforAreaLow <- ValueWithUncertainty(
     Value = MV$DeforAreaLow,
-    LowerCI = quantile(MV$McDeforAreaLow,probs=QLCI),
-    UpperCI = quantile(MV$McDeforAreaLow,probs=QUCI),
-    model = create_vwuSampled(MV$McDeforAreaLow), fixed = FALSE
+    #LowerCI = quantile(MV$McDeforAreaLow,probs=QLCI),
+    #UpperCI = quantile(MV$McDeforAreaLow,probs=QUCI),
+    #model = create_vwuSampled(MV$McDeforAreaLow), fixed = FALSE
+    LowerCI = MV$McDeforAreaLow_LCI,
+    UpperCI = MV$McDeforAreaLow_UCI,
+    model = vwuTriangle, fixed = FALSE
   )
   names(result$DeforAreaLow) <- c("DeforAreaLow")
 
   result$DeforAreaUp <- ValueWithUncertainty(
     Value = MV$DeforAreaUp,
-    LowerCI = quantile(MV$McDeforAreaUp,probs=QLCI),
-    UpperCI = quantile(MV$McDeforAreaUp,probs=QUCI),
-    model = create_vwuSampled(MV$McDeforAreaUp), fixed = FALSE
+    #LowerCI = quantile(MV$McDeforAreaUp,probs=QLCI),
+    #UpperCI = quantile(MV$McDeforAreaUp,probs=QUCI),
+    #model = create_vwuSampled(MV$McDeforAreaUp), fixed = FALSE
+    LowerCI = MV$McDeforAreaUp_LCI,
+    UpperCI = MV$McDeforAreaUp_UCI,
+    model = vwuTriangle, fixed = FALSE
   )
   names(result$DeforAreaUp) <- c("DeforAreaUp")
 
+  
   ## MGG - patch to ARefor allow growth tables.
   # This only allows 1 value for all years
   # TBD Fix this to allow a different value for each MP year
   result$AReforArea <- ValueWithUncertainty(
-   Value = MV$AReforArea$area_ha[1],
-   LowerCI = quantile(MV$McAReforArea,probs=QLCI),
-   UpperCI = quantile(MV$McAReforArea,probs=QUCI),
-   model = create_vwuSampled(MV$McAReforArea), fixed = FALSE
+   Value = MV$AReforArea$area_ha,
+   #LowerCI = quantile(MV$McAReforArea,probs=QLCI),
+   #UpperCI = quantile(MV$McAReforArea,probs=QUCI),
+   #model = create_vwuSampled(MV$McAReforArea), fixed = FALSE
+   LowerCI = MV$AReforArea$lci,
+   UpperCI = MV$AReforArea$uci,
+   model = vwuTriangle, fixed = FALSE
   )
   names(result$AReforArea) <- c("AReforArea")
 
